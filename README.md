@@ -1,1 +1,1 @@
-# semanticly: A biomedical content editor and publishing widget
+# Semanticly: A biomedical content editor and publishing widget
