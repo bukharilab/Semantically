@@ -37,8 +37,8 @@
     </style>
   </head>
   <body>
-    <div class="sidebar branding-below" style="padding: 0px; margin-top: 10px;">
-      <div class="mdc-form-field">
+    <div class="sidebar branding-below" style="padding: 0px; bottom: 80px;">
+      <div class="mdc-form-field" style="padding: 10px 0px; background: #f1f1f1;">
         <div class="mdc-checkbox demo-checkbox--custom-stroke-and-fill">
           <input type="checkbox" id="save-prefs" class="mdc-checkbox__native-control">
           <div class="mdc-checkbox__background">
@@ -54,7 +54,16 @@
         <button class="blue" id="highlight">Highlight</button>
         <button id="unhighlight">Unhighlight</button>
       </div>-->
-      <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>
+      <div class="annotations" style="padding: 0px 15px; display: none;">
+        <h6 class="mdc-typography--subtitle2 annotation_name" style="font-weight: 600;font-size: 0.95rem;margin-bottom: 8px;margin-top: 15px;line-height:  1.1rem;">NCI CTEP SDC Melanoma Sub-Category Terminology</h6>
+        <h6 class="mdc-typography--subtitle1 annotation_ontology" style="font-size: 0.85rem; margin-top: 0px; margin-bottom: 0px; line-height: 0.95rem;">Ontology: NCIT</h6>
+        <p class="mdc-typography--body1 annotation_definition" style="font-size: 0.95rem;">Melanoma is an NCI Cancer Therapeutic Evaluation Program (CTEP) Simplified Disease Classification (SDC) category used to organize cancer-related disease coding tha harmonizes with and supports reporting based on the global standard Medical Dictionary for Drug Regulatory Reporting (MedDRA) terminology.</p>
+        <h3 class="mdc-list-group__subheader header" style="margin: 20px 0px 12px;">Other Possible Annotations</h3>
+        <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>
+      </div>
+      <div class="no-annotations" style="padding: 0px 15px;">
+        <p class="mdc-typography--body1" style="font-size: 0.95rem;">No annotations found.</p>
+      </div>
     </div>
 
     <div class="sidebar bottom" style="background: #f1f1f1; padding-top: 0px; padding-bottom: 0px;">
@@ -75,13 +84,22 @@
             showError(msg, $('#button-bar'));
           }).changeAutomaticHighlightingProperty($('#save-prefs').prop('checked'));
         });
-        updateAnnotationsRecursively(function() { updateCurrentPositionRecursively(); });
+        google.script.run.withSuccessHandler(function(value) {
+          if(value) {
+            $('input[type=checkbox]').prop('checked', true);
+          }
+        }).withFailureHandler(function(msg, element) {
+          showError(msg, $('#button-bar'));
+        }).getAutomaticHighlightingProperty();
+        userChoiceAnnotations = [];
+        updateAnnotationsRecursively();
+        updateRecommenderAnnotationsRecursively(function() { updateCurrentPositionRecursively(); });
       });
 
       function updateAnnotationsRecursively(callback = null) {
         google.script.run.withSuccessHandler(function(newAnnotations) {
           annotations = JSON.parse(newAnnotations);
-          setTimeout(updateAnnotationsRecursively, 2500);
+          setTimeout(updateAnnotationsRecursively, 0);
           if(callback != null) {
             callback();
           }
@@ -91,11 +109,26 @@
         }).getAnnotations();
       }
 
+      function updateRecommenderAnnotationsRecursively(callback = null) {
+        google.script.run.withSuccessHandler(function(newRecommenderAnnotations) {
+          recommenderAnnotations = JSON.parse(newRecommenderAnnotations);
+          setTimeout(updateRecommenderAnnotationsRecursively, 0);
+          if(callback != null) {
+            callback();
+          }
+        }).withFailureHandler(function(msg, element) {
+          showError(msg, $('#button-bar'));
+          setTimeout(updateAnnotationsRecursively, 2500);
+        }).getRecommenderAnnotations();
+      }
+
       function updateCurrentPositionRecursively() {
         google.script.run.withSuccessHandler(function(newCurrentPosition) {
           currentPosition = newCurrentPosition;
-          renderAnnotations(true);
-          console.log(newCurrentPosition);
+          if(typeof annotations !== 'undefined' && typeof recommenderAnnotations !== 'undefined') {
+            renderAnnotations(true);
+          }
+          //console.log(newCurrentPosition);
           setTimeout(updateCurrentPositionRecursively, 0);
         }).withFailureHandler(function(msg, element) {
           showError(msg, $('#button-bar'));
@@ -103,29 +136,75 @@
         }).getCurrentPosition();
       }
       
+      function getRecommenderAnnotation(position) {
+        for(i = 0; i < recommenderAnnotations.length; i++) {
+          if(recommenderAnnotations[i].from - 1 <= position && position <= recommenderAnnotations[i].to) {
+            if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') {  
+              return [userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+            } else {
+              for(i2 = 0; i2 < annotations.length; i2++) {
+                if(annotations[i2]['ontology'] === recommenderAnnotations[i]['ontology']) {
+                  for(i3 = 0; i3 < annotations[i2].annotations.length; i3++) {
+                    if(annotations[i2].annotations[i3].from - 1 <= position && position <= annotations[i2].annotations[i3].to) {
+                      return [annotations[i2], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+                    }
+                  }
+                }
+              }
+            }
+            break;
+          }
+        }
+
+        return undefined;
+      }
+      
       function renderAnnotations(current = false) {
         if(current) {
           var thisAnnotations = annotations.filter(function(annotation) {
             for(i = 0; i < annotation.annotations.length; i++) {
-              if(annotation.annotations[i].from <= currentPosition && currentPosition <= annotation.annotations[i].to) {
+              if(annotation.annotations[i].from - 1 <= currentPosition && currentPosition <= annotation.annotations[i].to) {
                 return true;
               }
             }
-	
-	        return false;
+  
+          return false;
           });
         } else {
           thisAnnotations = annotations;
         }
         
-        $('ul.annotations_list').html('');
-        $.each(thisAnnotations, function(key, value) {
-          //if($('ul.annotations_list li[data-item-link="' + value['link'] + '"]').length == 0) {
-          $('ul.annotations_list').append('<li class="mdc-list-item" data-item-link="' + value['link'] + '">'
-          + '<span class="mdc-list-item__text">' + value['prefLabel'] + '<span class="mdc-list-item__secondary-text">Ontology: ' + value['ontology'] + '</span></span>'
-          + '<span class="mdc-list-item__meta"><i class="material-icons" aria-hidden="true">arrow_forward</i></span></li>');
-          //}
-        });
+        var recommenderAnnotation = getRecommenderAnnotation(currentPosition);
+        if(recommenderAnnotation !== undefined) {
+          $('.no-annotations').css('display', 'none');
+          $('.annotations').css('display', 'block');
+          $('.annotation_name').html(recommenderAnnotation[0].prefLabel);
+          $('.annotation_ontology').html('Ontology: ' + recommenderAnnotation[0].ontology);
+          $('.annotation_definition').html(recommenderAnnotation[0].definition);
+        
+          var new_html = '';
+          $.each(thisAnnotations, function(key, value) {
+            new_html += '<li class="mdc-list-item" style="cursor: pointer;" data-user-choice-index="' + recommenderAnnotation[1] + '" data-link="' + value['link'] + '" onClick="changeUserChoiceAnnotations(this);">'
+            + '<span class="mdc-list-item__text">' + value['prefLabel'] + '<span class="mdc-list-item__secondary-text">' + (value['definition'].length == 0 ? '' : value['definition'].split(/<[\S ]*?>/)[0] + '...') + '</span></span>'
+            + '<span class="mdc-list-item__meta"><i class="material-icons" aria-hidden="true">arrow_forward</i></span></li>';
+          });
+          $('ul.annotations_list').html(new_html);
+        } else {
+          $('.annotations').css('display', 'none');
+          $('.no-annotations').css('display', 'block');
+        }
+      }
+      
+      function changeUserChoiceAnnotations(element) {
+        var link = $(element).attr('data-link');
+        var index = $(element).attr('data-user-choice-index');
+        for(i = 0; i < annotations.length; i++) {
+          if(annotations[i]['link'] === link) {
+            userChoiceAnnotations[index] = annotations[i];
+            break;
+          }
+        }
+        $('div.sidebar').scrollTop(0);
       }
 
       /**
