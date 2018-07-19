@@ -23,7 +23,7 @@ String.prototype.capitalize = function() {
  */
 function onOpen(e) {
   DocumentApp.getUi().createMenu("Semantically")
-      .addItem('Open helper', 'showSidebar')
+      .addItem('Launch Semantically Workspace', 'showSidebar')
       .addToUi();
   init();
 }
@@ -67,12 +67,7 @@ function getAnnotations() {
   var result = JSON.parse(UrlFetchApp.fetch(url, {'muteHttpExceptions': true}));
   
   for(i = 0; i < result.length; i++) {
-    annotations.push({prefLabel: result[i]['annotatedClass']['prefLabel'].capitalize(), definition: ((typeof result[i]['annotatedClass']['definition'] !== 'undefined') ? result[i]['annotatedClass']['definition'][0].split(/<p>|<\/p>/).join('') : ''), ontology: result[i]['annotatedClass']['links']['ontology'].replace(/http[s]?:\/\/data.bioontology.org\/ontologies\//g, ''), link: result[i]['annotatedClass']['links']['self'], annotations: result[i]['annotations']});
-  }
-
-  Logger.log(PropertiesService.getScriptProperties().getProperty('automaticHighlighting'));
-  if(PropertiesService.getScriptProperties().getProperty('automaticHighlighting') === 'true') {
-    highlightAnnotations(annotations);
+    annotations.push({id: result[i]['annotatedClass']['@id'], prefLabel: result[i]['annotatedClass']['prefLabel'].capitalize(), definition: ((typeof result[i]['annotatedClass']['definition'] !== 'undefined') ? result[i]['annotatedClass']['definition'][0].split(/<p>|<\/p>/).join('') : ''), ontology: result[i]['annotatedClass']['links']['ontology'].replace(/http[s]?:\/\/data.bioontology.org\/ontologies\//g, ''), link: result[i]['annotatedClass']['links']['self'], annotations: result[i]['annotations']});
   }
   
   return JSON.stringify(annotations);
@@ -83,11 +78,14 @@ function getRecommenderAnnotations() {
   var url = 'https://data.bioontology.org/recommender?input=' + encodeURIComponent(DocumentApp.getActiveDocument().getBody().getText()) + '&display_context=false&display_links=false&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f';
   var result = UrlFetchApp.fetch(url, {'muteHttpExceptions': true}).getContentText();
   
-  ontologyId = /"ontologies":\[[\S ]*?"acronym":"([\S ]*?)"/g.exec(result)[1];
+  var ontologyId = /"ontologies":\[[\S ]*?"acronym":"([\S ]*?)"/g.exec(result)[1];
   recommenderAnnotations = JSON.parse(/"annotations":(\[[\S ]*?\])/g.exec(result)[1]);
   for(i = 0; i < recommenderAnnotations.length; i++) {
     recommenderAnnotations[i].ontology = ontologyId;
   }
+  
+  highlightAnnotations();
+  
   return JSON.stringify(recommenderAnnotations);
 }
 
@@ -95,15 +93,20 @@ function getCurrentPosition() {
   return DocumentApp.getActiveDocument().getCursor().getOffset();
 }
 
-function highlightAnnotations(annotations) {
+function highlightAnnotations() {
   //Logger.log(annotations.length);
+  
+  Logger.log(recommenderAnnotations.length);
   var text = DocumentApp.getActiveDocument().getBody().editAsText();
   text.setBackgroundColor(0, text.getText().length - 1, null);
-  for(i = 0; i < annotations.length; i++) {
-    for(j = 0; j < annotations[i]['annotations'].length; j++) {
-      text.setBackgroundColor(annotations[i]['annotations'][j]['from'] - 1, annotations[i]['annotations'][j]['to'] - 1, '#FCFC00');
-    }
+  for(i = 0; i < recommenderAnnotations.length; i++) {
+    text.setBackgroundColor(recommenderAnnotations[i]['from'] - 1, recommenderAnnotations[i]['to'] - 1, '#FCFC00');
   }
+}
+
+function unhighlightAnnotations() {
+  var text = DocumentApp.getActiveDocument().getBody().editAsText();
+  text.setBackgroundColor(0, text.getText().length - 1, null);
 }
 
 function changeAutomaticHighlightingProperty(value) {
@@ -116,4 +119,8 @@ function changeAutomaticHighlightingProperty(value) {
 
 function getAutomaticHighlightingProperty() {
   return PropertiesService.getScriptProperties().getProperty('automaticHighlighting') == 'true' ? true : false;
+}
+
+function getHtml() {
+  return DocumentApp.getActiveDocument().getBody().getText();
 }
