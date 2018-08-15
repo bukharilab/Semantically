@@ -59,12 +59,16 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
-function getAnnotations() {
+function getAnnotations(enableHighlighting) {
+  if(enableHighlighting === true) {
+    PropertiesService.getScriptProperties().setProperty('highlightingEnabled', true);
+  }
+  
   annotations = [];
   
   // Getting Annotations
-  var url = 'https://data.bioontology.org/annotator?text=' + encodeURIComponent(DocumentApp.getActiveDocument().getBody().getText()) + '&include=prefLabel,definition&display_context=false&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f';
-  var result = JSON.parse(UrlFetchApp.fetch(url, {'muteHttpExceptions': true}));
+  var url = 'https://data.bioontology.org/annotator';
+  var result = JSON.parse(UrlFetchApp.fetch(url, {'muteHttpExceptions': true, method: 'POST', payload: {text: DocumentApp.getActiveDocument().getBody().getText(), include: 'prefLabel,definition', display_context: 'false', apikey: '89f4c54e-aee8-4af5-95b6-dd7c608f057f'}}));
   
   for(i = 0; i < result.length; i++) {
     annotations.push({id: result[i]['annotatedClass']['@id'], prefLabel: result[i]['annotatedClass']['prefLabel'].capitalize(), definition: ((typeof result[i]['annotatedClass']['definition'] !== 'undefined') ? result[i]['annotatedClass']['definition'][0].split(/<p>|<\/p>/).join('') : ''), ontology: result[i]['annotatedClass']['links']['ontology'].replace(/http[s]?:\/\/data.bioontology.org\/ontologies\//g, ''), link: result[i]['annotatedClass']['links']['self'], annotations: result[i]['annotations']});
@@ -75,9 +79,9 @@ function getAnnotations() {
 
 function getRecommenderAnnotations() {
   // Getting Recommender Annotations
-  var url = 'https://data.bioontology.org/recommender?input=' + encodeURIComponent(DocumentApp.getActiveDocument().getBody().getText()) + '&display_context=false&display_links=false&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f';
-  var result = UrlFetchApp.fetch(url, {'muteHttpExceptions': true}).getContentText();
-  
+  var url = 'https://data.bioontology.org/recommender';
+  var result = UrlFetchApp.fetch(url, {'muteHttpExceptions': true, method: 'POST', payload: {input: DocumentApp.getActiveDocument().getBody().getText(), display_context: 'false', display_links: 'false', apikey: '89f4c54e-aee8-4af5-95b6-dd7c608f057f'}}).getContentText();
+  Logger.log(result);
   var ontologyId = /"ontologies":\[[\S ]*?"acronym":"([\S ]*?)"/g.exec(result)[1];
   recommenderAnnotations = JSON.parse(/"annotations":(\[[\S ]*?\])/g.exec(result)[1]);
   for(i = 0; i < recommenderAnnotations.length; i++) {
@@ -85,40 +89,33 @@ function getRecommenderAnnotations() {
   }
   
   highlightAnnotations();
-  
+    
   return JSON.stringify(recommenderAnnotations);
 }
 
 function getCurrentPosition() {
-  return DocumentApp.getActiveDocument().getCursor().getOffset();
+  var offset = DocumentApp.getActiveDocument().getBody().editAsText().getText().indexOf(DocumentApp.getActiveDocument().getCursor().getElement().asText().getText())
+  var offsetPosition = DocumentApp.getActiveDocument().getCursor().getSurroundingTextOffset();
+  return (offset == 0 && DocumentApp.getActiveDocument().getCursor().getElement().asText().getText().length == 0) ? -1 : offset + offsetPosition;
 }
 
 function highlightAnnotations() {
   //Logger.log(annotations.length);
-  
-  Logger.log(recommenderAnnotations.length);
-  var text = DocumentApp.getActiveDocument().getBody().editAsText();
-  text.setBackgroundColor(0, text.getText().length - 1, null);
-  for(i = 0; i < recommenderAnnotations.length; i++) {
-    text.setBackgroundColor(recommenderAnnotations[i]['from'] - 1, recommenderAnnotations[i]['to'] - 1, '#FCFC00');
+  if(PropertiesService.getScriptProperties().getProperty('highlightingEnabled')) {
+    Logger.log(recommenderAnnotations.length);
+    var text = DocumentApp.getActiveDocument().getBody().editAsText();
+    text.setBackgroundColor(0, text.getText().length - 1, null);
+    for(i = 0; i < recommenderAnnotations.length; i++) {
+      text.setBackgroundColor(recommenderAnnotations[i]['from'] - 1, recommenderAnnotations[i]['to'] - 1, '#FCFC00');
+    }
   }
 }
 
 function unhighlightAnnotations() {
+  PropertiesService.getScriptProperties().setProperty('highlightingEnabled', false);
+  
   var text = DocumentApp.getActiveDocument().getBody().editAsText();
   text.setBackgroundColor(0, text.getText().length - 1, null);
-}
-
-function changeAutomaticHighlightingProperty(value) {
-  PropertiesService.getScriptProperties().setProperty('automaticHighlighting', (value ? 'true' : 'false'));
-  if(!value) {
-    var text = DocumentApp.getActiveDocument().getBody().editAsText();
-    text.setBackgroundColor(0, text.getText().length - 1, null);
-  }
-}
-
-function getAutomaticHighlightingProperty() {
-  return PropertiesService.getScriptProperties().getProperty('automaticHighlighting') == 'true' ? true : false;
 }
 
 function getHtml() {

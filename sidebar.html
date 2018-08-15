@@ -2,10 +2,12 @@
 <html>
   <head>
     <base target="_top">
+    
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/list.css">
     <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/checkbox.css">
     <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/button.css">
+    <link rel="stylesheet" href="https://bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
 
@@ -74,6 +76,15 @@
       -webkit-animation: spin 1.5s linear infinite;
       animation: spin 1.5s linear infinite;
     }
+    .ncbo-autocomplete {
+      display: none;
+    }
+    ul.ncboTree li.root {
+      padding: 0 0 0 15px;
+    }
+    div#NCBOtree {
+      margin-bottom: 15px;
+    }
     @-webkit-keyframes spin {
       0%   {
         -webkit-transform: rotate(0deg);
@@ -103,7 +114,7 @@
   <body>
     <div class="sidebar branding-below" style="padding: 0px; bottom: 127px;">
       <div class="mdc-form-field" style="padding: 10px 0px; background: #f1f1f1; width: 100%;">
-        <button id="annotate" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto;" onclick="annotatingEnabled = true; show('loader'); updateAnnotationsRecursively(function() { updateRecommenderAnnotationsRecursively(function() { updateCurrentPositionRecursively(); }); });">Annotate</button>
+        <button id="annotate" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto;" onclick="annotatingEnabled = true; show('loader'); updateAnnotationsRecursively(function() { updateRecommenderAnnotationsRecursively(function() { updateCurrentPositionRecursively(); }); }, true);">Annotate</button>
         <button id="remove-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: right; font-size: 10px; margin-right: auto" onclick="removeAnnotations();">Remove annotations</button>
       </div>
       <!--<div class="block" id="button-bar">
@@ -114,7 +125,8 @@
         <h6 class="mdc-typography--subtitle2 annotation_name" style="font-weight: 600;font-size: 0.95rem;margin-bottom: 8px;margin-top: 15px;line-height:  1.1rem;">NCI CTEP SDC Melanoma Sub-Category Terminology</h6>
         <h6 class="mdc-typography--subtitle1 annotation_ontology" style="font-size: 0.85rem; margin-top: 0px; margin-bottom: 0px; line-height: 0.95rem;">Ontology: NCIT</h6>
         <p class="mdc-typography--body1 annotation_definition" style="font-size: 0.95rem;">Melanoma is an NCI Cancer Therapeutic Evaluation Program (CTEP) Simplified Disease Classification (SDC) category used to organize cancer-related disease coding tha harmonizes with and supports reporting based on the global standard Medical Dictionary for Drug Regulatory Reporting (MedDRA) terminology.</p>
-        <button id="show-other-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent;" onclick="show('other-annotations');">Not satisfied with this annotation</button>        
+        <div id="NCBOtree"></div>
+        <button id="show-other-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent; margin-bottom: 15px;" onclick="show('other-annotations');">Not satisfied with this annotation</button>        
         <!--<h3 class="mdc-list-group__subheader header" style="margin: 20px 0px 12px;">Other Possible Annotations</h3>
         <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>-->
       </div>
@@ -137,7 +149,8 @@
       <img alt="Add-on logo" class="logo" src="https://raw.githubusercontent.com/ignatov357/semanticly/master/logo.png" width="100%">
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree-2.0.2.min.js"></script>
     <script>
       String.prototype.insertAt = function(position, stringToInsert) {
         return this.substring(0, position) + stringToInsert + this.substring(position);
@@ -170,22 +183,15 @@
        * user's origin and destination language preferences if previously set.
        */
       $(function() {
-        $('#save-prefs').change(function() {
-          google.script.run.withSuccessHandler(function() {
-          
-          }).withFailureHandler(function(msg, element) {
-            showError(msg, $('#button-bar'));
-          }).changeAutomaticHighlightingProperty($('#save-prefs').prop('checked'));
-        });
-        google.script.run.withSuccessHandler(function(value) {
-          if(value) {
-            $('input[type=checkbox]').prop('checked', true);
-          }
-        }).withFailureHandler(function(msg, element) {
-          showError(msg, $('#button-bar'));
-        }).getAutomaticHighlightingProperty();
         userChoiceAnnotations = [];
         //updateRecommenderAnnotationsRecursively(function() { updateCurrentPositionRecursively(); });
+        var NCBOtree = $("#NCBOtree").NCBOTree({
+          apikey: "89f4c54e-aee8-4af5-95b6-dd7c608f057f",
+          ontology: "NCIT",
+          autoclose: true,
+          autocompleteClass: "ncbo-autocomplete",
+          //treeClass: "ncbo-tree"
+        });
       });
 
       function show(blockName) {
@@ -193,7 +199,7 @@
           $('.' + blockName).css('display', 'block');
       }
 
-      function updateAnnotationsRecursively(callback = null) {
+      function updateAnnotationsRecursively(callback = null, enableHighlighting = false) {
         if(annotatingEnabled) {
           google.script.run.withSuccessHandler(function(newAnnotations) {
             if(annotatingEnabled) {
@@ -204,9 +210,11 @@
               }
             }
           }).withFailureHandler(function(msg, element) {
-            showError(msg, $('#button-bar'));
-            setTimeout(updateAnnotationsRecursively, 2500);
-          }).getAnnotations();
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateAnnotationsRecursively, 2500);
+            }
+          }).getAnnotations(enableHighlighting);
         }
       }
 
@@ -221,8 +229,10 @@
               }
             }
           }).withFailureHandler(function(msg, element) {
-            showError(msg, $('#button-bar'));
-            setTimeout(updateAnnotationsRecursively, 2500);
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateRecommenderAnnotationsRecursively, 2500);
+            }
           }).getRecommenderAnnotations();
         }
       }
@@ -232,15 +242,17 @@
           google.script.run.withSuccessHandler(function(newCurrentPosition) {
             if(annotatingEnabled) {
               currentPosition = newCurrentPosition;
-              if(typeof recommenderAnnotations !== 'undefined' && typeof annotations !== 'undefined') {
+              if(annotatingEnabled && typeof recommenderAnnotations !== 'undefined' && typeof annotations !== 'undefined') {
                 renderAnnotations(true);
               }
               //console.log(newCurrentPosition);
               setTimeout(updateCurrentPositionRecursively, 0);
             }
           }).withFailureHandler(function(msg, element) {
-            showError(msg, $('#button-bar'));
-            setTimeout(updateCurrentPositionRecursively, 0);
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateCurrentPositionRecursively, 0);
+            }
           }).getCurrentPosition();
         }
       }
@@ -291,6 +303,15 @@
           $('.annotation_name').html(recommenderAnnotation[0].prefLabel);
           $('.annotation_ontology').html('Ontology: ' + recommenderAnnotation[0].ontology);
           $('.annotation_definition').html((recommenderAnnotation[0].definition.length > 0) ? recommenderAnnotation[0].definition : 'No definition.');
+        
+          if(NCBOtree.NCBOTree.options().ontology !== recommenderAnnotation[0].ontology) {
+            NCBOtree.NCBOTree.changeOntology(recommenderAnnotation[0].ontology);
+            NCBOtreeSelectedClassId = recommenderAnnotation[0].id;
+            NCBOtree.NCBOTree.jumpToClass(recommenderAnnotation[0].id);
+          } else if(typeof NCBOtreeSelectedClassId === 'undefined' || NCBOtreeSelectedClassId !== recommenderAnnotation[0].id) {
+            NCBOtreeSelectedClassId = recommenderAnnotation[0].id;
+            NCBOtree.NCBOTree.jumpToClass(recommenderAnnotation[0].id);
+          }
         
           var new_html = '';
           $.each(thisAnnotations, function(key, value) {
@@ -354,10 +375,10 @@
         show('loader');
         setTimeout(function() {
           google.script.run.withSuccessHandler(function() { show('setup'); }).withFailureHandler(function(msg, element) {
-            showError(msg, $('#button-bar'));
+            console.error(msg);
             setTimeout(updateCurrentPositionRecursively, 0);
           }).unhighlightAnnotations();
-        }, 2500);
+        }, 3500);
       }
       
       function download(filename, text) {
@@ -399,5 +420,6 @@
         $(element).after(div);
       }
     </script>
+  
   </body>
 </html>
