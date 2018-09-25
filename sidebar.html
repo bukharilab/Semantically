@@ -133,6 +133,7 @@
         <p class="mdc-typography--body1 annotation_definition" style="font-size: 0.95rem;">Melanoma is an NCI Cancer Therapeutic Evaluation Program (CTEP) Simplified Disease Classification (SDC) category used to organize cancer-related disease coding tha harmonizes with and supports reporting based on the global standard Medical Dictionary for Drug Regulatory Reporting (MedDRA) terminology.</p>
         <div id="NCBOtree"></div>
         <button id="show-other-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent; margin-bottom: 15px;" onclick="show('other-annotations');">Not satisfied with this annotation</button>        
+        <button id="remove-annotation" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent; margin-bottom: 15px;" onclick="removeCurrentAnnotation();">Remove annotation</button>   
         <!--<h3 class="mdc-list-group__subheader header" style="margin: 20px 0px 12px;">Other Possible Annotations</h3>
         <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>-->
       </div>
@@ -305,7 +306,11 @@
         for(i = 0; i < recommenderAnnotations.length; i++) {
           if(recommenderAnnotations[i].from - 1 <= position && position <= recommenderAnnotations[i].to) {
             if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') {  
-              return [userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+              if(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] != null) {
+                return [userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+              } else {
+                return undefined;
+              }
             } else {
               for(i2 = 0; i2 < annotations.length; i2++) {
                 if(annotations[i2]['ontology'] === recommenderAnnotations[i]['ontology']) {
@@ -332,8 +337,8 @@
                 return true;
               }
             }
-  
-          return false;
+	
+	        return false;
           });
         } else {
           thisAnnotations = annotations;
@@ -390,8 +395,10 @@
           } else {
             duplicatesAvoider[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] = true;
           }*/
-          if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') {          
-            thisAnnotations.push(Object.concatenate(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], {from: recommenderAnnotations[i].from, to: recommenderAnnotations[i].to}));
+          if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') { 
+            if(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] != null) {
+              thisAnnotations.push(Object.concatenate(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], {from: recommenderAnnotations[i].from, to: recommenderAnnotations[i].to}));
+            }
           } else {
             var flag = false;
             for(i2 = 0; i2 < annotations.length; i2++) {
@@ -412,6 +419,15 @@
         }
         
         return thisAnnotations;
+      }
+      
+      function removeCurrentAnnotation() {
+        for(i = 0; i < recommenderAnnotations.length; i++) {
+          if(recommenderAnnotations[i].from - 1 <= currentPosition && currentPosition <= recommenderAnnotations[i].to) {
+            userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] = null;
+            break;
+          }
+        }
       }
       
       function removeAnnotations() {
