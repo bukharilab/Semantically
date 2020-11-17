@@ -24,6 +24,27 @@ trix-editor {
   line-height: 1.8rem;
 }
 
+.highlight {
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+  background-color: #6200ee;
+  position: absolute;
+  transition: width .7s ease-in-out;
+}
+
+/* #highlight .active {
+  width:
+} */
+
+#sidebar-container {
+  padding: 3rem 0 .5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
 .sidebar {
   position: relative !important;
 }
@@ -34,7 +55,12 @@ trix-editor {
   flex-direction: column;
   justify-content: space-between;
   text-align: center;
-  min-width: 60px !important;
+  overflow-y: auto;
+  min-height: 10rem;
+}
+
+.sidebar.bottom {
+  overflow-y: inherit;
 }
 
 .branding-below {
