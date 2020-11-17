@@ -1,0 +1,115 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Semantically</title>
+
+  <link rel="stylesheet" type="text/css" href="trix/trix.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/list.css">
+  <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/checkbox.css">
+  <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/button.css">
+  <link rel="stylesheet" href="https://bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="trix/trix.js"></script>
+</head>
+<body>
+  <main>
+    <trix-editor></trix-editor>
+  </main>
+  <div id="sidebar-container">
+    <div class="mdc-form-field" style="width: 100%; display: flex; flex-direction: row; justify-content: center; padding-bottom: 1rem;">
+      <button id="annotate" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="font-size: 10px; margin: 0 .2rem; display: inline-block;">Annotate</button>
+      <button id="remove-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="font-size: 10px; margin: 0 .2rem; display: inline-block;" onclick="removeAnnotations();">Remove annotations</button>
+      <!--<button id="a" class="a" style="float: right; font-size: 10px; margin-right: auto" onclick="removeCurrentAnnotation();">R</button>-->
+    </div>
+    <div id="sidebar">
+
+      <div class="sidebar branding-below" style="padding: 0px; bottom: 80px;">
+        <!-- <div class="mdc-form-field" style="padding: 10px 0px; width: 100%;">
+          <button id="annotate" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto;">Annotate</button>
+          <button id="remove-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: right; font-size: 10px; margin-right: auto" onclick="removeAnnotations();">Remove annotations</button>
+          <!--<button id="a" class="a" style="float: right; font-size: 10px; margin-right: auto" onclick="removeCurrentAnnotation();">R</button>-->
+        </div>
+        <!--<div class="block" id="button-bar">
+          <button class="blue" id="highlight">Highlight</button>
+          <button id="unhighlight">Unhighlight</button>
+        </div>-->
+        <div class="sidebar-block setup" style="padding: 15px 15px;">
+          <p class="mdc-typography--body1" style="font-size: 0.95rem;">Please click "Annotate" to see annotated words, then click on a certain word to see its annotation.</p>
+        </div>
+        <div class="sidebar-block no-annotations" style="padding: 15px 15px; display: none;">
+          <p class="mdc-typography--body1" style="font-size: 0.95rem;">No annotations found.</p>
+        </div>
+        <div class="sidebar-block annotations" style="padding: 0px 15px; display: none;">
+          <h6 class="mdc-typography--subtitle2 annotation_name" style="font-weight: 600;font-size: 0.95rem;margin-bottom: 8px;margin-top: 15px;line-height:  1.1rem;">NCI CTEP SDC Melanoma Sub-Category Terminology</h6>
+          <h6 class="mdc-typography--subtitle1 annotation_ontology" style="font-size: 0.85rem; margin-top: 0px; margin-bottom: 0px; line-height: 0.95rem;">Ontology: NCIT</h6>
+          <p class="mdc-typography--body1 annotation_definition" style="font-size: 0.95rem;">Melanoma is an NCI Cancer Therapeutic Evaluation Program (CTEP) Simplified Disease Classification (SDC) category used to organize cancer-related disease coding tha harmonizes with and supports reporting based on the global standard Medical Dictionary for Drug Regulatory Reporting (MedDRA) terminology.</p>
+          <div id="NCBOtree"></div>
+
+          <!--<h3 class="mdc-list-group__subheader header" style="margin: 20px 0px 12px;">Other Possible Annotations</h3>
+          <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>-->
+        </div>
+        <div class="sidebar-block other-annotations" style="padding: 0px 0px; display: none;">
+          <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>
+        </div>
+        <div class="sidebar-block download-as" style="padding: 0px 0px; display: none;">
+          <ul class="mdc-list mdc-list--two-line mdc-list--dense back">
+            <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="showDownloadButton(); show('no-annotations');">
+              <span class="mdc-list-item__meta" style="height: 24px; width: 24px; margin-left:  0px; margin-right:  10px;">
+                <i class="material-icons" aria-hidden="true">arrow_backward</i>
+              </span>
+              <span class="mdc-list-item__text">Back to annotations</span>
+            </li>
+          </ul>
+          <h6 class="mdc-typography--subtitle1" style="padding: 0px 15px;font-weight: 400;font-size: 0.95rem;margin-top: 0px;margin-bottom: 0px;line-height: 0.95rem;margin-bottom: 10px;margin-top: 10px;">Download as:</h6>
+          <ul class="mdc-list mdc-list--two-line mdc-list--dense download_options">
+            <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsHtml(); showDownloadButton(); show('no-annotations');">
+              <span class="mdc-list-item__text">
+                Schema.org complaint HTML page
+              </span>
+              <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+                <i class="material-icons" aria-hidden="true">arrow_down</i>
+              </span>
+            </li>
+            <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsHtml(true); showDownloadButton(); show('no-annotations');">
+              <span class="mdc-list-item__text">
+                Schema.org complaint HTML page
+                <span class="mdc-list-item__secondary-text">With annotations highlighted</span>
+              </span>
+              <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+                <i class="material-icons" aria-hidden="true">arrow_down</i>
+              </span>
+            </li>
+            <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsJSON(); showDownloadButton(); show('no-annotations');">
+              <span class="mdc-list-item__text">
+                Schema.org complaint JSON page
+              </span>
+              <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+                <i class="material-icons" aria-hidden="true">arrow_down</i>
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div class="loader-container" style="display: none; flex-direction: column; justify-content; min-height: 20rem;">
+          <div class="loader">
+            <div id="loader"></div>
+          </div>
+        </div>
+        <button id="downloadAs" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: right; width: 100%; margin-top: 15px; display: none;" onclick="hideDownloadButton(); show('download-as');">Download As</button>
+      </div>
+      <div class="sidebar bottom" style="padding-top: 0px; padding-bottom: 0px;">
+        <img alt="Add-on logo" class="logo" src="https://raw.githubusercontent.com/ignatov357/semanticly/master/logo.png" width="100%">
+      </div>
+    </div>
+  </div>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+  <!-- <script src="//bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree-2.0.2.min.js"></script> -->
+  <script type="text/javascript" src="scripts.js"></script>
+</body>
+</html>
