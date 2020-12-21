@@ -70,7 +70,7 @@ function formatAnnotations(results) {
 
 function getRecommenderAnnotations(text, callback) {
   // Check if callback is given
-	if(typeof callback !== "function") {
+	if(typeof callback !== "function" || !text) {
 		return;
 	}
 
