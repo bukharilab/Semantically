@@ -1,4 +1,5 @@
 $('#annotate').click(() => showAnnotations());
+$('#remove-annotations').click(() => removeAnnotations());
 
 function showAnnotations() {
   //annotatingEnabled = true;
@@ -11,7 +12,21 @@ function showAnnotations() {
   });
 }
 
-
+function removeAnnotations() {
+  $.post("http://data.bioontology.org/batch?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f", {
+    "http://www.w3.org/2002/07/owl#Class": {
+      "collection": [
+        {
+          "class": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3224",
+          "ontology": "http://data.bioontology.org/ontologies/NCIT"
+        }
+      ],
+      "display": "prefLabel,synonym,semanticTypes"
+    }
+  }).done(data => {
+    console.log(data);
+  });
+}
 
 function showDownloadButton() {
   $('.sidebar.bottom button#downloadAs').css('display', 'block');

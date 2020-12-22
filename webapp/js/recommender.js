@@ -68,9 +68,23 @@ function formatAnnotations(results) {
   return formattedRes;
 }
 
+function parseRecommenderData(data) {
+  const results = [];
+  for(i = 0; i < data.length; i++) {
+    results[i] = {};
+    results[i]['acronym'] = data[i]['ontologies'][0]['acronym'];
+    results[i]['annotations'] = [];
+    for (const annotation of data[i]['coverageResult']['annotations']) {
+      results[i]['annotations'].push(annotation);
+    }
+  }
+  return results;
+}
+
 function getRecommenderAnnotations(text, callback) {
   // Check if callback is given
 	if(typeof callback !== "function" || !text) {
+    callback({});
 		return;
 	}
 
@@ -91,31 +105,22 @@ function getRecommenderAnnotations(text, callback) {
 		    	activeRequestsToBioPortal++;
 		    },
 			success: function(data) {
-				  // Converting retrieved data to an array of ontology ids
-
-          const results = [];
-	        for(i = 0; i < data.length; i++) {
-            results[i] = {};
-            results[i]['acronym'] = data[i]['ontologies'][0]['acronym'];
-            results[i]['annotations'] = [];
-            for (const annotation of data[i]['coverageResult']['annotations']) {
-              results[i]['annotations'].push(annotation);
-            }
-				  }
+			  // Converting retrieved data to an array of ontology ids
+        const results = parseRecommenderData(data);
 
 				// Caching the response data
 				bioPortalRecommenderCache[text] = data;
 
 				// Executing a callback function, passing an array of ontology IDs
 				callback(formatAnnotations(results));
-		    },
-		    error: function() {
-		    	// Executing callback function, passing an empty array
-				callback([]);
-		    },
-		    complete: function() {
-		    	activeRequestsToBioPortal--;
-		    }
+	    },
+	    error: function() {
+	    	// Executing callback function, passing an empty array
+			  callback([]);
+	    },
+	    complete: function() {
+	    	activeRequestsToBioPortal--;
+	    }
 		});
 	} else {
 		activeRequestsToBioPortal++;
