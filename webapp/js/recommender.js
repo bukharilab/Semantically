@@ -112,7 +112,8 @@ function getRecommenderAnnotations(text, callback) {
 				bioPortalRecommenderCache[text] = data;
 
 				// Executing a callback function, passing an array of ontology IDs
-				callback(formatAnnotations(results));
+        getOntologyDefinitions(formatAnnotations(results), callback);
+				// callback(formatAnnotations(results));
 	    },
 	    error: function() {
 	    	// Executing callback function, passing an empty array
