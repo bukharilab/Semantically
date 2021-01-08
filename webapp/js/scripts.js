@@ -5,45 +5,29 @@ function showAnnotations() {
   //annotatingEnabled = true;
   showLoader();
   getRecommenderAnnotations(getText(), (formattedRes) => {
-    console.log(formattedRes);
-    fillSidebarAccordion(formattedRes);
-    showDownloadButton();
-    hideLoader();
+    getOntologyDefinitions(formattedRes, formattedResWithDef => {
+      console.log(formattedResWithDef);
+      fillSidebarAccordion(formattedResWithDef);
+      showDownloadButton();
+      hideLoader();
+    });
   });
 }
 
 function removeAnnotations() {
-  // $.post("http://data.bioontology.org/batch?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f", {
-  //   "http://www.w3.org/2002/07/owl#Class": {
-  //     "collection": [
-  //       {
-  //         "class": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3224",
-  //         "ontology": "http://data.bioontology.org/ontologies/NCIT"
-  //       }
-  //     ],
-  //     "display": "prefLabel,synonym,semanticTypes"
-  //   }
-  // }).done(data => {
-  //   console.log(data);
-  // });
-  //
-  // $.ajax({
-  //   type: "POST",
-  //   url: "http://data.bioontology.org/batch?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f",
-  //   data: {
-  //     "http://www.w3.org/2002/07/owl#Class": {
-  //       "collection": [
-  //         {
-  //           "class": "http://data.bioontology.org/ontologies/NCIT/classes/http%3A%2F%2Fncicb.nci.nih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C3224",
-  //           "ontology": "http://data.bioontology.org/ontologies/NCIT"
-  //         }
-  //       ],
-  //       "display": "definition"
-  //     }
-  //   },
-  //   success: res => console.log(res),
-  //   dataType: 'JSON'
-  // });
+  $.post("http://data.bioontology.org/batch?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f", {
+    "http://www.w3.org/2002/07/owl#Class": {
+      "collection": [
+        {
+          "class": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C3224",
+          "ontology": "http://data.bioontology.org/ontologies/NCIT"
+        }
+      ],
+      "display": "prefLabel,synonym,semanticTypes"
+    }
+  }).done(data => {
+    console.log(data);
+  });
 }
 
 function showDownloadButton() {
@@ -70,6 +54,9 @@ function showLoader() {
   console.log('loader shown');
   $('.loader-container').css('display', 'flex');
   $('.sidebar-block').css('display', 'none');
+
+  // Clear sidebar
+  $('#sidebar-accordion').empty();
 }
 
 function hideLoader() {

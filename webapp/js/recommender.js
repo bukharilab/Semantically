@@ -35,7 +35,8 @@ function fillSidebarAccordion(formattedRes) {
     let count1 = 0;
     for (const annotation of formattedRes[key]) {
       const acronym = annotation['acronym'];
-      annotationTabs += '<div class="card"><div class="card-header d-flex" id="heading-' + count + '-' + count1 + '"><h2 class="mb-0 d-inline-block flex-grow-1"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '-' + count1 + '" aria-expanded="false" aria-controls="collapse-' + count + '-' + count1 + '">' + acronym + '</button></h2><button class="btn btn-primary btn-sm" type="submit">select</button></div><div id="collapse-' + count + '-' + count1 + '" class="collapse" aria-labelledby="heading-' + count + '-' + count1 + '" data-parent="#sidebar-accordion-' + count + '"><div class="card-body">' + acronym + '</div></div></div>'
+      const def = annotation['definition'];
+      annotationTabs += '<div class="card"><div class="card-header d-flex" id="heading-' + count + '-' + count1 + '"><h2 class="mb-0 d-inline-block flex-grow-1"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '-' + count1 + '" aria-expanded="false" aria-controls="collapse-' + count + '-' + count1 + '">' + acronym + '</button></h2><button class="btn btn-primary btn-sm" type="submit">select</button></div><div id="collapse-' + count + '-' + count1 + '" class="collapse" aria-labelledby="heading-' + count + '-' + count1 + '" data-parent="#sidebar-accordion-' + count + '"><div class="card-body">' + def + '</div></div></div>'
 
       count1++;
     }
@@ -95,7 +96,7 @@ function getRecommenderAnnotations(text, callback) {
 	if(typeof activeRequestsToBioPortal != "number") {
 		activeRequestsToBioPortal = 0;
 	}
-	if(typeof bioPortalRecommenderCache[text] === "undefined") {
+	// if(typeof bioPortalRecommenderCache[text] === "undefined") {
 		// Performing the request
 		$.ajax({
 			url: 'https://data.bioontology.org/recommender?input=' + text + '&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f',
@@ -110,24 +111,24 @@ function getRecommenderAnnotations(text, callback) {
 
 				// Caching the response data
 				bioPortalRecommenderCache[text] = data;
-
+        console.log("Here!");
 				// Executing a callback function, passing an array of ontology IDs
-        getOntologyDefinitions(formatAnnotations(results), callback);
+        callback(formatAnnotations(results));
 				// callback(formatAnnotations(results));
 	    },
 	    error: function() {
 	    	// Executing callback function, passing an empty array
-			  callback([]);
+			  callback({});
 	    },
 	    complete: function() {
 	    	activeRequestsToBioPortal--;
 	    }
 		});
-	} else {
-		activeRequestsToBioPortal++;
-		setTimeout(function() {
-			callback(bioPortalRecommenderCache[text]);
-			activeRequestsToBioPortal--;
-		}, 250);
-	}
+	// } else {
+	// 	activeRequestsToBioPortal++;
+	// 	setTimeout(function() {
+	// 		callback(bioPortalRecommenderCache[text]);
+	// 		activeRequestsToBioPortal--;
+	// 	}, 250);
+	// }
 }
