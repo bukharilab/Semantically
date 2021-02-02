@@ -2,10 +2,14 @@ function getText() {
   return document.querySelector("trix-editor").editor.getDocument().toString().trim();
 }
 
+/**
+* Create sidebar ontology accordion and populate with recommender ontologies.
+*/
 function fillSidebarAccordion(formattedRes) {
   const accordion = $('#sidebar-accordion');
   const fullText = getText();
 
+  // Sort ontologies based on location in text
   function sortKeys(keys) {
     return keys.sort((a, b) => {
       const from1 = a.substring(0, a.indexOf("-"));
@@ -22,6 +26,7 @@ function fillSidebarAccordion(formattedRes) {
     });
   }
 
+  // Create and populate accordion rows.
   let count = 0;
   for (const key of sortKeys(Object.keys(formattedRes))) {
     const divider = key.indexOf('-');
@@ -31,18 +36,33 @@ function fillSidebarAccordion(formattedRes) {
     highlight(from, to);
     const text = fullText.substring(from, to);
 
-    let annotationTabs = '<div class="accordion" id="sidebar-accordion-' + count + '">';
+    const annotationTabs = $('<div class="accordion" id="sidebar-accordion-' + count + '"></div>');
     let count1 = 0;
+
+    //Create inner accordion for all ontologies belonging to each term
     for (const annotation of formattedRes[key]) {
       const acronym = annotation['acronym'];
-      const def = annotation['definition'];
-      annotationTabs += '<div class="card"><div class="card-header d-flex" id="heading-' + count + '-' + count1 + '"><h2 class="mb-0 d-inline-block flex-grow-1"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '-' + count1 + '" aria-expanded="false" aria-controls="collapse-' + count + '-' + count1 + '">' + acronym + '</button></h2><button class="btn btn-primary btn-sm" type="submit">select</button></div><div id="collapse-' + count + '-' + count1 + '" class="collapse" aria-labelledby="heading-' + count + '-' + count1 + '" data-parent="#sidebar-accordion-' + count + '"><div class="card-body">' + def + '</div></div></div>'
+      var getOntologyDef = () => getOntologyDefinition(annotation, `#collapse-${count}-${count1}`);
+      const annotationTab = $(`<div class="card"><div class="card-header d-flex" id="heading-` + count + '-' + count1 + '"><h2 class="mb-0 d-inline-block flex-grow-1"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '-' + count1 + '" aria-expanded="false" aria-controls="collapse-' + count + '-' + count1 + '">' + acronym + '</button></h2><button class="btn btn-primary btn-sm" type="submit">select</button></div><div id="collapse-' + count + '-' + count1 + '" class="collapse" aria-labelledby="heading-' + count + '-' + count1 + '" data-parent="#sidebar-accordion-' + count + '"><div class="card-body">Loading...</div></div></div>');
 
+      annotationTabs.append(annotationTab);
       count1++;
     }
 
-    const card = $('<div class="card"><div class="card-header" id="heading-' + count + '"><h2 class="mb-0"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '" aria-expanded="false" aria-controls="collapse-' + count + '">' + text + '</button></h2></div><div id="collapse-' + count + '" class="collapse" aria-labelledby="heading-' + count + '" data-parent="#sidebar-accordion"><div class="card-body">' + annotationTabs + '</div></div></div>');
+    const card = $('<div class="card"><div class="card-header" id="heading-' + count + '"><h2 class="mb-0"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse-' + count + '" aria-expanded="false" aria-controls="collapse-' + count + '">' + text + '</button></h2></div><div id="collapse-' + count + '" class="collapse" aria-labelledby="heading-' + count + '" data-parent="#sidebar-accordion"><div class="card-body"></div></div');
+
     accordion.append(card);
+    $(`#collapse-${count} .card-body`).append(annotationTabs);
+
+    // Collapse first ontology and get definition
+    if (count == 0) {
+      $(`#collapse-0`).collapse('show');
+      $(`#collapse-0-0`).collapse('show');
+
+      // Get definition of ontology and append first sentence
+      // const ontology = formattedRes[key][0];
+      // getOntologyDefinition(ontology, '#collapse-0-0');
+    }
     count++;
   }
 }

@@ -1,33 +1,16 @@
-function getOntologyDefinitions(formattedRes, callback) {
-  let count = 0;
-  for (const key of Object.keys(formattedRes)) {
-    const ontologies = formattedRes[key];
-    for (const ontology of ontologies) {
-      count++;
-      const url = ontology['annotatedClass']['links']['self'];
-      $.ajax({
-        method: "GET",
-        url: url + "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f",
-        dataType: "JSON",
-        success: res => {
-          ontology['definition'] = res['definition'][0];
-          count--;
-        },
-        error: res => {
-          ontology['definition'] = "error";
-          count--;
-        }
-      });
-    }
+function getOntologyDefinition(ontology, cardSelector) {
+  if (ontology['definition']) return;
+  const callback = def => {
+    ontology['definition'] = def;
+    def = def.substring(0, def.indexOf('.')+1);
+    $(`${cardSelector} .card-body`).text(def);
   }
-
-  // calback once all api calls completed.
-  var intervalID;
-
-  intervalID = setInterval(() => {
-    if (count == 0) {
-      clearInterval(intervalID);
-      callback(formattedRes);
-    }
-  }, 500);
+  const url = ontology['annotatedClass']['links']['self'];
+  $.ajax({
+    method: "GET",
+    url: url + "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f",
+    dataType: "JSON",
+    success: res => callback(res['definition'][0]),
+    error: res => callback("Failed to retrieve ontology definition.")
+  });
 }

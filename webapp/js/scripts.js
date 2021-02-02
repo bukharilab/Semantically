@@ -5,12 +5,12 @@ function showAnnotations() {
   //annotatingEnabled = true;
   showLoader();
   getRecommenderAnnotations(getText(), (formattedRes) => {
-    getOntologyDefinitions(formattedRes, formattedResWithDef => {
-      console.log(formattedResWithDef);
-      fillSidebarAccordion(formattedResWithDef);
+    //getOntologyDefinitions(formattedRes, formattedResWithDef => {
+      console.log(formattedRes);
+      fillSidebarAccordion(formattedRes);
       showDownloadButton();
       hideLoader();
-    });
+    //});
   });
 }
 
