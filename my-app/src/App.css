@@ -1,0 +1,178 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Show editor after annotation column. */
+body {
+  display: flex;
+  flex-direction: row-reverse;
+}
+main {
+  width: 100%;
+  padding: 3rem 1rem 1rem;
+}
+
+
+trix-editor {
+  height: calc(100vh - 4rem - 40px);
+  overflow-y: scroll;
+  padding: 1rem;
+  font-size: 1.3rem;
+  letter-spacing: .04rem;
+  line-height: 1.8rem;
+}
+
+.highlight {
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+  background-color: #6200ee;
+  position: absolute;
+  transition: width .7s ease-in-out;
+}
+
+/* #highlight .active {
+  width:
+} */
+
+#sidebar-container {
+  max-height: 100vh !important;
+  padding: 3rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.sidebar {
+  position: relative !important;
+}
+
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  min-height: 10rem;
+
+}
+
+#sidebar-accordion {
+  overflow: auto;
+  max-height: calc(100vh - 4rem - 90px - 40px) !important;
+}
+
+.accordion-toggle {
+  cursor: pointer;
+}
+
+#sidebar-logo {
+  height: 85px;
+}
+
+.branding-below {
+  bottom: 56px;
+  top: 0;
+}
+.branding-text {
+  left: 7px;
+  position: relative;
+  top: 3px;
+}
+.col-contain {
+  overflow: hidden;
+}
+.col-one {
+  float: left;
+  width: 50%;
+}
+.logo {
+  vertical-align: middle;
+}
+.radio-spacer {
+  height: 20px;
+}
+.width-100 {
+  width: 100%;
+}
+
+#loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 20rem;
+}
+#loader {
+  display: block;
+  position: relative;
+  left: 50%;
+  margin-left: -75px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #9370DB;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+#loader:before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #BA55D3;
+  -webkit-animation: spin 3s linear infinite;
+  animation: spin 3s linear infinite;
+}
+#loader:after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #FF00FF;
+  -webkit-animation: spin 1.5s linear infinite;
+  animation: spin 1.5s linear infinite;
+}
+.ncbo-autocomplete {
+  display: none;
+}
+ul.ncboTree li.root {
+  padding: 0 0 0 15px;
+}
+div#NCBOtree {
+  margin-bottom: 15px;
+}
+@-webkit-keyframes spin {
+  0%   {
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  0%   {
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
