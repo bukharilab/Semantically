@@ -13,15 +13,39 @@ const getTermStr = term => {
   return getText().substring(from, to);
 }
 
+const setGetDefinitionListeners = (annotations, setDefinition) => {
+  for (const annotation of Object.values(annotations)) {
+    for (const {from, to, acronym, annotatedClass} of annotation) {
+      const toggle = `${from}-${to}-${acronym}`;
+      const url = annotatedClass.links.self;
+      console.log(toggle);
+      $(`.${toggle}`).click(() => {setDefinition(url); console.log(toggle);});
+    }
+  }
+}
 
-
-const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, udpateLoadHighlights }) => {
+const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, udpateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
   const [ontologyModal, updateOntologyModal] = useState('');
+  const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
+  const [ontologyIdx, updateOntologyIdx] = useState(0);
+  
   const annotatedTerms = sortKeys(Object.keys(annotations));
+//   console.log(annotations);
   console.log('refresh');
-
+  
   const setDefinition = url => {
-    return !(url in definitions) ? getDefinition(url).then(def => updateDefinitions({...definitions, [url]: def})) : null;
+    if (!(url in definitions)) {
+      getDefinition(url).then(def => updateDefinitions({...definitions, [url]: def}));
+      return 'Loading...';
+    } else {
+      return definitions[url];
+    }
+  }
+  
+  if (!setDefinitionListeners) {
+    console.log("here");
+    setGetDefinitionListeners(annotations, setDefinition);
+    updateSetDefinitionListeners(true);
   }
   
   if (loadHighlights) {
@@ -33,55 +57,38 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     udpateLoadHighlights(false);
   }
   
-  useEffect(() => {
-    for (const term in annotatedTerms) {
-      $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.links.self));
-    }
-  });
+//   useEffect(() => {
+//     for (const term in annotatedTerms) {
+//       $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.links.self));
+//     }
+//   });
+  
+  if (!currentHighlight) return null;
   
   return (
-    <Accordion defaultActiveKey={annotatedTerms[0]} id="sidebar-accordion">
-      {annotatedTerms.map(term => {
-        const termStr = getTermStr(term);
-
-        return (
-          <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={term} className={`accordion-toggle toggle-${term} term-toggle`} onClick={() => {}}>
-              {termStr}
-            </Accordion.Toggle>
-            <Accordion.Collapse eventKey={term} className={`p-2 p-0 accordion-card`}>
-
-                <Card>
-                  <Card.Header className="d-flex justify-content-between">
-                    <span>{annotations[term][0].acronym}</span>
-                    <div>
-                      <Button variant="outline-info" size="sm">edit</Button>{' '}
-                      <Button variant="outline-danger" size="sm">delete</Button>
-                    </div>
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Text>
-                      {'With supporting text below as a natural lead-in to additional content.'}
-                    </Card.Text>
-                    { annotations[term].length > 1 ? <Button variant="primary" className="w-100" onClick={() => updateOntologyModal(term)}>Other Ontologies</Button> : null }
-                  </Card.Body>
-                </Card>
-
-
-            </Accordion.Collapse>
-          </Card>
-        )
-      })}
+    <Card id="sidebar-accordion">
+      <Card.Header className="d-flex justify-content-between">
+        <span>{annotations[currentHighlight][ontologyIdx].acronym}</span>
+        <div>
+          <Button variant="outline-info" size="sm">edit</Button>{' '}
+          <Button variant="outline-danger" size="sm">delete</Button>
+        </div>
+      </Card.Header>
+      <Card.Body>
+        <Card.Text>
+          {setDefinition(annotations[currentHighlight][ontologyIdx].annotatedClass.links.self)}
+        </Card.Text>
+        { annotations[currentHighlight].length > 1 ? <Button variant="primary" className="w-100" onClick={() => updateOntologyModal(currentHighlight)}>Other Ontologies</Button> : null }
+      </Card.Body>
       
-      {ontologyModal ? <OntologyModal term={ontologyModal} updateOntologyModal={updateOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} /> : null}
-    </Accordion>
+      {ontologyModal ? <OntologyModal term={ontologyModal} updateOntologyModal={updateOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
+    </Card>
   );
 }
 
-const OntologyModal = ({term, updateOntologyModal, annotations, definitions, setDefinition }) => {
+const OntologyModal = ({term, updateOntologyModal, annotations, definitions, setDefinition, ontologyIdx, updateOntologyIdx }) => {
   const closeModal = () => updateOntologyModal('');
   const getDef = url => {
-    if (!(url in definitions)) setDefinition(url);
     return definitions[url] ? definitions[url] : 'loading...';
   }
   
@@ -99,24 +106,17 @@ const OntologyModal = ({term, updateOntologyModal, annotations, definitions, set
       </Modal.Header>
       <Modal.Body>
         <Accordion defaultActiveKey={`${term}-modal-0`} id="sidebar-accordion">
-          {annotations[term].slice().splice(1).map((ontology, idx) => 
-                                          
-                                          
-                                          
+          {annotations[term].map((ontology, idx) =>                 
           <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={`${term}-modal-${idx}`} onClick={() => {}} className="d-flex justify-content-between">
+            <Accordion.Toggle as={Card.Header} eventKey={`${term}-modal-${idx}`} className={`d-flex justify-content-between ${ontology.from}-${ontology.to}-${ontology.acronym}`}>
               <span>{ontology.acronym}</span>
-              <Button variant="outline-primary" size="sm">select</Button>
+              {ontologyIdx != idx ? 
+                <Button variant="outline-primary" size="sm" onClick={() => {
+                    updateOntologyIdx(idx);
+                    updateOntologyModal(false);
+                }}>select</Button>
+                : null}
             </Accordion.Toggle>
-            <Accordion.Collapse eventKey={`${term}-modal-${idx}`} className={`p-2 p-0 accordion-card`}>
-              <Card>
-                <Card.Body>
-                  <Card.Text>
-                    {getDef(ontology.annotatedClass.links.self)}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Accordion.Collapse>
           </Card>
                                            )}
         </Accordion>

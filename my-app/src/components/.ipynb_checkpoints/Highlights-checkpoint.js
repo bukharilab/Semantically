@@ -3,11 +3,10 @@ import React, {useEffect, useState} from 'react';
 import sortKeys from '../hooks/sortKeys';
 import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
 
-const Highlights = ({ highlights }) => {
+const Highlights = ({ highlights, currentHighlight, setCurrentHighlight }) => {
   const sortedKeys = sortKeys(Object.keys(highlights));
   
   const [activeIndex, updateActiveIndex] = useState(0);
-  const [activeTerm, updateActiveTerm] = useState("");
   const editor = document.querySelector("trix-editor").editor;
   
   $(document.querySelector("trix-editor")).click(() => {
@@ -43,15 +42,15 @@ const Highlights = ({ highlights }) => {
 //       $('.active').removeClass('active');
 //       $(`#highlight-${key}`).addClass('active');
       if (activeIndex > highlightStart) {
-        updateActiveTerm(key);
+        setCurrentHighlight(key);
           
         // show accordion card
-        const toggle = document.querySelector(`.toggle-${key}`);
-        const collapse = document.querySelector(`.toggle-${key} + .collapse`);
-        if (!collapse.classList.contains('show')) {
-            toggle.click();
-            setTimeout(() => toggle.scrollIntoView(), 300);
-        }
+//         const toggle = document.querySelector(`.toggle-${key}`);
+//         const collapse = document.querySelector(`.toggle-${key} + .collapse`);
+//         if (!collapse.classList.contains('show')) {
+//             toggle.click();
+//             setTimeout(() => toggle.scrollIntoView(), 300);
+//         }
       }
       break;
     }
@@ -60,7 +59,7 @@ const Highlights = ({ highlights }) => {
   return (
     <div>
       {Object.keys(highlights).map((term, key) => <div key={key} id={`highlight-${term}`} 
-        className={`highlight ${term === activeTerm ? 'active' : ''} ${highlights[term] != -1 ? 'selected' : ''}`}/>)
+        className={`highlight ${term === currentHighlight ? 'active' : ''} ${highlights[term] != -1 ? 'selected' : ''}`}/>)
       }
     </div>
   )
