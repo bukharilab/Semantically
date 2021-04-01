@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/list.css">
+    <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/checkbox.css">
+    <link rel="stylesheet" href="https://material-components-web.appspot.com/assets/button.css">
+    <link rel="stylesheet" href="https://bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+
+    <style>
+    .branding-below {
+      bottom: 56px;
+      top: 0;
+    }
+    .branding-text {
+      left: 7px;
+      position: relative;
+      top: 3px;
+    }
+    .col-contain {
+      overflow: hidden;
+    }
+    .col-one {
+      float: left;
+      width: 50%;
+    }
+    .logo {
+      vertical-align: middle;
+    }
+    .radio-spacer {
+      height: 20px;
+    }
+    .width-100 {
+      width: 100%;
+    }
+    #loader {
+      display: block;
+      position: relative;
+      left: 50%;
+      margin-left: -75px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #9370DB;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+    #loader:before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #BA55D3;
+      -webkit-animation: spin 3s linear infinite;
+      animation: spin 3s linear infinite;
+    }
+    #loader:after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #FF00FF;
+      -webkit-animation: spin 1.5s linear infinite;
+      animation: spin 1.5s linear infinite;
+    }
+    .ncbo-autocomplete {
+      display: none;
+    }
+    ul.ncboTree li.root {
+      padding: 0 0 0 15px;
+    }
+    div#NCBOtree {
+      margin-bottom: 15px;
+    }
+    @-webkit-keyframes spin {
+      0%   {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes spin {
+      0%   {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar branding-below" style="padding: 0px; bottom: 80px;">
+      <div class="mdc-form-field" style="padding: 10px 0px; background: #f1f1f1; width: 100%;">
+        <button id="annotate" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto;" onclick="annotatingEnabled = true; show('loader'); updateAnnotationsRecursively(function() { updateRecommenderAnnotationsRecursively(function() { showDownloadButton(); updateCurrentPositionRecursively(); }); }, true);">Annotate</button>
+        <button id="remove-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: right; font-size: 10px; margin-right: auto" onclick="removeAnnotations();">Remove annotations</button>
+        <!--<button id="a" class="a" style="float: right; font-size: 10px; margin-right: auto" onclick="removeCurrentAnnotation();">R</button>-->
+      </div>
+      <!--<div class="block" id="button-bar">
+        <button class="blue" id="highlight">Highlight</button>
+        <button id="unhighlight">Unhighlight</button>
+      </div>-->
+      <div class="sidebar-block setup" style="padding: 15px 15px;">
+        <p class="mdc-typography--body1" style="font-size: 0.95rem;">Please click "Annotate" to see annotated words, then click on a certain word to see its annotation.</p>
+      </div>
+      <div class="sidebar-block no-annotations" style="padding: 15px 15px; display: none;">
+        <p class="mdc-typography--body1" style="font-size: 0.95rem;">No annotations found.</p>
+      </div>
+      <div class="sidebar-block annotations" style="padding: 0px 15px; display: none;">
+        <h6 class="mdc-typography--subtitle2 annotation_name" style="font-weight: 600;font-size: 0.95rem;margin-bottom: 8px;margin-top: 15px;line-height:  1.1rem;">NCI CTEP SDC Melanoma Sub-Category Terminology</h6>
+        <h6 class="mdc-typography--subtitle1 annotation_ontology" style="font-size: 0.85rem; margin-top: 0px; margin-bottom: 0px; line-height: 0.95rem;">Ontology: NCIT</h6>
+        <p class="mdc-typography--body1 annotation_definition" style="font-size: 0.95rem;">Melanoma is an NCI Cancer Therapeutic Evaluation Program (CTEP) Simplified Disease Classification (SDC) category used to organize cancer-related disease coding tha harmonizes with and supports reporting based on the global standard Medical Dictionary for Drug Regulatory Reporting (MedDRA) terminology.</p>
+        <div id="NCBOtree"></div>
+        <button id="show-other-annotations" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent; margin-bottom: 15px;" onclick="show('other-annotations');">Not satisfied with this annotation</button>
+        <button id="remove-annotation" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: left; font-size: 10px; margin-left: auto; margin-right: auto; background: transparent; margin-bottom: 15px;" onclick="show('loader'); removeCurrentAnnotation();">Remove annotation</button>
+        <!--<h3 class="mdc-list-group__subheader header" style="margin: 20px 0px 12px;">Other Possible Annotations</h3>
+        <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>-->
+      </div>
+      <div class="sidebar-block other-annotations" style="padding: 0px 0px; display: none;">
+        <ul class="mdc-list mdc-list--two-line mdc-list--dense annotations_list"></ul>
+      </div>
+      <div class="sidebar-block download-as" style="padding: 0px 0px; display: none;">
+        <ul class="mdc-list mdc-list--two-line mdc-list--dense back">
+          <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="showDownloadButton(); show('no-annotations');">
+            <span class="mdc-list-item__meta" style="height: 24px; width: 24px; margin-left:  0px; margin-right:  10px;">
+              <i class="material-icons" aria-hidden="true">arrow_backward</i>
+            </span>
+            <span class="mdc-list-item__text">Back to annotations</span>
+          </li>
+        </ul>
+        <h6 class="mdc-typography--subtitle1" style="padding: 0px 15px;font-weight: 400;font-size: 0.95rem;margin-top: 0px;margin-bottom: 0px;line-height: 0.95rem;margin-bottom: 10px;margin-top: 10px;">Download as:</h6>
+        <ul class="mdc-list mdc-list--two-line mdc-list--dense download_options">
+          <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsHtml(); showDownloadButton(); show('no-annotations');">
+            <span class="mdc-list-item__text">
+              Schema.org complaint HTML page
+            </span>
+            <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+              <i class="material-icons" aria-hidden="true">arrow_down</i>
+            </span>
+          </li>
+          <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsHtml(true); showDownloadButton(); show('no-annotations');">
+            <span class="mdc-list-item__text">
+              Schema.org complaint HTML page
+              <span class="mdc-list-item__secondary-text">With annotations highlighted</span>
+            </span>
+            <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+              <i class="material-icons" aria-hidden="true">arrow_down</i>
+            </span>
+          </li>
+          <li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" onclick="saveAsJSON(); showDownloadButton(); show('no-annotations');">
+            <span class="mdc-list-item__text">
+              Schema.org complaint JSON page
+            </span>
+            <span class="mdc-list-item__meta" style="height: 24px; width: 24px;">
+              <i class="material-icons" aria-hidden="true">arrow_down</i>
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-block loader" style="position: relative;top: calc(50% - 26px);margin-top:  -75px;display: none;">
+        <div id="loader"></div>
+      </div>
+    </div>
+
+    <div class="sidebar bottom" style="background: #f1f1f1; padding-top: 0px; padding-bottom: 0px;">
+      <button id="downloadAs" class="mdc-button mdc-button--outlined mdc-button--dense mdc-ripple-upgraded" style="float: right; width: 100%; margin-top: 15px; display: none;" onclick="hideDownloadButton(); show('download-as');">Download As</button>
+      <img alt="Add-on logo" class="logo" src="https://raw.githubusercontent.com/ignatov357/semanticly/master/logo.png" width="100%">
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//bioportal.bioontology.org/widgets/minified/jquery.ncbo.tree-2.0.2.min.js"></script>
+    <script>
+      //sandbox="allow-downloads";
+      //google.script.sandbox.mode;
+      String.prototype.insertAt = function(position, stringToInsert) {
+        return this.substring(0, position) + stringToInsert + this.substring(position);
+      }
+      Object.concatenate = function(ob1, ob1) {
+        var ret = {},
+        len = arguments.length,
+        arg,
+        i = 0,
+        p;
+
+        for (i = 0; i < len; i++) {
+          arg = arguments[i];
+          if (typeof arg !== "object") {
+            continue;
+          }
+          for (p in arg) {
+            if (arg.hasOwnProperty(p)) {
+              ret[p] = arg[p];
+            }
+          }
+        }
+
+        return ret;
+      }
+
+      var annotatingEnabled = false;
+      var deleted=[];
+      /**
+       * On document load, assign click handlers to each button and try to load the
+       * user's origin and destination language preferences if previously set.
+       */
+      $(function() {
+        userChoiceAnnotations = [];
+        //updateRecommenderAnnotationsRecursively(function() { updateCurrentPositionRecursively(); });
+        var NCBOtree = $("#NCBOtree").NCBOTree({
+          apikey: "89f4c54e-aee8-4af5-95b6-dd7c608f057f",
+          ontology: "NCIT",
+          autoclose: true,
+          autocompleteClass: "ncbo-autocomplete",
+          //treeClass: "ncbo-tree"
+        });
+      });
+
+      function showDownloadButton() {
+        $('.sidebar.bottom button#downloadAs').css('display', 'block');
+        $('.sidebar.branding-below').css('bottom', '127px');
+      }
+
+      function hideDownloadButton() {
+        $('.sidebar.bottom button#downloadAs').css('display', 'none');
+        $('.sidebar.branding-below').css('bottom', '80px');
+      }
+
+      function show(blockName) {
+        $('.sidebar-block').css('display', 'none');
+        $('.' + blockName).css('display', 'block');
+      }
+
+      function updateAnnotationsRecursively(callback = null, enableHighlighting = false) {
+        if(annotatingEnabled) {
+          google.script.run.withSuccessHandler(function(newAnnotations) {
+            if(annotatingEnabled) {
+              annotations = JSON.parse(newAnnotations);
+              annotationsRecursiveUpdater = setTimeout(updateAnnotationsRecursively, 0);
+              if(callback != null) {
+                callback();
+              }
+            }
+          }).withFailureHandler(function(msg, element) {
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateAnnotationsRecursively, 2500);
+            }
+          }).getAnnotations(enableHighlighting);
+        }
+      }
+
+      function updateRecommenderAnnotationsRecursively(callback = null) {
+        if(annotatingEnabled) {
+          google.script.run.withSuccessHandler(function(newRecommenderAnnotations) {
+            if(annotatingEnabled) {
+              recommenderAnnotations = JSON.parse(newRecommenderAnnotations);
+              setTimeout(updateRecommenderAnnotationsRecursively, 0);
+              if(callback != null) {
+                callback();
+              }
+            } else {
+              google.script.run.withFailureHandler(function(msg, element) {
+                console.error(msg);
+              }).unhighlightAnnotations();
+            }
+          }).withFailureHandler(function(msg, element) {
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateRecommenderAnnotationsRecursively, 2500);
+            }
+          }).getRecommenderAnnotations(deleted);
+        }
+      }
+
+      function updateCurrentPositionRecursively() {
+        if(annotatingEnabled) {
+          google.script.run.withSuccessHandler(function(newCurrentPosition) {
+            if(annotatingEnabled) {
+              currentPosition = newCurrentPosition;
+              if(annotatingEnabled && typeof recommenderAnnotations !== 'undefined' && typeof annotations !== 'undefined') {
+                renderAnnotations(true);
+              }
+              //console.log(newCurrentPosition);
+              setTimeout(updateCurrentPositionRecursively, 0);
+            }
+          }).withFailureHandler(function(msg, element) {
+            console.error(msg);
+            if(annotatingEnabled) {
+              setTimeout(updateCurrentPositionRecursively, 0);
+            }
+          }).getCurrentPosition();
+        }
+      }
+
+      function getRecommenderAnnotation(position) {
+        for(i = 0; i < recommenderAnnotations.length; i++) {
+          if(recommenderAnnotations[i].from - 1 <= position && position <= recommenderAnnotations[i].to) {
+            if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') {
+              if(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] != null) {
+                return [userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+              } else {
+                return undefined;
+              }
+            } else {
+              for(i2 = 0; i2 < annotations.length; i2++) {
+                if(annotations[i2]['ontology'] === recommenderAnnotations[i]['ontology']) {
+                  for(i3 = 0; i3 < annotations[i2].annotations.length; i3++) {
+                    if(annotations[i2].annotations[i3].from - 1 <= position && position <= annotations[i2].annotations[i3].to) {
+                      return [annotations[i2], recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']];
+                    }
+                  }
+                }
+              }
+            }
+            break;
+          }
+        }
+
+        return undefined;
+      }
+
+      function renderAnnotations(current = false) {
+        if(current) {
+          var thisAnnotations = annotations.filter(function(annotation) {
+            for(i = 0; i < annotation.annotations.length; i++) {
+              if(annotation.annotations[i].from - 1 <= currentPosition && currentPosition <= annotation.annotations[i].to) {
+                return true;
+              }
+            }
+
+	        return false;
+          });
+        } else {
+          thisAnnotations = annotations;
+        }
+
+        var recommenderAnnotation = getRecommenderAnnotation(currentPosition);
+        if(recommenderAnnotation !== undefined) {
+          if($('.annotations').css('display') === 'none' && $('.other-annotations').css('display') === 'none' && $('.download-as').css('display') === 'none') {
+            show('annotations');
+          }
+          $('.annotation_name').html(recommenderAnnotation[0].prefLabel);
+          $('.annotation_ontology').html('Ontology: ' + recommenderAnnotation[0].ontology);
+          $('.annotation_definition').html((recommenderAnnotation[0].definition.length > 0) ? recommenderAnnotation[0].definition : 'No definition.');
+
+          if(NCBOtree.NCBOTree.options().ontology !== recommenderAnnotation[0].ontology) {
+            NCBOtree.NCBOTree.changeOntology(recommenderAnnotation[0].ontology);
+            NCBOtreeSelectedClassId = recommenderAnnotation[0].id;
+            NCBOtree.NCBOTree.jumpToClass(recommenderAnnotation[0].id);
+          } else if(typeof NCBOtreeSelectedClassId === 'undefined' || NCBOtreeSelectedClassId !== recommenderAnnotation[0].id) {
+            NCBOtreeSelectedClassId = recommenderAnnotation[0].id;
+            NCBOtree.NCBOTree.jumpToClass(recommenderAnnotation[0].id);
+          }
+
+          var new_html = '';
+          $.each(thisAnnotations, function(key, value) {
+            new_html += '<li class="mdc-list-item" style="cursor: pointer; padding: 0px 15px;" data-user-choice-index="' + recommenderAnnotation[1] + '" data-link="' + value['link'] + '" onClick="changeUserChoiceAnnotations(this); show(\'annotations\');">'
+            + '<span class="mdc-list-item__text">' + value['prefLabel'] + ' (' + value['ontology'] + ')<span class="mdc-list-item__secondary-text">' + (value['definition'].length == 0 ? '' : value['definition'].split(/<[\S ]*?>/)[0] + '...') + '</span></span>'
+            + '<span class="mdc-list-item__meta"><i class="material-icons" aria-hidden="true">arrow_forward</i></span></li>';
+          });
+          $('.other-annotations ul.annotations_list').html(new_html);
+        } else {
+          show('no-annotations');
+        }
+      }
+
+      function changeUserChoiceAnnotations(element) {
+        var link = $(element).attr('data-link');
+        var index = $(element).attr('data-user-choice-index');
+        for(i = 0; i < annotations.length; i++) {
+          if(annotations[i]['link'] === link) {
+            userChoiceAnnotations[index] = annotations[i];
+            break;
+          }
+        }
+        $('div.sidebar').scrollTop(0);
+      }
+
+      function getUserChoiceAnnotations() {
+        var thisAnnotations = [];
+        //var duplicatesAvoider = {};
+        for(i = 0; i < recommenderAnnotations.length; i++) {
+          /*if(duplicatesAvoider[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] == true) {
+            continue;
+          } else {
+            duplicatesAvoider[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] = true;
+          }*/
+          if(typeof userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] !== 'undefined') {
+            if(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] != null) {
+              thisAnnotations.push(Object.concatenate(userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']], {from: recommenderAnnotations[i].from, to: recommenderAnnotations[i].to}));
+            }
+          } else {
+            var flag = false;
+            for(i2 = 0; i2 < annotations.length; i2++) {
+              if(annotations[i2]['ontology'] === recommenderAnnotations[i]['ontology']) {
+                for(i3 = 0; i3 < annotations[i2].annotations.length; i3++) {
+                  if(annotations[i2].annotations[i3].from == recommenderAnnotations[i].from && annotations[i2].annotations[i3].text === recommenderAnnotations[i].text) {
+                    thisAnnotations.push(Object.concatenate(annotations[i2], {from: recommenderAnnotations[i].from, to: recommenderAnnotations[i].to}));
+                    flag = true;
+                    break;
+                  }
+                }
+              }
+              if(flag) {
+                break;
+              }
+            }
+          }
+        }
+
+        return thisAnnotations;
+      }
+
+      function a(a,b) {
+      setTimeout(function() {
+          google.script.run.withFailureHandler(function(msg, element) {
+            console.error(msg);
+          }).unhighlightAnnotation(a,b);
+          //getRecommenderAnnotations(deleted);
+          //unhighlightAnnotation(a,b);
+        }, 0);
+      }
+
+
+      function removeCurrentAnnotation() {
+        for(i = 0; i < recommenderAnnotations.length; i++) {
+          if(recommenderAnnotations[i].from - 1 <= currentPosition && currentPosition <= recommenderAnnotations[i].to) {
+            userChoiceAnnotations[recommenderAnnotations[i]['text'] + '-' + recommenderAnnotations[i]['ontology']] = null;
+            //a=[recommenderAnnotations[i]['from']-1,recommenderAnnotations[i]['to']-1];
+            deleted.push(recommenderAnnotations[i]['text'].toLowerCase());
+            //updateRecommenderAnnotationsRecursively();
+            a(recommenderAnnotations[i]['from']-1,recommenderAnnotations[i]['to']-1);
+            //while(true){a(recommenderAnnotations[i]['from']-1,recommenderAnnotations[i]['to']-1);}
+            //alert(JSON.stringify(userChoiceAnnotations));
+            recommenderAnnotations.splice(i,1);
+
+            //alert(a);
+            break;
+          }
+        }
+      }
+
+
+
+
+
+
+      function removeAnnotations() {
+        annotatingEnabled = false;
+        show('loader');
+        setTimeout(function() {
+          google.script.run.withSuccessHandler(function() { hideDownloadButton(); show('setup'); }).withFailureHandler(function(msg, element) {
+            console.error(msg);
+            setTimeout(removeAnnotations, 0);
+          }).unhighlightAnnotations();
+        }, 0);
+      }
+
+      function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+
+        document.body.appendChild(element);
+        element.click();
+
+        document.body.removeChild(element);
+      }
+
+      function saveAsHtml(highlightAnnotations = false) {
+        google.script.run.withSuccessHandler(function(html) {
+          var schemaJson = {"@context": "http://schema.org", "@type": "MedicalEntity", "code": []};
+
+          var thisAnnotations = getUserChoiceAnnotations();
+
+          for(var i = thisAnnotations.length - 1; i >= 0; i--) {
+            schemaJson['code'].push({"@type": "MedicalCode", "name": thisAnnotations[i].prefLabel, "codingSystem": thisAnnotations[i].ontology, "link": thisAnnotations[i].id});
+            if(highlightAnnotations) {
+              html = html.insertAt(thisAnnotations[i].to, '</span>');
+              html = html.insertAt(thisAnnotations[i].from - 1, '<span class="tippy" title="' + thisAnnotations[i].definition + '">');
+            }
+          }
+
+          download('document.html', '<html><head><title><\/title><link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,600,800" rel="stylesheet">' + ((highlightAnnotations) ? '<script src="https://unpkg.com/tippy.js@2.5.4/dist/tippy.all.min.js"><\/script>' : '') + '<style>.container { font-family: Nunito Sans,Avenir,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Ubuntu,Cantarell,Helvetica Neue,Helvetica,Arial,sans-serif; font-size: 1.125rem; padding: 4%; margin: 0 auto; }' + ((highlightAnnotations) ? ' .tippy { background: rgba(255,202,223,.5); color: #d22489; outline: 0; border-bottom: 1px solid #f27da6; padding: 0 4px; font-weight: 600; cursor: help; }' : '') + '<\/style><script type="application/ld+json">' + JSON.stringify(schemaJson) + '<\/script><\/head><body class="container"' + ((highlightAnnotations) ? ' onload="tippy(\'.tippy\');"' : '') + '>' + html + '<\/body><\/html>');
+        }).withFailureHandler(function(msg, element) {}).getHtml();
+      }
+
+      function saveAsJSON() {
+        google.script.run.withSuccessHandler(function(html) {
+          //var schemaJson = {"@context": "http://schema.org", "@type": "MedicalEntity", "code": []};
+          var schemaJson = {};
+          var thisAnnotations = getUserChoiceAnnotations();
+
+
+
+          //for(var i = thisAnnotations.length - 1; i >= 0; i--) {
+          for(var i = 0; i < thisAnnotations.length; i++) {
+            //schemaJson['code'].push({"@type": "MedicalCode", "name": thisAnnotations[i].prefLabel, "codingSystem": thisAnnotations[i].ontology, "link": thisAnnotations[i].id,"definition" : thisAnnotations[i].definition,});
+            schemaJson[thisAnnotations[i].prefLabel]=thisAnnotations[i].definition;
+          }
+          //alert(JSON.stringify(schemaJson));
+
+          download('document.json', schemaJson);
+        }).withFailureHandler(function(msg, element) {}).getHtml();
+      }
+
+
+    </script>
+  </body>
+</html>     

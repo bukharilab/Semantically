@@ -24,6 +24,12 @@ const setGetDefinitionListeners = (annotations, setDefinition) => {
   }
 }
 
+const removeHighlight = (currentHighlight, setCurrentHighlight, highlights, updateHighlights) => {
+  delete highlights[currentHighlight];
+  updateHighlights({...highlights});
+  setCurrentHighlight('');
+}
+
 const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, udpateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
   const [ontologyModal, updateOntologyModal] = useState('');
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
@@ -71,7 +77,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
         <span>{annotations[currentHighlight][ontologyIdx].acronym}</span>
         <div>
           <Button variant="outline-info" size="sm">edit</Button>{' '}
-          <Button variant="outline-danger" size="sm">delete</Button>
+          <Button variant="outline-danger" size="sm" onClick={() => removeHighlight(currentHighlight, setCurrentHighlight, highlights, updateHighlights)}>{'delete'}</Button>
         </div>
       </Card.Header>
       <Card.Body>
@@ -92,6 +98,12 @@ const OntologyModal = ({term, updateOntologyModal, annotations, definitions, set
     return definitions[url] ? definitions[url] : 'loading...';
   }
   
+  useEffect(() => {
+    for (const ontology of annotations[term]) {
+      $(`.modal-toggle-${ontology.acronym}`).click(() => setDefinition(ontology.annotatedClass.links.self));
+    }
+  });
+  
   return (
     <Modal
       show={true}
@@ -108,7 +120,7 @@ const OntologyModal = ({term, updateOntologyModal, annotations, definitions, set
         <Accordion defaultActiveKey={`${term}-modal-0`} id="sidebar-accordion">
           {annotations[term].map((ontology, idx) =>                 
           <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={`${term}-modal-${idx}`} className={`d-flex justify-content-between ${ontology.from}-${ontology.to}-${ontology.acronym}`}>
+            <Accordion.Toggle as={Card.Header} eventKey={`${term}-modal-${idx}`} className={`d-flex justify-content-between ${ontology.from}-${ontology.to}-${ontology.acronym} modal-toggle-${ontology.acronym}`}>
               <span>{ontology.acronym}</span>
               {ontologyIdx != idx ? 
                 <Button variant="outline-primary" size="sm" onClick={() => {
@@ -117,8 +129,17 @@ const OntologyModal = ({term, updateOntologyModal, annotations, definitions, set
                 }}>select</Button>
                 : null}
             </Accordion.Toggle>
+            <Accordion.Collapse eventKey={`${term}-modal-${idx}`} className={`p-2 p-0 accordion-card`}>
+              <Card>
+                <Card.Body>
+                  <Card.Text>
+                    {getDef(ontology.annotatedClass.links.self)}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Accordion.Collapse>
           </Card>
-                                           )}
+          )}
         </Accordion>
       </Modal.Body>
       <Modal.Footer>
