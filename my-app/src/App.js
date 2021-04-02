@@ -12,7 +12,9 @@ import NCBOTree from './hooks/NCBOTree';
 function App() {
   const [highlights, updateHighlights] = useState({});
   const [currentHighlight, setCurrentHighlight] = useState('');
-  
+  const tree = $("#tree")[0].NCBOTree;
+  // tree.jumpToClass("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C63536");
+
   // initialize tree
 //   NCBOTree(document.querySelector("#tree"), {
 //     apikey: "89f4c54e-aee8-4af5-95b6-dd7c608f057f",
@@ -22,7 +24,7 @@ function App() {
 //     apikey: "89f4c54e-aee8-4af5-95b6-dd7c608f057f",
 //     ontology: "NCIT"
 //   });
-  
+
 //   $.getScript("http://bioportal.bioontology.org/widgets/jquery.ncbo.tree-2.0.2.js", function( data, textStatus, jqxhr ) {
 //     console.log( data ); // Data returned
 //     console.log( textStatus ); // Success
