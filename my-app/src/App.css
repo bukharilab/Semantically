@@ -190,15 +190,17 @@ trix-editor {
   -webkit-animation: spin 1.5s linear infinite;
   animation: spin 1.5s linear infinite;
 }
-.ncbo-autocomplete {
-  display: none;
+
+/* Ontology tree */
+#tree > .ncboAutocomplete {
+  margin-bottom: 1rem;
 }
-ul.ncboTree li.root {
-  padding: 0 0 0 15px;
+
+#tree > ul {
+  max-height: 25vh;
+  overflow: scroll;
 }
-div#NCBOtree {
-  margin-bottom: 15px;
-}
+
 @-webkit-keyframes spin {
   0%   {
     -webkit-transform: rotate(0deg);
