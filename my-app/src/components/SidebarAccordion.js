@@ -76,10 +76,14 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
 
   // Switch annotations or change ontology
   useEffect(() => {
-    const tree = $("#tree")[0].NCBOTree;
-    const ontology = annotations[currentHighlight][ontologyIdx];
+    if (currentHighlight) {
+      const tree = $("#tree")[0].NCBOTree;
+      const ontology = annotations[currentHighlight][ontologyIdx];
+      console.log(ontology.annotatedClass['@id']);
+      tree.jumpToClass(ontology.annotatedClass['@id']);
+      // change NCBO tree
+    }
 
-    // change NCBO tree
   }, [currentHighlight, ontologyIdx]);
 
   if (!currentHighlight) return null;
