@@ -13,6 +13,11 @@ function App() {
   const [highlights, updateHighlights] = useState({});
   const [currentHighlight, setCurrentHighlight] = useState('');
   const tree = $("#tree")[0].NCBOTree;
+  // tree.on('afterJumpToClass', classId => {
+  //   console.log('jumped to class.');
+  // });
+  // tree.jumpToClass('https://data.bioontology.org/ontologies/NCIT/class…ih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C41204');
+
   console.log(tree);
 
   return (
