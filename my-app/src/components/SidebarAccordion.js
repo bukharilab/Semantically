@@ -7,6 +7,7 @@ import getText from '../hooks/getText';
 import getDefinition from '../hooks/getDefinition';
 
 const getTermStr = term => {
+  console.log(term);
   const divider = term.indexOf('-');
   const from = Number(term.substring(0, divider))-1;
   const to = Number(term.substring(divider+1, term.length));
@@ -30,11 +31,19 @@ const removeHighlight = (currentHighlight, setCurrentHighlight, highlights, upda
   setCurrentHighlight('');
 }
 
+// show in NCBOTree
+const showInTree = text => {
+  while (document.querySelector('#tree > .root > span') !== null) setTimeout(() => {}, 100);
+  const listItem = [...document.querySelectorAll('#tree li')].filter(li => li.innerText.toLowerCase() === text.toLowerCase());
+  if (listItem.length > 0) listItem[0].scrollIntoView();
+  console.log(listItem);
+}
+
 const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, udpateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
-
+  // console.log(currentHighlight)
   const annotatedTerms = sortKeys(Object.keys(annotations));
 //   console.log(annotations);
   console.log('refresh');
@@ -76,13 +85,13 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
 
   // Switch annotations or change ontology
   useEffect(() => {
-    if (currentHighlight) {
-      const tree = $("#tree")[0].NCBOTree;
-      const ontology = annotations[currentHighlight][ontologyIdx];
-      console.log(ontology.annotatedClass['@id']);
-      tree.jumpToClass(ontology.annotatedClass['@id']);
+    // if (currentHighlight) {
+    //   const tree = $("#tree")[0].NCBOTree;
+    //   const ontology = annotations[currentHighlight][ontologyIdx];
+    //   console.log(ontology.annotatedClass['@id']);
+    //   showInTree(annotations[currentHighlight][ontologyIdx].text);
+    //   tree.jumpToClass(ontology.annotatedClass['@id']);
       // change NCBO tree
-    }
 
   }, [currentHighlight, ontologyIdx]);
 
@@ -104,7 +113,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
         { annotations[currentHighlight].length > 1 ? <Button variant="primary" className="w-100" onClick={() => updateOpenOntologyModal(true)}>Other Ontologies</Button> : null }
       </Card.Body>
 
-      {openOntologyModal ? <OntologyModal term={openOntologyModal} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
+      {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
     </Card>
   );
 }
