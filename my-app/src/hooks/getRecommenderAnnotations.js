@@ -37,7 +37,7 @@ const formatAnnotations = (results) => {
               const from2 = res1.substring(0, res1.indexOf("-"));
               const to1 = res.substring(res.indexOf("-")+1, res.length);
               const to2 = res1.substring(res1.indexOf("-")+1, res1.length);
-              
+
               if (Number(from1) >= Number(from2) && Number(to1) <= Number(to2)) formattedRes[res] = [];
               else if (Number(from2) >= Number(from1) && Number(to2) <= Number(to1)) formattedRes[res1] = [];
           }
@@ -46,14 +46,25 @@ const formatAnnotations = (results) => {
   for (const res in formattedRes) {
       if (formattedRes[res].length == 0) delete formattedRes[res];
   }
-    
+
   console.log(formattedRes);
   return formattedRes;
 }
 
-const getRecommenderAnnotations = (text, callback) => {
+const getRecommenderAnnotations = (text, ontologies, callback) => {
+  let ontologyUrl = '';
+  if (ontologies !== undefined) {
+    ontologyUrl += '&ontologies=';
+    for (const ontology of ontologies) {
+      ontologyUrl += ontology + ',';
+    }
+  }
+  const url = 'https://data.bioontology.org/recommender?input='
+    + text
+    + ontologyUrl
+    + '&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f'
   $.ajax({
-		url: 'https://data.bioontology.org/recommender?input=' + text + '&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f',
+		url: url,
     dataType: 'JSON',
 		success: (data) => {
 //           console.log(data);
