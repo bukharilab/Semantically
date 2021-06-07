@@ -45,7 +45,7 @@ const ManualAnnotationPopUp = ({manualOntologies, updateManualOntologies}) => {
 
 
   return (
-    <div className="d-block">
+    <div className="mb-3">
       {hideOntologyField ?
         <Button variant="outline-secondary" className="pt-1 pb-2 w-100" onClick={() => updateHideOntologyField(false)}>show ontologies</Button> :
         <React.Fragment>

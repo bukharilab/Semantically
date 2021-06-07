@@ -39,7 +39,7 @@ const showInTree = text => {
   console.log(listItem);
 }
 
-const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, udpateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
+const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, updateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
@@ -69,7 +69,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
       newHighlights[term] = -1;
     }
     updateHighlights(newHighlights);
-    udpateLoadHighlights(false);
+    updateLoadHighlights(false);
   }
 
 //   useEffect(() => {

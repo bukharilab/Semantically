@@ -7,17 +7,19 @@ import getRecommenderAnnotations from '../hooks/getRecommenderAnnotations';
 import getText from '../hooks/getText';
 import ManualAnnotationPopUp from './ManualOntologySelector';
 
-const SidebarHeader = ({ updateShowLoader, updateShowAccordion, updateAnnotations }) => {
+const SidebarHeader = ({ updateShowLoader, updateShowAccordion, updateAnnotations, resetAnnotations, updateLoadHighlights }) => {
   const [showManualAnnotation, updateShowManualAnnotation] = useState(false);
   const [manualOntologies, updateManualOntologies] = useState({});
 
   const showAnnotations = () => {
     updateShowLoader(true);
+    resetAnnotations();
     getRecommenderAnnotations(getText(), showManualAnnotation ? Object.keys(manualOntologies) : undefined,
       (formattedAnnotations) => {
         updateAnnotations(formattedAnnotations);
         updateShowAccordion(true);
         updateShowLoader(false);
+        updateLoadHighlights(true);
       }
     );
   }
