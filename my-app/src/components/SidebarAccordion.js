@@ -39,7 +39,10 @@ const showInTree = text => {
   console.log(listItem);
 }
 
-const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions, updateHighlights, loadHighlights, highlights, updateLoadHighlights, currentHighlight, setCurrentHighlight }) => {
+const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions,
+  updateHighlights, loadHighlights, highlights, updateLoadHighlights, currentHighlight,
+  setCurrentHighlight, removedHighlights, updateRemovedHighlights }) => {
+
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
@@ -98,23 +101,28 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
   if (!currentHighlight) return null;
 
   return (
-    <Card id="sidebar-accordion">
-      <Card.Header className="d-flex justify-content-between">
-        <span>{annotations[currentHighlight][ontologyIdx].acronym}</span>
-        <div>
-          <Button variant="outline-info" size="sm">edit</Button>{' '}
-          <Button variant="outline-danger" size="sm" onClick={() => removeHighlight(currentHighlight, setCurrentHighlight, highlights, updateHighlights)}>{'delete'}</Button>
-        </div>
-      </Card.Header>
-      <Card.Body>
-        <Card.Text>
-          {setDefinition(annotations[currentHighlight][ontologyIdx].annotatedClass.links.self)}
-        </Card.Text>
-        { annotations[currentHighlight].length > 1 ? <Button variant="primary" className="w-100" onClick={() => updateOpenOntologyModal(true)}>Other Ontologies</Button> : null }
-      </Card.Body>
-
-      {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
-    </Card>
+    <React.Fragment>
+    {removedHighlights.includes(currentHighlight) ?
+      <Card className="p-4 text-center"><Button variant="outline-success" size="sm" style={{width: 'fit-content'}} className="mx-auto"
+        onClick={() => updateRemovedHighlights(removedHighlights.filter(key => key !== currentHighlight))}>reannotate</Button></Card> :
+      <Card>
+        <Card.Header className="d-flex justify-content-between">
+          <span>{annotations[currentHighlight][ontologyIdx].acronym}</span>
+          <div>
+            { annotations[currentHighlight].length > 1 ?
+              <Button variant="outline-info" size="sm" onClick={() => updateOpenOntologyModal(true)}>change</Button> : null }{' '}
+            <Button variant="outline-danger" size="sm" onClick={() => updateRemovedHighlights([...removedHighlights, currentHighlight])}>{'delete'}</Button>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <Card.Text>
+            {setDefinition(annotations[currentHighlight][ontologyIdx].annotatedClass.links.self)}
+          </Card.Text>
+        </Card.Body>
+        {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
+      </Card>
+    }
+    </React.Fragment>
   );
 }
 

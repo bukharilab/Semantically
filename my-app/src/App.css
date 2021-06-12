@@ -48,7 +48,7 @@ trix-editor {
   width: 5px;
   height: 5px;
   border-radius: 5px;
-  background-color: #e6e6e6;
+  background-color: #14c39a;
   position: absolute;
   transition: width .7s ease-in-out;
   transition: background-color 200ms linear;
@@ -72,7 +72,11 @@ trix-editor {
 }
 
 .highlight.active {
-  background-color: #6200ee;
+  background-color: #c000fe !important;
+}
+
+.highlight.deleted {
+  background-color: #ff5e5e;
 }
 
 .highlight.selected {
@@ -114,11 +118,6 @@ trix-editor {
   position: absolute !important;
   right: 2%;
   top: 3.2rem;
-}
-
-#sidebar-accordion {
-  overflow: auto;
-  max-height: calc(100vh - 4rem - 90px - 40px) !important;
 }
 
 .accordion-toggle {

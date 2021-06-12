@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import sortKeys from '../hooks/sortKeys';
 import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
 
-const Highlights = ({ highlights, currentHighlight, setCurrentHighlight }) => {
+const Highlights = ({ highlights, currentHighlight, setCurrentHighlight, removedHighlights}) => {
   const sortedKeys = sortKeys(Object.keys(highlights));
 
   const [activeIndex, updateActiveIndex] = useState(0);
@@ -62,7 +62,7 @@ const Highlights = ({ highlights, currentHighlight, setCurrentHighlight }) => {
   return (
     <div>
       {Object.keys(highlights).map((term, key) => <div key={key} id={`highlight-${term}`}
-        className={`highlight ${term === currentHighlight ? 'active' : ''} ${highlights[term] != -1 ? 'selected' : ''}`}/>)
+        className={`highlight ${term === currentHighlight ? 'active' : ''} ${removedHighlights.includes(term) ? 'deleted' : ''} ${highlights[term] != -1 ? 'selected' : ''}`}/>)
       }
     </div>
   )

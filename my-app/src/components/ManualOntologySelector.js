@@ -10,7 +10,9 @@ const fetchAllOntologies = (updateAllOntologies) => {
     success: data => {
       const ontologies = {};
       for (const ontology of data) {
-        ontologies[ontology.name] = ontology['acronym'];
+        ontologies[ontology.name.trim()] = ontology['acronym'];
+        // differentiate acronyms
+        ontologies[`${ontology['acronym']} `] = ontology.name;
       }
       updateAllOntologies(ontologies);
     }});
@@ -27,9 +29,16 @@ const limitResults = limit => {
 
 const updateChips = (chips, allOntologies, updateManualOntologies) => {
   updateManualOntologies(chips.reduce((ontologies, chip) => {
-    ontologies[`${allOntologies[chip]}`] = chip;
+    if (chip.endsWith(' ')) ontologies[chip.trim()] = allOntologies[chip];
+    else ontologies[`${allOntologies[chip]}`] = chip;
     return ontologies;
   }, {}));
+}
+
+const getSuggestions = (allOntologies, manualOntologies) => {
+  return Object.keys(allOntologies).filter(
+    suggestion => !Object.keys(manualOntologies).concat(Object.values(manualOntologies)).includes(suggestion.trim())
+  );
 }
 
 const ManualAnnotationPopUp = ({manualOntologies, updateManualOntologies}) => {
@@ -53,7 +62,7 @@ const ManualAnnotationPopUp = ({manualOntologies, updateManualOntologies}) => {
             placeholder={"Enter ontology"}
             value={Object.values(manualOntologies)}
             onChange={chips => updateChips(chips, allOntologies, updateManualOntologies)}
-            suggestions={Object.keys(allOntologies)}
+            suggestions={getSuggestions(allOntologies, manualOntologies)}
             highlightFirstSuggestion={true}
           />
           <Button variant="link" onClick={() => updateHideOntologyField(true)}>hide ontologies</Button>
