@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import $ from 'jquery';
 
-import {Button, Dropdown, ButtonGroup, Card, Form, Row, Col } from 'react-bootstrap';
+import {Button, Dropdown, DropdownButton, Card, Form, Row, Col } from 'react-bootstrap';
 
 import getRecommenderAnnotations from '../hooks/getRecommenderAnnotations';
 import getText from '../hooks/getText';
