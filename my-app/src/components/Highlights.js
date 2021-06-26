@@ -2,12 +2,15 @@ import $ from 'jquery';
 import React, {useEffect, useState} from 'react';
 import sortKeys from '../hooks/sortKeys';
 import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
+import getRemovedHighlights from '../hooks/getRemovedHighlights';
 
-const Highlights = ({ highlights, currentHighlight, setCurrentHighlight, removedHighlights}) => {
+const Highlights = ({ highlights, currentHighlight, setCurrentHighlight, annotationSelection}) => {
   const sortedKeys = sortKeys(Object.keys(highlights));
 
   const [activeIndex, updateActiveIndex] = useState(0);
   const editor = document.querySelector("trix-editor").editor;
+
+  const removedHighlights = getRemovedHighlights(annotationSelection);
 
   $(document.querySelector("trix-editor")).click(() => {
 //       console.log(editor.getSelectedRange()[0]);

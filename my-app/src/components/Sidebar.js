@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import $ from 'jquery';
 
 import SidebarHeader from './SidebarHeader';
 import SidebarBody from './SidebarBody';
 import SidebarFooter from './SidebarFooter';
 
-const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHighlight, removedHighlights, updateRemovedHighlights }) => {
+import {saveAsHTML} from '../hooks/downloadAnnotations';
+
+const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHighlight, removedHighlights, updateRemovedHighlights, annotationSelection, updateAnnotationSelection }) => {
   const [showLoader, updateShowLoader] = useState(false);
   const [showAccordion, updateShowAccordion] = useState(false);
   const [annotations, updateAnnotations] = useState({});
@@ -18,6 +21,11 @@ const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHig
     updateDefinitions({});
   }
 
+  // activate downloads
+  if($('body')[0].onclick === null) {
+   $('#download-plain-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, false);
+  }
+
   return (
     <div id="sidebar">
       <SidebarHeader updateShowLoader={updateShowLoader} updateShowAccordion={updateShowAccordion}
@@ -27,7 +35,7 @@ const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHig
         highlights={highlights} updateHighlights={updateHighlights} loadHighlights={loadHighlights}
         updateLoadHighlights={updateLoadHighlights} currentHighlight={currentHighlight}
         setCurrentHighlight={setCurrentHighlight} removedHighlights={removedHighlights}
-        updateRemovedHighlights={updateRemovedHighlights} />
+        updateRemovedHighlights={updateRemovedHighlights} annotationSelection={annotationSelection} updateAnnotationSelection ={updateAnnotationSelection} />
       <SidebarFooter />
     </div>
   );

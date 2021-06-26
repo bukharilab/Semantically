@@ -4,15 +4,11 @@ import $ from 'jquery';
 
 import sortKeys from '../hooks/sortKeys';
 import getText from '../hooks/getText';
+import getTermStr from '../hooks/getTermString';
 import getDefinition from '../hooks/getDefinition';
+import getRemovedHighlights from '../hooks/getRemovedHighlights';
 
-const getTermStr = term => {
-  console.log(term);
-  const divider = term.indexOf('-');
-  const from = Number(term.substring(0, divider))-1;
-  const to = Number(term.substring(divider+1, term.length));
-  return getText().substring(from, to);
-}
+
 
 const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
@@ -41,13 +37,14 @@ const showInTree = text => {
 
 const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions,
   updateHighlights, loadHighlights, highlights, updateLoadHighlights, currentHighlight,
-  setCurrentHighlight, removedHighlights, updateRemovedHighlights }) => {
+  setCurrentHighlight, annotationSelection, updateAnnotationSelection }) => {
 
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
   // console.log(currentHighlight)
   const annotatedTerms = sortKeys(Object.keys(annotations));
+  const removedHighlights = getRemovedHighlights(annotationSelection);
 //   console.log(annotations);
   console.log('refresh');
 
@@ -104,29 +101,29 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     <React.Fragment>
     {removedHighlights.includes(currentHighlight) ?
       <Card className="p-4 text-center"><Button variant="outline-success" size="sm" style={{width: 'fit-content'}} className="mx-auto"
-        onClick={() => updateRemovedHighlights(removedHighlights.filter(key => key !== currentHighlight))}>reannotate</Button></Card> :
+        onClick={() => updateAnnotationSelection({...annotationSelection, [currentHighlight]: 0})}>reannotate</Button></Card> :
       <Card>
         <Card.Header className="d-flex justify-content-between">
-          <span>{annotations[currentHighlight][ontologyIdx].acronym}</span>
+          <span>{annotations[currentHighlight][annotationSelection[currentHighlight]].acronym}</span>
           <div>
             { annotations[currentHighlight].length > 1 ?
               <Button variant="outline-info" size="sm" onClick={() => updateOpenOntologyModal(true)}>change</Button> : null }{' '}
-            <Button variant="outline-danger" size="sm" onClick={() => updateRemovedHighlights([...removedHighlights, currentHighlight])}>{'delete'}</Button>
+            <Button variant="outline-danger" size="sm" onClick={() => updateAnnotationSelection({...annotationSelection, [currentHighlight]: -1})}>{'delete'}</Button>
           </div>
         </Card.Header>
         <Card.Body>
           <Card.Text>
-            {setDefinition(annotations[currentHighlight][ontologyIdx].annotatedClass.links.self)}
+            {setDefinition(annotations[currentHighlight][annotationSelection[currentHighlight]].annotatedClass.links.self)}
           </Card.Text>
         </Card.Body>
-        {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} updateOntologyIdx={updateOntologyIdx} /> : null}
+        {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} annotationSelection={annotationSelection} updateAnnotationSelection={updateAnnotationSelection} /> : null}
       </Card>
     }
     </React.Fragment>
   );
 }
 
-const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions, setDefinition, ontologyIdx, updateOntologyIdx }) => {
+const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions, setDefinition, ontologyIdx, annotationSelection, updateAnnotationSelection }) => {
   const closeModal = () => updateOpenOntologyModal(false);
   const getDef = url => {
     return definitions[url] ? definitions[url] : 'loading...';
@@ -158,7 +155,7 @@ const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions,
               <span>{ontology.acronym}</span>
               {ontologyIdx != idx ?
                 <Button variant="outline-primary" size="sm" onClick={() => {
-                    updateOntologyIdx(idx);
+                    updateAnnotationSelection({...annotationSelection, [term]: idx});
                     updateOpenOntologyModal(false);
                 }}>select</Button>
                 : null}
