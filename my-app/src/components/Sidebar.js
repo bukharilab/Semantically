@@ -22,9 +22,7 @@ const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHig
   }
 
   // activate downloads
-  if($('body')[0].onclick === null) {
-   $('#download-plain-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, false);
-  }
+  $('#download-plain-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, false);
 
   return (
     <div id="sidebar">
