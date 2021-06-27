@@ -16,6 +16,8 @@ const SidebarBody = ({ showLoader, showAccordion, annotations, updateAnnotations
       .forEach(term => selection[term] = 0);
     updateAnnotationSelection(selection);
   }, [annotations])
+
+  
   return (
     <div className="flex-grow-1">
       {showLoader ? <SidebarLoader /> : null}

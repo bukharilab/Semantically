@@ -5,7 +5,7 @@ import SidebarHeader from './SidebarHeader';
 import SidebarBody from './SidebarBody';
 import SidebarFooter from './SidebarFooter';
 
-import {saveAsHTML} from '../hooks/downloadAnnotations';
+import {saveAsHTML, saveAsJSON} from '../hooks/downloadAnnotations';
 
 const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHighlight, removedHighlights, updateRemovedHighlights, annotationSelection, updateAnnotationSelection }) => {
   const [showLoader, updateShowLoader] = useState(false);
@@ -22,7 +22,9 @@ const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHig
   }
 
   // activate downloads
-  $('#download-plain-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, false);
+  $('#download-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, false);
+  $('#download-html-highlighted')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, true);
+  $('#download-json')[0].onclick = () => saveAsJSON(annotations, annotationSelection, definitions, updateDefinitions);
 
   return (
     <div id="sidebar">
