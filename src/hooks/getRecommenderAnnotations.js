@@ -60,7 +60,7 @@ const getRecommenderAnnotations = (text, ontologies, callback) => {
     }
   }
   const url = 'https://data.bioontology.org/recommender?input='
-    + text
+    + encodeURIComponent(text)
     + ontologyUrl
     + '&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f'
   $.ajax({
