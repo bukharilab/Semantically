@@ -11,10 +11,10 @@ export default function Home() {
       <track kind="captions" label="English captions" src="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt" srclang="en" default />
     </video>
     <div className="buttons text-center is-block pt-4">
-      <Link className="button is-primary is-large is-inline-block" to="/demo">
+      <a className="button is-primary is-large is-inline-block" href="https://demo.semantically.risonstudio.com" target="_blank">
         <strong>Demo</strong>
-      </Link>
-      <Link className="button is-link is-large is-inline-block" to="/register">
+      </a>
+      <Link className="button is-link is-large is-inline-block is-static" to="#">
         Get Started
       </Link>
     </div>

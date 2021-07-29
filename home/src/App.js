@@ -39,7 +39,7 @@ export default function App() {
             Home
           </Link>
 
-          <Link className="navbar-item" to="documentation">
+          <Link className="navbar-item" to="#">
             Documentation
           </Link>
 
@@ -49,16 +49,15 @@ export default function App() {
             </a>
 
             <div className="navbar-dropdown">
-              <a className="navbar-item">
+              <Link className="navbar-item" to="#">
                 About
-              </a>
-              <a className="navbar-item">
+              </Link>
+              <Link className="navbar-item" to="#">
                 Contact
-              </a>
-
-              <a className="navbar-item">
+              </Link>
+              <Link className="navbar-item" to="#">
                 Report an issue
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -66,10 +65,10 @@ export default function App() {
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <Link className="button is-primary" to="/demo">
+              <a className="button is-primary" href="https://demo.semantically.risonstudio.com" target="_blank">
                 <strong>Demo</strong>
-              </Link>
-              <Link className="button is-light" to="/login">
+              </a>
+              <Link className="button is-light is-static" to="#">
                 Log in
               </Link>
             </div>
@@ -93,6 +92,10 @@ export default function App() {
             <Home />
           </Route>
         </Switch>
+
+        <footer class="container py-6 px-3">
+
+        </footer>
       </Router>
         </div>
   );
