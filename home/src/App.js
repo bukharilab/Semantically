@@ -16,6 +16,8 @@ import Home from './pages/home';
 import Login from './pages/login';
 import Register from './pages/register';
 
+import Logo from './logo.png';
+
 export default function App() {
   return (
     <div class="container is-max-desktop">
@@ -23,7 +25,7 @@ export default function App() {
     <nav className="navbar mb-5" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
         <Link className="navbar-item" to="/">
-          <img src="https://raw.githubusercontent.com/ignatov357/semanticly/master/logo.png" width="112" height="28" />
+          <img src={Logo} width="112" height="28" />
         </Link>
 
         <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
