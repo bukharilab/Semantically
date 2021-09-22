@@ -11,11 +11,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-.button.is-primary {
-  background-color: #C000FF !important;
-}
-
-.button.is-primary:hover {
-  background-color: #AC00E6 !important;
-}

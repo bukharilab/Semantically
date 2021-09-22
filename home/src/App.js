@@ -15,6 +15,7 @@ import {
 import Home from './pages/home';
 import Login from './pages/login';
 import Register from './pages/register';
+import Survey from './pages/survey';
 
 import Logo from './logo.png';
 
@@ -70,7 +71,7 @@ export default function App() {
               <a className="button is-primary" href="https://demo.semantically.risonstudio.com" target="_blank">
                 <strong>Demo</strong>
               </a>
-              <Link className="button is-light is-static" to="#">
+              <Link className="button is-light" to="/login">
                 Log in
               </Link>
             </div>
@@ -83,6 +84,9 @@ export default function App() {
         <Switch>
           <Route path="/register">
             <Register />
+          </Route>
+          <Route path="/survey">
+            <Survey />
           </Route>
           <Route path="/login">
             <Login />

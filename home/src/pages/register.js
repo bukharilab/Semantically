@@ -1,11 +1,29 @@
 import React from "react";
+import { GoogleLogin } from 'react-google-login';
+import {Redirect} from 'react-router-dom';
 
 export default function Register() {
+  const [isRegistered, setIsRegistered] = React.useState(false);
   return (
     <div className="container pt-6">
       <div className="columns is-centered">
         <div className="column is-9-tablet is-8-desktop is-7-widescreen">
           <form action="" class="box">
+          <div className="text-center mb-4">
+          <div className="d-inline">
+            <GoogleLogin
+              clientId="747358695027-vehsgoqad55lbl5jmdfbef9qm6ff4v7i.apps.googleusercontent.com"
+              buttonText={"Sign Up"}
+              onSuccess={(data) => {
+                console.log(data);
+                setIsRegistered(true);
+              }}
+              onFailure={null}
+              isSignedIn={true}
+              />
+              {isRegistered ? <Redirect to='/survey'/> : null}
+          </div>
+          </div>
           <div class="field is-horizontal">
   <div class="field-body">
   <div className="field">
