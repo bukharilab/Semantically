@@ -3,25 +3,72 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 5rem;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#app {
+  display: flex;
+  flex-direction: row;
 }
 
-.App-header {
+#sidebar {
   background-color: #282c34;
+  padding-top: 2rem;
+  width: 20rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+#sidebar-header {
+  height: 10rem;
+}
+
+#sidebar-menu {
+  height: calc(100% - 10rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#body {
+  width: calc(100% - 20rem);
+}
+
+#home-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 4rem;
+}
+
+#home-panel header {
+  border-bottom: 1px lightgrey solid;
+  padding-bottom: 2rem;
+}
+
+#home-panel main {
+  padding: 2rem 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.document-card {
+  width: 15rem;
+  margin: .5rem;
+}
+
+.document-card .card-footer,
+.document-card .card-header {
+  padding: 0 !important;
+}
+
+.document-card .card-content {
+  padding: 1rem !important;
 }
 
 .App-link {
