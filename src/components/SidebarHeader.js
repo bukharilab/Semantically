@@ -17,6 +17,7 @@ const SidebarHeader = ({ updateShowLoader, updateShowAccordion, updateAnnotation
     getRecommenderAnnotations(getText(), showManualAnnotation ? Object.keys(manualOntologies) : undefined,
       (formattedAnnotations) => {
         updateAnnotations(formattedAnnotations);
+        console.log(formattedAnnotations);
         updateShowAccordion(true);
         updateShowLoader(false);
         updateLoadHighlights(true);

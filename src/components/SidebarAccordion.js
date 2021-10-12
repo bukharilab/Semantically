@@ -8,6 +8,7 @@ import getTermStr from '../hooks/getTermString';
 import getDefinition from '../hooks/getDefinition';
 import getRemovedHighlights from '../hooks/getRemovedHighlights';
 
+import NewPost from './NewPost';
 
 
 const setGetDefinitionListeners = (annotations, setDefinition) => {
@@ -40,6 +41,8 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
   setCurrentHighlight, annotationSelection, updateAnnotationSelection }) => {
 
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
+  const [openPostModal, updateOpenPostModal] = useState(false);
+
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
   // console.log(currentHighlight)
@@ -102,7 +105,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     {removedHighlights.includes(currentHighlight) ?
       <Card className="p-4 text-center"><Button variant="outline-success" size="sm" style={{width: 'fit-content'}} className="mx-auto"
         onClick={() => updateAnnotationSelection({...annotationSelection, [currentHighlight]: 0})}>reannotate</Button></Card> :
-      <Card>
+      <div><Card>
         <Card.Header className="d-flex justify-content-between">
           <span>{annotations[currentHighlight][annotationSelection[currentHighlight]].acronym}</span>
           <div>
@@ -117,7 +120,9 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
           </Card.Text>
         </Card.Body>
         {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} annotationSelection={annotationSelection} updateAnnotationSelection={updateAnnotationSelection} /> : null}
+        {openPostModal ? <NewPost word={getTermStr(currentHighlight)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} /> : null}
       </Card>
+      <div className="text-right"><Button variant="link" style={{'box-shadow': 'none'}} onClick={() => updateOpenPostModal(true)}>Need Help?</Button></div></div>
     }
     </React.Fragment>
   );

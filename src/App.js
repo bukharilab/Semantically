@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import React, { useState } from 'react';
+import {BrowserRouter, Switch, Route, useParams} from 'react-router-dom';
 
 import $ from 'jquery';
 
@@ -10,6 +11,8 @@ import Highlights from './components/Highlights';
 import NCBOTree from './hooks/NCBOTree';
 
 function App() {
+  const [documentId, updateDocumentId] = useState('');
+
   const [highlights, updateHighlights] = useState({});
   const [currentHighlight, setCurrentHighlight] = useState('');
   const [annotationSelection, updateAnnotationSelection] = useState({});
@@ -27,8 +30,19 @@ function App() {
         removedHighlights={removedHighlights} updateRemovedHighlights={updateRemovedHighlights} annotationSelection={annotationSelection} updateAnnotationSelection ={updateAnnotationSelection} />
       <Highlights highlights={highlights} currentHighlight={currentHighlight} setCurrentHighlight={setCurrentHighlight}
         removedHighlights={removedHighlights} annotationSelection={annotationSelection} />
+      
+
+      <BrowserRouter><Switch>
+        <Route path="/:documentId" render={() => <UpdateId updateDocumentId={updateDocumentId} />} />
+      </Switch></BrowserRouter>
     </div>
   );
+}
+
+function UpdateId({updateDocumentId}) {
+  const {documentId} = useParams();
+  updateDocumentId(documentId);
+  return null;
 }
 
 export default App;

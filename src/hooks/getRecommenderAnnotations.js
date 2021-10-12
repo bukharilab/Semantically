@@ -67,6 +67,7 @@ const getRecommenderAnnotations = (text, ontologies, callback) => {
 		url: url,
     dataType: 'JSON',
 		success: (data) => {
+      console.log(data);
 //           console.log(data);
 		  // Converting retrieved data to an array of ontology ids
       const results = parseRecommenderData(data);
