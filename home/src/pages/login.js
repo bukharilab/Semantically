@@ -1,8 +1,11 @@
 import React from "react";
 import { GoogleLogin } from 'react-google-login';
+import login from '';
 
 export default function Login() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   return (
     <div className="container pt-6">
@@ -11,6 +14,7 @@ export default function Login() {
           <form action="" class="box">
             <div className="text-center mb-4">
             <div className="d-inline">
+              {/* Google authentication */}
               <GoogleLogin
                 clientId="747358695027-vehsgoqad55lbl5jmdfbef9qm6ff4v7i.apps.googleusercontent.com"
                 buttonText={"Sign in"}
@@ -24,19 +28,21 @@ export default function Login() {
                 />
             </div>
             </div>
+
+            {/* Manual authentication */}
             <div className="field">
-              <label for="" className="label">Email</label>
+              <label for="email" className="label">Email</label>
               <div className="control has-icons-left">
-                <input type="email" placeholder="e.g. bobsmith@gmail.com" className="input" required />
+                <input type="email" className="input" value={email} onChange={} required />
                 <span className="icon is-small is-left">
                   <i className="fa fa-envelope"></i>
                 </span>
               </div>
             </div>
             <div className="field">
-              <label for="" className="label">Password</label>
+              <label for="password" className="label">Password</label>
               <div className="control has-icons-left">
-                <input type="password" placeholder="*******" className="input" required />
+                <input type="password" className="input" required />
                 <span className="icon is-small is-left">
                   <i className="fa fa-lock"></i>
                 </span>
@@ -49,11 +55,12 @@ export default function Login() {
               </label>
             </div>
             <div className="field pt-4 text-center">
-              <button className="button is-primary">
+              <button className="button is-primary" onClick={() => login(email, password)}>
                 Login
               </button>
             </div>
           </form>
+          {/* Add button to navigate to registration page */}
         </div>
       </div>
     </div>

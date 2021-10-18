@@ -29,7 +29,7 @@ export default function Register() {
   <div className="field">
     <label for="" className="label">Name</label>
     <div className="control has-icons-left">
-      <input type="text" className="input" placeholder="e.g. Bob Smith" required />
+      <input type="text" className="input" required />
       <span className="icon is-small is-left">
         <i className="fa fa-user"></i>
       </span>
@@ -38,7 +38,7 @@ export default function Register() {
     <div className="field">
       <label for="" className="label">Email</label>
       <div className="control has-icons-left">
-        <input type="email" placeholder="e.g. bobsmith@gmail.com" className="input" required />
+        <input type="email"className="input" required />
         <span className="icon is-small is-left">
           <i className="fa fa-envelope"></i>
         </span>
@@ -52,7 +52,7 @@ export default function Register() {
             <div className="field">
               <label for="" className="label">Password</label>
               <div className="control has-icons-left">
-                <input type="password" placeholder="*******" className="input" required />
+                <input type="password" className="input" required />
                 <span className="icon is-small is-left">
                   <i className="fa fa-lock"></i>
                 </span>
@@ -61,7 +61,7 @@ export default function Register() {
             <div className="field">
               <label for="" className="label">Repeat Password</label>
               <div className="control has-icons-left">
-                <input type="password" placeholder="*******" className="input" required />
+                <input type="password" className="input" required />
                 <span className="icon is-small is-left">
                   <i className="fa fa-lock"></i>
                 </span>
@@ -75,6 +75,7 @@ export default function Register() {
               </button>
             </div>
           </form>
+          {/* Add button to navigate to login page */}
         </div>
       </div>
     </div>
