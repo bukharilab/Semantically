@@ -59,6 +59,13 @@
   flex-wrap: wrap;
 }
 
+#post-panel {
+  display: flex;
+  font-size: 1.2rem;
+  flex-direction: column;
+  padding: 4rem;
+}
+
 .document-card {
   width: 15rem;
   margin: .5rem;

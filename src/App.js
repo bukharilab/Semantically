@@ -30,10 +30,11 @@ function App() {
         removedHighlights={removedHighlights} updateRemovedHighlights={updateRemovedHighlights} annotationSelection={annotationSelection} updateAnnotationSelection ={updateAnnotationSelection} />
       <Highlights highlights={highlights} currentHighlight={currentHighlight} setCurrentHighlight={setCurrentHighlight}
         removedHighlights={removedHighlights} annotationSelection={annotationSelection} />
-      
+
 
       <BrowserRouter><Switch>
-        <Route path="/:documentId" render={() => <UpdateId updateDocumentId={updateDocumentId} />} />
+
+        <Route path="/docs/:documentId" render={() => <UpdateId updateDocumentId={updateDocumentId} />} />
       </Switch></BrowserRouter>
     </div>
   );

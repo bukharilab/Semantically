@@ -7,7 +7,7 @@
 
   // Check if POST request
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get project id
+    // Get user id
     $user_id = $_POST['user_id'];
 
     // Check if project id given
@@ -15,21 +15,17 @@
       // Connect to database & retrieve instance
       $db = Database::connect();
 
-      // Query for all projects
-      $query = pg_prepare($db, 'create_document_query', 'INSERT INTO document(user_id) VALUES ($1)');
-      $result = pg_execute($db, 'create_document_query', array($user_id));
+      // Create document
+      $results = mysqli_query($db, "INSERT INTO Document (user_id, content) VALUES ('1', '')");
 
       // Check if document created
-      if ($result) {
-        // Get project data
-
-
+      if ($results) {
         // Turn to JSON & output
         echo json_encode(array('message' => 'success'));
 
       } else {
         // Convert to JSON & output error msg
-        echo json_encode(array('message' => 'error'));
+        echo json_encode(array('message' => mysqli_error($db)));
       }
 
     } else {

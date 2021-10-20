@@ -8,7 +8,7 @@ export default function Sidebar() {
       </header>
       <div id="sidebar-menu">
         <span>Home</span>
-        <span>Forum</span>
+        <span className="font-weight-normal">Forum</span>
         <span>Logout</span>
       </div>
     </div>

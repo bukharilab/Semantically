@@ -8,8 +8,8 @@ import getTermStr from '../hooks/getTermString';
 import getDefinition from '../hooks/getDefinition';
 import getRemovedHighlights from '../hooks/getRemovedHighlights';
 
-import NewPost from './NewPost';
-
+import LookUp from './LookUp';
+import AskQuestion from './AskQuestion';
 
 const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
@@ -41,7 +41,9 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
   setCurrentHighlight, annotationSelection, updateAnnotationSelection }) => {
 
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
+  const [openLookUpModal, updateOpenLookUpModal] = useState(false);
   const [openPostModal, updateOpenPostModal] = useState(false);
+
 
   const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
@@ -120,9 +122,10 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
           </Card.Text>
         </Card.Body>
         {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} annotationSelection={annotationSelection} updateAnnotationSelection={updateAnnotationSelection} /> : null}
-        {openPostModal ? <NewPost word={getTermStr(currentHighlight)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} /> : null}
+        {openLookUpModal ? <LookUp word={getTermStr(currentHighlight)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} updateOpenLookUpModal={updateOpenLookUpModal}/> : null}
+        {openPostModal ? <AskQuestion word={getTermStr(currentHighlight)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} updateOpenLookUpModal={updateOpenLookUpModal} currentHighlight={currentHighlight} annotationSelection={annotationSelection} annotations={annotations} /> : null}
       </Card>
-      <div className="text-right"><Button variant="link" style={{'box-shadow': 'none'}} onClick={() => updateOpenPostModal(true)}>Need Help?</Button></div></div>
+      <div className="text-right"><Button variant="link" style={{'box-shadow': 'none'}} onClick={() => updateOpenLookUpModal(true)}>Need Help?</Button></div></div>
     }
     </React.Fragment>
   );

@@ -3,8 +3,8 @@
     // Database connect
     public static function connect() {
       // Declare and initialize connect string
-      $host = '127.0.0.1';
-      $database = 'semantically';
+      $host = 'localhost';
+      $database = 'Semantically';
       $username = 'root';
       $password = '5@w4W@HGZtPXn97';
 
