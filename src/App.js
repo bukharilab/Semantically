@@ -10,7 +10,9 @@ import Sidebar from './components/Sidebar';
 import Highlights from './components/Highlights';
 import NCBOTree from './hooks/NCBOTree';
 
-import {readDocument} from './hooks/documentAPI';
+import Post from './pages/Post';
+
+import {readDocument, editDocument} from './hooks/documentAPI';
 
 function App() {
   const [documentId, updateDocumentId] = useState('');
@@ -25,12 +27,12 @@ function App() {
   // });
   // tree.jumpToClass('https://data.bioontology.org/ontologies/NCIT/class…ih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C41204');
 
-  useEffect(() => readDocument('2', updateContent), [documentId]);
+
 
   return (
     <div>
       <BrowserRouter><Switch>
-
+        <Route path="/post/:postId" component={Post} />
         <Route path="/:documentId" component={AppComponents} />
       </Switch></BrowserRouter>
     </div>
@@ -38,19 +40,33 @@ function App() {
 }
 
 const AppComponents = () => {
-  const [documentId, updateDocumentId] = useState(useParams().documentId);
+  const documentId = useParams().documentId;
 
   const [highlights, updateHighlights] = useState({});
   const [currentHighlight, setCurrentHighlight] = useState('');
   const [annotationSelection, updateAnnotationSelection] = useState({});
   const [removedHighlights, updateRemovedHighlights] = useState([]);
   const tree = $("#tree")[0].NCBOTree;
+  const editor = document.querySelector("trix-editor");
   // tree.on('afterJumpToClass', classId => {
   //   console.log('jumped to class.');
   // });
   // tree.jumpToClass('https://data.bioontology.org/ontologies/NCIT/class…ih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C41204');
 
-  useEffect(() => readDocument('2', updateContent), [documentId]);
+  let saveTimerId = '';
+  useEffect(() => {
+    // fetch document content
+    readDocument(documentId, updateContent);
+
+    // set content change listener
+    new MutationObserver(() => {
+      const content = editor.innerText;
+      clearTimeout(saveTimerId);
+      saveTimerId = setTimeout(() => editDocument(documentId, content), 1000);
+    }).observe(editor, {characterData: true, subtree: true});
+  }, []);
+
+
 
   return (
     <div className="App">

@@ -7,23 +7,26 @@
 
   // Check if POST request
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get user id and content
-    $document_id = $_POST['document_id'];
-    $content = $_POST['content'];
+    // Get project id
+    $terminology = $_POST['terminology'];
 
-    // Check if document id given
-    if ($document_id) {
+    // Check if project id given
+    if ($terminology) {
       // Connect to database & retrieve instance
       $db = Database::connect();
 
-      // Edit the document's content
-      $results = mysqli_query($db, sprintf("UPDATE Document SET content = '%s' WHERE document_id = '%s'", $content, $document_id));
+      // Query for all projects
+      $results = mysqli_query($db, sprintf("SELECT ontology, reason FROM OntologyRecommendation WHERE terminology = '%s'", $terminology));
 
-      // Check if document was edited
+      // Check if document created
       if ($results) {
-        // Turn to JSON & output
-        echo json_encode(array('message' => 'success'));
+        // Get project data
 
+        // Turn to JSON & output
+        $res = array();
+        while ($row = mysqli_fetch_assoc($results)) $res[] = $row;
+
+        echo json_encode(array('data' => $res));
       } else {
         // Convert to JSON & output error msg
         echo json_encode(array('message' => mysqli_error($db)));

@@ -8,21 +8,20 @@
   // Check if POST request
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get user id and content
-    $document_id = $_POST['document_id'];
-    $content = $_POST['content'];
+    $post_id = $_POST['post_id'];
 
-    // Check if document id given
-    if ($document_id) {
+    // Check if project id given
+    if ($post_id) {
       // Connect to database & retrieve instance
       $db = Database::connect();
 
       // Edit the document's content
-      $results = mysqli_query($db, sprintf("UPDATE Document SET content = '%s' WHERE document_id = '%s'", $content, $document_id));
+      $results = mysqli_query($db, sprintf("SELECT author_id, terminology, question, context, selected_ontology FROM OntologySuggestionPost WHERE post_id = '%s'", $post_id));
 
       // Check if document was edited
       if ($results) {
         // Turn to JSON & output
-        echo json_encode(array('message' => 'success'));
+        echo json_encode(array('post_data' => $results->fetch_assoc()));
 
       } else {
         // Convert to JSON & output error msg
@@ -31,7 +30,7 @@
 
     } else {
       // Convert to JSON & output error msg
-      echo json_encode(array('message' => 'User id not given'));
+      echo json_encode(array('message' => 'Post id not given'));
     }
 
   } else {
