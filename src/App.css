@@ -8,9 +8,9 @@ html, body {
 
 
 /* Show editor after annotation column. */
-body {
+#editor {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   padding: 2rem 1rem 1rem;
 }
 
