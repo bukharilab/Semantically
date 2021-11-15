@@ -7,8 +7,8 @@ import { TrixEditor } from "react-trix";
 
 import Highlights from './Highlights';
 
-const DocumentEditor = ({ highlights, currentHighlight, setCurrentHighlight, annotationSelection, content, updateContent, editor, updateEditor }) => {
-
+const DocumentEditor = editorProps => {
+  const {content, updateContent, updateEditor} = editorProps;
 
   const trixEditorProps = {
     value: content,
@@ -18,12 +18,10 @@ const DocumentEditor = ({ highlights, currentHighlight, setCurrentHighlight, ann
     autoFocus: true
   };
 
-  // useEffect(() => updateEditor(document.querySelector("trix-editor").editor), []);
   return (
     <div>
       <TrixEditor {...trixEditorProps} />
-      <Highlights highlights={highlights} currentHighlight={currentHighlight} setCurrentHighlight={setCurrentHighlight}
-       annotationSelection={annotationSelection} editor={editor} />
+      <Highlights {...editorProps} />
     </div>
   )
 };

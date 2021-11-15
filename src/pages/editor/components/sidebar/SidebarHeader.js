@@ -4,7 +4,6 @@ import $ from 'jquery';
 import {Button, Card, Form, Col, Row } from 'react-bootstrap';
 
 import getRecommenderAnnotations from '../../hooks/sidebar/getRecommenderAnnotations';
-// import getText from '../../hooks/editor/getText';
 import ManualAnnotationPopUp from './ManualOntologySelector';
 
 const SidebarHeader = sidebarProps => {

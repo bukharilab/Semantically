@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
-import { BrowserRouter,Switch, Route, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import Sidebar from './components/sidebar/Sidebar';
 import Publish from './components/publish';
 import DocumentEditor from './components/editor/DocumentEditor';
-// import Highlights from './components/editor/Highlights';
-
 
 const Editor = () => {
   const { documentId } = useParams();

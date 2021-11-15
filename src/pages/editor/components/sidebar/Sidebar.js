@@ -25,11 +25,6 @@ const Sidebar = editorProps => {
     resetAnnotations: resetAnnotations
   }
 
-  // activate downloads
-  // $('#download-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, false);
-  // $('#download-html-highlighted')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, true);
-  // $('#download-json')[0].onclick = () => saveAsJSON(annotations, annotationSelection, definitions, updateDefinitions);
-
   return (
     <div id="sidebar-container">
       <div id="sidebar">
