@@ -1,9 +1,6 @@
 <?php
-  // Headers
-  header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/json');
-
-  include_once 'config/database.php';
+  include_once '../config/headers.php';
+  include_once '../config/database.php';
 
   // Check if POST request
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
