@@ -17,7 +17,7 @@
           // Connect to database & retrieve instance
           $db = Database::connect();
           // Query for all projects
-          $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_documents` WHERE user_id = '%s'", $user_id));
+          $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_create_post` WHERE user_id = '%s'", $user_id));
           // Check if document created
           if ($results) {
               // Turn to JSON & output
@@ -26,7 +26,7 @@
                   $res[] = $row;
               }
               http_response_code(200);
-              echo json_encode(array('documents' => $res));
+              echo json_encode(array('posts' => $res));
           } else {
               http_response_code(404);
               // Convert to JSON & output error msg

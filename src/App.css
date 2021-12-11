@@ -5,6 +5,39 @@ html, body {
   overflow: hidden; */
 }
 
+.app {
+  display: flex !important;
+  flex-direction: row;
+}
+
+#dashboard-sidebar {
+  background-color: #282c34;
+  padding-top: 2rem;
+  width: 20rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: 1.5rem;
+  font-weight: lighter;
+}
+
+#dashboard-sidebar-header {
+  height: 10rem;
+}
+
+#dashboard-sidebar-menu {
+  height: calc(100% - 10rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-link {
+  color: lightgrey !important;
+}
+
 
 
 /* Show editor after annotation column. */
@@ -12,6 +45,7 @@ html, body {
   display: flex;
   flex-direction: row;
   padding: 2rem 1rem 1rem;
+  width: 100%;
 }
 
 /* #root {

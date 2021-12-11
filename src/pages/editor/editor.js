@@ -1,7 +1,10 @@
+import './editor.css';
+
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
 import { useParams } from 'react-router-dom';
 
+import EditorSidebar from './components/EditorSidebar';
 import Sidebar from './components/sidebar/Sidebar';
 import Publish from './components/publish';
 import DocumentEditor from './components/editor/DocumentEditor';
@@ -21,6 +24,7 @@ const Editor = () => {
   const [annotationSelection, updateAnnotationSelection] = useState({});
 
   const editorProps = {
+    documentId: documentId,
     content: content, updateContent: updateContent,
     editor: editor, updateEditor: updateEditor,
     annotations: annotations, updateAnnotations: updateAnnotations,
@@ -32,11 +36,14 @@ const Editor = () => {
   };
 
   return (
-    <div id="editor">
-      <Sidebar {...editorProps} />
-      <div style={{ width: '100%'}}>
-        <Publish {...editorProps} />
-        <DocumentEditor {...editorProps} />
+    <div className="d-flex flex-row">
+      <EditorSidebar />
+      <div id="editor">
+        <Sidebar {...editorProps} />
+        <div style={{ width: '100%'}}>
+          <Publish {...editorProps} />
+          <DocumentEditor {...editorProps} />
+        </div>
       </div>
     </div>
   );

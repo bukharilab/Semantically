@@ -1,17 +1,16 @@
 import React,{useState} from 'react';
 import {Card, Button, Modal, Row, Form, Col, Accordion, FormControl, Dropdown} from 'react-bootstrap';
-import {createPost} from '../hooks/editor/documentAPI';
+import {createPost} from '../../forum/hooks/postAPI';
 
 
 const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, annotationSelection, annotations}) => {
 
   const context = "Omnis nihil blanditiis autem numquam autem sit.";
-  const [question, updateQuestion] = useState(0);
   const questions = [
     "Which ontology should I use?",
     "Does this ontology best describe this terminology?"
   ];
-
+  const [question, updateQuestion] = useState(questions[0]);
   const [questionOntology, updateQuestionOntology] = useState(annotationSelection[currentHighlight]);
 
   const acronyms = annotations[currentHighlight].reduce((ontologies, ontology) => ontologies.concat(ontology.acronym), []);
@@ -19,11 +18,9 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
   const closeModal = () => updateOpenPostModal(false);
 
   const submit = () => {
-    createPost('1', word, questions[question], context, acronyms[questionOntology], data => {
-      if (data['post_id']) {
-        console.log(data['post_id']);
-        window.open('localhost:3001/post', '_blank')
-      } else console.log(data['message']);
+    createPost(question, word, acronyms[questionOntology], context, post_id => {
+      console.log(post_id);
+      window.open(`localhost:3000/post/${post_id}`, '_blank')
     });
   }
   return (

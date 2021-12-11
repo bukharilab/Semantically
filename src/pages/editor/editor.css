@@ -1,0 +1,22 @@
+#editor-sidebar {
+  background-color: #282c34;
+  padding-top: 2rem;
+  min-width: 5rem !important;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: 1.5rem;
+  font-weight: lighter;
+}
+
+.editor-sidebar-icon {
+  width: 2.5rem;
+  fill: grey;
+  margin: 1rem 0;
+}
+
+trix-editor {
+  max-width: 100%;
+}

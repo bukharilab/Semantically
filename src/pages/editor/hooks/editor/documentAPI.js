@@ -1,24 +1,25 @@
 import $ from 'jquery';
+import {apiAddresses} from '../../../../appInfo';
 
-const readDocument = (document_id, updateContent) => {
+const readDocument = (document_id, callback) => {
   if (!document_id) return;
   $.post({
-    url: 'http://localhost:3001/read_document.php',
+    url: apiAddresses.readDocument,
     data: {document_id: document_id},
-    success: data => updateContent(data['content'])});
+    success: data => callback(data['content'])});
 }
 
 const editDocument = (document_id, content) => {
   if (!document_id) return;
   $.post({
-    url: 'http://localhost:3001/edit_document.php',
+    url: apiAddresses.editDocument,
     data: {document_id: document_id, content: content},
     success: () => console.log(content + ": saved")});
 }
 
 const createPost = (user_id, terminology, question, context, selected_ontology, callback) => {
   $.post({
-    url: 'http://localhost:3001/create_post.php',
+    url: apiAddresses.createPost,
     data: {
       user_id: user_id,
       terminology: terminology,
@@ -29,12 +30,4 @@ const createPost = (user_id, terminology, question, context, selected_ontology, 
     success: data => callback(data)});
 }
 
-const readPost = (post_id, updatePostData) => {
-  if (!post_id) return;
-  $.post({
-    url: 'http://localhost:3001/read_post.php',
-    data: {post_id: post_id},
-    success: data => {updatePostData(data['post_data']); console.log(data)}});
-}
-
-export {readDocument, editDocument, createPost, readPost};
+export {readDocument, editDocument, createPost};

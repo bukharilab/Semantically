@@ -1,4 +1,4 @@
-import Logo from '../logo.png';
+import Logo from '../../../logo.png';
 import {Link} from 'react-router-dom';
 import React, {useState} from 'react';
 
@@ -8,7 +8,7 @@ export default function Sidebar() {
     {name: "Home", link: "/"},
     {name: "Forum", link: "/posts"},
     {name: "Account", link: "/myaccount"},
-    {name: "Logout", link: "/logout"},
+    {name: "Logout", link: "/logout"}
   ];
 
 
