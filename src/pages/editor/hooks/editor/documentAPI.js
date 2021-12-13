@@ -1,8 +1,15 @@
 import $ from 'jquery';
 import {apiAddresses} from '../../../../appInfo';
 
+const setUp = () => $.ajaxSetup({
+  xhrFields: {
+      withCredentials: true
+  }
+});
+
 const readDocument = (document_id, callback) => {
   if (!document_id) return;
+  setUp();
   $.post({
     url: apiAddresses.readDocument,
     data: {document_id: document_id},

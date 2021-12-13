@@ -33,7 +33,7 @@
       else {
         // Convert to JSON & output error msg
         http_response_code(404);
-        echo json_encode(array('message' => 'User not registered'));
+        echo json_encode(array('error_key' => 'unregisteredLogin'));
       }
     } else {
       // Convert to JSON & output error msg

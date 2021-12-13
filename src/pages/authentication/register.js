@@ -3,7 +3,7 @@ import { GoogleLogin } from 'react-google-login';
 import {Redirect, Link} from 'react-router-dom';
 import {register} from './hooks/authenticate';
 
-export default function Register({loggedIn, setLoggedIn}) {
+export default function Register({loggedIn, setLoggedIn, setAlert}) {
   return (
     <>
       {
@@ -25,14 +25,14 @@ export default function Register({loggedIn, setLoggedIn}) {
                   img_url: data.profileObj.imageUrl,
                   google_id: data.profileObj.googleId
                 };
-                register(userInfo, setLoggedIn);
+                register(userInfo, setLoggedIn, setAlert);
               }}
               onFailure={null}
               isSignedIn={loggedIn}
               />
             </div>
           </div>
-          <Link to="/login">Click here to login</Link>
+          <p className="text-muted mt-2">Already registered? <Link to="/login">click here!</Link></p>
         </div>
       }
     </>

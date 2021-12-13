@@ -67,7 +67,7 @@ export default function Post() {
             <Card.Text>
               {reply_content}
             </Card.Text>
-            <div className="text-right mt-5">
+            <div className="text-right">
               <Button variant="outline-success" size="sm" className="mr-3" disabled>UpVote</Button>
               <strong>{' 0 '}</strong>
               <Button variant="outline-danger" size="sm" className="ml-3" disabled>DownVote</Button>
@@ -102,8 +102,8 @@ function AnswerModal({postId, updateReplies, updateOpenAnswerModal}) {
   </Row>
   <Form.Row>
 <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
-  <Form.Label>Justification</Form.Label>
-  <Form.Control type="text" placeholder="Normal text" value={content} onChange={evt => setContent(evt.target.value)} />
+  <Form.Label>Reason</Form.Label>
+  <Form.Control as="textarea" rows={3} value={content} onChange={evt => setContent(evt.target.value)} />
 </Form.Group>
 </Form.Row>
   </Form>

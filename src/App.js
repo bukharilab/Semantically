@@ -17,17 +17,24 @@ import Register from './pages/authentication/register';
 import Survey from './pages/authentication/survey';
 import Account from './pages/account/account';
 
+import AlertMessage from './components/Alert';
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [alert, setAlert] = useState({});
   const appProps = {
     loggedIn: loggedIn,
-    setLoggedIn: setLoggedIn
+    setLoggedIn: setLoggedIn,
+    alert: alert,
+    setAlert: setAlert,
   };
 
   // Check if session still active
   if (!loggedIn) checkLoggedIn(setLoggedIn);
 
   return (
+    <>
+    {!$.isEmptyObject(alert) ? <AlertMessage {...appProps} /> : null}
     <BrowserRouter><Switch>
       <Route path="/login" render={() => <Login {...appProps} />} />
       <Route path="/logout" render={() => <Logout {...appProps} />} />
@@ -39,6 +46,7 @@ function App() {
       <Route path="/document/:documentId" component={Editor} />
       <Route path="/" render={() => <Dashboard {...appProps} />} />
     </Switch></BrowserRouter>
+    </>
   );
 }
 

@@ -15,4 +15,8 @@ const apiAddresses = {
   getPosts: `${apiAddress}/post/get_posts.php`
 };
 
-export {apiAddresses};
+const postAddresses = {
+  post: `${document.location.origin}/post`
+};
+
+export {apiAddresses, postAddresses};

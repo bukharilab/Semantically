@@ -13,6 +13,7 @@ export default function NewDocumentModal({updateShowNewDocModal}) {
     const name = upload.name;
     if (acceptedExtensions.some(ext => name.endsWith(ext))) {
       updateFile(upload);
+      Promise.resolve(upload.text()).then(text => updateText(text));
       updateValidFile(true);
     } else {
       updateValidFile(false);
@@ -23,17 +24,14 @@ export default function NewDocumentModal({updateShowNewDocModal}) {
   const [title, updateTitle] = useState("");
   const [desc, updateDesc] = useState("");
   const [file, updateFile] = useState(null);
+  const [text, updateText] = useState("");
   const [validFile, updateValidFile] = useState(true);
   const [newDocumentId, setNewDocumentId] = useState('');
 
   const submit = () => {
-    createDocument(title, desc, '', setNewDocumentId);
+    createDocument(title, desc, text, setNewDocumentId);
   }
 
-  if (file !== null) {
-    // Promise.resolve(file.text()).then(val => console.log(val));
-    console.log(file);
-  }
   return (
     <>
     {newDocumentId ? <Redirect to={`/document/${newDocumentId}`} /> :
@@ -71,7 +69,7 @@ export default function NewDocumentModal({updateShowNewDocModal}) {
                 <Form.File
                   onChange={evt => uploadFile(evt.target.files[0])}
                   id="starter-file"
-                  label={file ? file.name : "Upload starter document"}
+                  label={file ? file.name : "Upload starter document (.txt)"}
                   isInvalid={!validFile}
                   feedback={!validFile ? "Unsupported file extension" : ""}
                   custom

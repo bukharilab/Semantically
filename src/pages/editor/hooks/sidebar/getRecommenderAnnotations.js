@@ -66,6 +66,9 @@ const getRecommenderAnnotations = (text, ontologies, callback) => {
   $.ajax({
 		url: url,
     dataType: 'JSON',
+    xhrFields: {
+        withCredentials: false
+    },
 		success: (data) => {
       console.log(data);
 //           console.log(data);
