@@ -5,6 +5,9 @@ const getDefinition = url => new Promise((resolve, reject) =>
     method: "GET",
     url: url + "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f",
     dataType: "JSON",
+    xhrFields: {
+      withCredentials: false
+    },
     success: res => resolve(res['definition'][0] ? res['definition'][0] : 'No definitions found.'),
     error: res => resolve('Error retrieving definition.')
   })

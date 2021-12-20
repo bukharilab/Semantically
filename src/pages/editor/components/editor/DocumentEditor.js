@@ -6,7 +6,7 @@ import $ from 'jquery';
 import { TrixEditor } from "react-trix";
 
 import Highlights from './Highlights';
-import {readDocument} from '../../hooks/editor/documentAPI';
+import {readDocument, editDocument} from '../../hooks/editor/documentAPI';
 
 const DocumentEditor = editorProps => {
   const {documentId, content, updateContent, editor, updateEditor} = editorProps;
@@ -27,6 +27,14 @@ const DocumentEditor = editorProps => {
         updateContentRetrieved(true);
       });
   }
+
+  const [timeoutId, updateTimeoutId] = useState(0);
+  useEffect(() => {
+    if (contentRetrived) {
+      clearTimeout(timeoutId);
+      updateTimeoutId(setTimeout(() => editDocument(documentId, content), 1000));
+    }
+  }, [content]);
 
   return (
     <div>

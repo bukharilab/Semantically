@@ -33,7 +33,7 @@
         } else {
           http_response_code(400);
           // Convert to JSON & output error msg
-          echo json_encode(array('message' => 'Missing arguments'));
+          echo json_encode(array('message' => array('ont'=> $post_title, 'term'=> $terminology, 'cont'=> $post_content)));
         }
       } else {
           http_response_code(400);

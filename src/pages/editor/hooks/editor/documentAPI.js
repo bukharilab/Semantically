@@ -18,6 +18,7 @@ const readDocument = (document_id, callback) => {
 
 const editDocument = (document_id, content) => {
   if (!document_id) return;
+  setUp();
   $.post({
     url: apiAddresses.editDocument,
     data: {document_id: document_id, content: content},

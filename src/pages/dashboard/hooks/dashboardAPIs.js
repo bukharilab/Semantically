@@ -15,6 +15,14 @@ const createDocument = (name, desc, content, setNewDocumentId) => {
     success: data => setNewDocumentId(data['document_id'])});
 }
 
+const deleteDocument = (documentId, callback) => {
+  setUp();
+  $.post({
+    url: apiAddresses.deleteDocument,
+    data: {document_id: documentId},
+    success: () => callback()});
+}
+
 const getDocuments = updateDocuments => {
   setUp();
   $.post({
@@ -22,4 +30,4 @@ const getDocuments = updateDocuments => {
     success: data => updateDocuments(data['documents'])});
 }
 
-export {createDocument, getDocuments};
+export {createDocument, deleteDocument, getDocuments};

@@ -4,14 +4,20 @@ import Sidebar from '../../components/Sidebar';
 import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab} from 'react-bootstrap';
 
-import {getPosts} from './hooks/postAPI';
+import {getPosts, getAllPosts} from './hooks/postAPI';
 
 const Forum = () => {
   const [key, setKey] = useState('home');
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
 
   // fetch posts
-  useEffect(() => getPosts(posts => setPosts(posts)), []);
+  useEffect(() => getPosts(posts => {
+    // sort posts
+    posts.sort((post1, post2) => post2.responses - post1.responses);
+    setPosts(posts);
+  }), []);
+  useEffect(() => getAllPosts(posts => setAllPosts(posts)), []);
 
   return (
     <div className="app">
@@ -27,11 +33,13 @@ const Forum = () => {
           onSelect={(k) => setKey(k)}>
           <Tab eventKey="home" title="My Questions">
             <div className="py-4">
-            {posts.map(post => <ForumCard {...post} />)}
+            {posts.map(post => <ForumCard {...post} publicPost={false} />)}
             </div>
           </Tab>
-          <Tab eventKey="public" title="Public" disabled>
-
+          <Tab eventKey="public" title="Public">
+            <div className="py-4">
+              {allPosts.map(post => <ForumCard {...post} publicPost={true} />)}
+            </div>
           </Tab>
         </Tabs>
 

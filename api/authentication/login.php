@@ -17,11 +17,12 @@
 
       if (mysqli_num_rows($check) > 0) {
         //fetch data
-         if ($check->fetch_assoc()['google_id'] == $google_id) {
+        $row = $check->fetch_assoc();
+         if ($row['google_id'] == $google_id) {
           //create session and save variable in the session
           // create session
           session_start();
-          $_SESSION['user_id'] = $check->fetch_assoc()['user_id'];
+          $_SESSION['user_id'] = $row['user_id'];
           http_response_code(200);
           echo json_encode(array('message' => 'Login Sucessfully'));
         } else {
@@ -33,7 +34,7 @@
       else {
         // Convert to JSON & output error msg
         http_response_code(404);
-        echo json_encode(array('error_key' => 'unregisteredLogin'));
+        echo json_encode(array('message' => 'User not registered'));
       }
     } else {
       // Convert to JSON & output error msg

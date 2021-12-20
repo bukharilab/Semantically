@@ -34,6 +34,13 @@ const getPosts = callback => {
     success: data => callback(data['posts'])});
 }
 
+const getAllPosts = callback => {
+  setUp();
+  $.post({
+    url: apiAddresses.getAllPosts,
+    success: data => callback(data['all_posts'])});
+}
+
 const replyPost = (post_id, ontology, content, callback) => {
   setUp();
   $.post({
@@ -42,4 +49,4 @@ const replyPost = (post_id, ontology, content, callback) => {
     success: () => callback()});
 }
 
-export {createPost, getPosts, readPost, replyPost};
+export {createPost, getPosts, getAllPosts, readPost, replyPost};

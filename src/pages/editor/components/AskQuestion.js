@@ -6,7 +6,7 @@ import {postAddresses} from '../../../appInfo';
 
 const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, annotationSelection, annotations}) => {
 
-  const context = "This is an example context selection. Implementation is under progress.";
+  const [context, updateContext] = useState("");
   const questions = [
     "Which ontology should I use?",
     "Does this ontology best describe this terminology?"
@@ -19,7 +19,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
   const closeModal = () => updateOpenPostModal(false);
 
   const submit = () => {
-    createPost(questions[question], word, acronyms[questionOntology], context, post_id => {
+    createPost(question, word, acronyms[questionOntology], context, post_id => {
       window.open(`${postAddresses.post}/${post_id}`, '_blank');
       closeModal();
     });
@@ -44,18 +44,18 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
             <Form.Label>Terminology</Form.Label>
             <Form.Control type="text" value={word} disabled />
           </Form.Group>
-          <Form.Group as={Col} controlId="term">
-            <Form.Label>Context</Form.Label>
-            <Form.Control type="text" value={context} disabled />
+          <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
+            <Form.Label>Question</Form.Label>
+            <Form.Control as="select" size="md" value={question} onChange={evt => updateQuestion(evt.target.value)} custom>
+              {questions.map((question, index) => <option value={index}>{question}</option>)}
+            </Form.Control>
           </Form.Group>
         </Row>
         <Row className="mb-1">
-        <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
-  <Form.Label>What do you need help with?</Form.Label>
-  <Form.Control as="select" size="md" value={question} onChange={evt => updateQuestion(evt.target.value)} custom>
-    {questions.map((question, index) => <option value={index}>{question}</option>)}
-  </Form.Control>
-</Form.Group>
+          <Form.Group as={Col} controlId="term">
+            <Form.Label>Please explain</Form.Label>
+            <Form.Control as="textarea" rows={3} value={context} onChange={evt => updateContext(evt.target.value)} placeholder="Elaborate on your question..." />
+          </Form.Group>
         </Row>
         {question == 1 ?
         <Row className="mb-1">

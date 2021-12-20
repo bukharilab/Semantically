@@ -10,9 +10,17 @@ import {getDocuments} from './hooks/dashboardAPIs';
 
 const Dashboard = ({loggedIn}) => {
   const [showNewDocModal, updateShowNewDocModal] = useState(false);
+  const [showDelDocModal, updateShowDelDocModal] = useState(false);
   const [documents, updateDocuments] = useState([]);
   const newDocModalProps = {
     updateShowNewDocModal: updateShowNewDocModal
+  };
+
+  const docCardProps = {
+    documents: documents,
+    updateDocuments: updateDocuments,
+    showDelDocModal: showDelDocModal,
+    updateShowDelDocModal: updateShowDelDocModal
   };
 
   // fetch user documents
@@ -30,7 +38,7 @@ const Dashboard = ({loggedIn}) => {
                 onClick={() => updateShowNewDocModal(true)}>New Document</Button>
             </header>
             <main>
-              {documents.map(document => <DocumentCard {...document} />)}
+              {documents.map(document => <DocumentCard {...document} {...docCardProps} />)}
             </main>
           </div>
           {showNewDocModal ? <NewDocumentModal {...newDocModalProps} /> : null}
