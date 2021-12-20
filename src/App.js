@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import React, { useState, useEffect } from 'react';
@@ -6,81 +5,49 @@ import {BrowserRouter, Switch, Route, useParams} from 'react-router-dom';
 
 import $ from 'jquery';
 
-import Sidebar from './components/Sidebar';
-import Highlights from './components/Highlights';
-import NCBOTree from './hooks/NCBOTree';
+import {checkLoggedIn} from './pages/authentication/hooks/authenticate';
 
-import Post from './pages/Post';
+import Editor from './pages/editor/editor';
+import Dashboard from './pages/dashboard/dashboard';
+import Forum from './pages/forum/forum';
+import Post from './pages/forum/post';
+import Login from './pages/authentication/login';
+import Logout from './pages/authentication/logout';
+import Register from './pages/authentication/register';
+import Survey from './pages/authentication/survey';
+import Account from './pages/account/account';
 
-import {readDocument, editDocument} from './hooks/documentAPI';
+import AlertMessage from './components/Alert';
 
 function App() {
-  const [documentId, updateDocumentId] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [alert, setAlert] = useState({});
+  const appProps = {
+    loggedIn: loggedIn,
+    setLoggedIn: setLoggedIn,
+    alert: alert,
+    setAlert: setAlert,
+  };
 
-  const [highlights, updateHighlights] = useState({});
-  const [currentHighlight, setCurrentHighlight] = useState('');
-  const [annotationSelection, updateAnnotationSelection] = useState({});
-  const [removedHighlights, updateRemovedHighlights] = useState([]);
-  const tree = $("#tree")[0].NCBOTree;
-  // tree.on('afterJumpToClass', classId => {
-  //   console.log('jumped to class.');
-  // });
-  // tree.jumpToClass('https://data.bioontology.org/ontologies/NCIT/class…ih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C41204');
-
-
+  // Check if session still active
+  if (!loggedIn) checkLoggedIn(setLoggedIn);
 
   return (
-    <div>
-      <BrowserRouter><Switch>
-        <Route path="/post/:postId" component={Post} />
-        <Route path="/:documentId" component={AppComponents} />
-      </Switch></BrowserRouter>
-    </div>
+    <>
+    {!$.isEmptyObject(alert) ? <AlertMessage {...appProps} /> : null}
+    <BrowserRouter><Switch>
+      <Route path="/login" render={() => <Login {...appProps} />} />
+      <Route path="/logout" render={() => <Logout {...appProps} />} />
+      <Route path="/register" render={() => <Register {...appProps} />} />
+      <Route path="/survey" component={Survey} />
+      <Route path="/myaccount" component={Account} />
+      <Route path="/posts" component={Forum} />
+      <Route path="/post/:postId" component={Post} />
+      <Route path="/document/:documentId" component={Editor} />
+      <Route path="/" render={() => <Dashboard {...appProps} />} />
+    </Switch></BrowserRouter>
+    </>
   );
 }
-
-const AppComponents = () => {
-  const documentId = useParams().documentId;
-
-  const [highlights, updateHighlights] = useState({});
-  const [currentHighlight, setCurrentHighlight] = useState('');
-  const [annotationSelection, updateAnnotationSelection] = useState({});
-  const [removedHighlights, updateRemovedHighlights] = useState([]);
-  const tree = $("#tree")[0].NCBOTree;
-  const editor = document.querySelector("trix-editor");
-  // tree.on('afterJumpToClass', classId => {
-  //   console.log('jumped to class.');
-  // });
-  // tree.jumpToClass('https://data.bioontology.org/ontologies/NCIT/class…ih.gov%2Fxml%2Fowl%2FEVS%2FThesaurus.owl%23C41204');
-
-  let saveTimerId = '';
-  useEffect(() => {
-    // fetch document content
-    readDocument(documentId, updateContent);
-
-    // set content change listener
-    new MutationObserver(() => {
-      const content = editor.innerText;
-      clearTimeout(saveTimerId);
-      saveTimerId = setTimeout(() => editDocument(documentId, content), 1000);
-    }).observe(editor, {characterData: true, subtree: true});
-  }, []);
-
-
-
-  return (
-    <div className="App">
-      <Sidebar highlights={highlights} updateHighlights={updateHighlights} currentHighlight={currentHighlight} setCurrentHighlight={setCurrentHighlight}
-        removedHighlights={removedHighlights} updateRemovedHighlights={updateRemovedHighlights} annotationSelection={annotationSelection} updateAnnotationSelection ={updateAnnotationSelection} />
-      <Highlights highlights={highlights} currentHighlight={currentHighlight} setCurrentHighlight={setCurrentHighlight}
-        removedHighlights={removedHighlights} annotationSelection={annotationSelection} />
-    </div>
-  );
-}
-
-function updateContent(content) {
-  document.querySelector("trix-editor").innerText = content;
-};
-
 
 export default App;

@@ -1,44 +1,31 @@
-import React, { useState } from 'react';
-import $ from 'jquery';
+import Logo from '../logo.png';
+import {Link} from 'react-router-dom';
+import React, {useState} from 'react';
 
-import SidebarHeader from './SidebarHeader';
-import SidebarBody from './SidebarBody';
-import SidebarFooter from './SidebarFooter';
+export default function Sidebar() {
+  const [active, updateActive] = useState(document.location.pathname);
+  const navItems = [
+    {name: "Home", link: "/"},
+    {name: "Forum", link: "/posts"},
+    {name: "Account", link: "/myaccount"},
+    {name: "Logout", link: "/logout"},
+  ];
 
-import {saveAsHTML, saveAsJSON} from '../hooks/downloadAnnotations';
-
-const Sidebar = ({ highlights, updateHighlights, currentHighlight, setCurrentHighlight, removedHighlights, updateRemovedHighlights, annotationSelection, updateAnnotationSelection }) => {
-  const [showLoader, updateShowLoader] = useState(false);
-  const [showAccordion, updateShowAccordion] = useState(false);
-  const [annotations, updateAnnotations] = useState({});
-  const [definitions, updateDefinitions] = useState({});
-  const [loadHighlights, updateLoadHighlights] = useState(false);
-
-  const resetAnnotations = () => {
-    updateAnnotations({});
-    updateHighlights({});
-    setCurrentHighlight('');
-    updateDefinitions({});
-  }
-
-  // activate downloads
-  $('#download-html')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, false);
-  $('#download-html-highlighted')[0].onclick = () => saveAsHTML(annotations, annotationSelection, definitions, updateDefinitions, true);
-  $('#download-json')[0].onclick = () => saveAsJSON(annotations, annotationSelection, definitions, updateDefinitions);
 
   return (
-    <div id="sidebar">
-      <SidebarHeader updateShowLoader={updateShowLoader} updateShowAccordion={updateShowAccordion}
-        updateAnnotations={updateAnnotations} resetAnnotations={resetAnnotations} updateLoadHighlights={updateLoadHighlights} />
-      <SidebarBody showLoader={showLoader} showAccordion={showAccordion} annotations={annotations}
-        updateAnnotations={updateAnnotations} definitions={definitions} updateDefinitions={updateDefinitions}
-        highlights={highlights} updateHighlights={updateHighlights} loadHighlights={loadHighlights}
-        updateLoadHighlights={updateLoadHighlights} currentHighlight={currentHighlight}
-        setCurrentHighlight={setCurrentHighlight} removedHighlights={removedHighlights}
-        updateRemovedHighlights={updateRemovedHighlights} annotationSelection={annotationSelection} updateAnnotationSelection ={updateAnnotationSelection} />
-      <SidebarFooter />
+    <div id="dashboard-sidebar">
+      <header id="dashboard-sidebar-header" className="w-100">
+        <img src={Logo} className="px-5 w-100" alt="logo" />
+      </header>
+      <div id="dashboard-sidebar-menu">
+        {navItems.map(nav =>
+          <Link to={nav.link}
+            className={(active === nav.link ? "font-weight-normal" : "") + " nav-link"}
+            onClick={() => updateActive(nav.link)}>
+          {nav.name}
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
-
-export default Sidebar;
