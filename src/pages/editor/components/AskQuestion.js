@@ -11,7 +11,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
     "Which ontology should I use?",
     "Does this ontology best describe this terminology?"
   ];
-  const [question, updateQuestion] = useState(questions[0]);
+  const [question, updateQuestion] = useState(0);
   const [questionOntology, updateQuestionOntology] = useState(annotationSelection[currentHighlight]);
 
   const acronyms = annotations[currentHighlight].reduce((ontologies, ontology) => ontologies.concat(ontology.acronym), []);
@@ -19,7 +19,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
   const closeModal = () => updateOpenPostModal(false);
 
   const submit = () => {
-    createPost(question, word, acronyms[questionOntology], context, post_id => {
+    createPost(questions[question], word, acronyms[questionOntology], context, post_id => {
       window.open(`${postAddresses.post}/${post_id}`, '_blank');
       closeModal();
     });
