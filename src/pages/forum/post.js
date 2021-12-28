@@ -95,8 +95,30 @@ function AnswerModal({postId, updateReplies, updateOpenAnswerModal}) {
   <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
     <Form.Label>Select Ontology</Form.Label>
     <Form.Control as="select" size="md" value={ontology} onChange={evt => setOntology(evt.target.value)} custom>
+      <option value="LOINC">LOINC</option>
+      <option value="VO">VO</option>
+      <option value="DOID">DOID</option>
+      <option value="GSSO">GSSO</option>
+      <option value="ICPC2P">ICPC2P</option>
+      <option value="BAO">BAO</option>
+      <option value="NIFSTD">NIFSTD</option>
+      <option value="COVID">COVID-19</option>
+      <option value="OHPI">OHPI</option>
+      <option value="DTO">DTO</option>
+      <option value="OHMI">OHMI</option>
+      <option value="OBIB">OBIB</option>
+      <option value="VICO">VICO</option>
+      <option value="KTAO">KTAO</option>
+      <option value="EFO">EFO</option>
+      <option value="HTN">HTN</option>
+      <option value="RBO">RBO</option>
+      <option value="ODAE">ODAE</option>
+      <option value="MELO">MELO</option>
       <option value="NCIT">NCIT</option>
-      <option value="OBT">OBT</option>
+      <option value="IOBC">IOBC</option>
+      <option value="CANCO">CANCO</option>
+      <option value="CCONT">CCONT</option>
+      <option value="NCRO">NCRO</option>
     </Form.Control>
   </Form.Group>
   </Row>
