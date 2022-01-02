@@ -5,14 +5,18 @@ import {Button, Card, Form, Col, Row } from 'react-bootstrap';
 
 import getRecommenderAnnotations from '../../hooks/sidebar/getRecommenderAnnotations';
 import ManualAnnotationPopUp from './ManualOntologySelector';
+import RemoveAnnotationsModal from './RemoveAnnotationsModal';
 
 const SidebarHeader = sidebarProps => {
   const [showManualAnnotation, updateShowManualAnnotation] = useState(false);
+  const [showRemoveAnnotationsModalA, updateShowRemoveAnnotationsModalA] = useState(false);
+  const [showRemoveAnnotationsModalB, updateShowRemoveAnnotationsModalB] = useState(false);
   const [manualOntologies, updateManualOntologies] = useState({});
 
   const {
     updateShowLoader,
     updateShowAccordion,
+    annotations,
     updateAnnotations,
     updateLoadHighlights,
     resetAnnotations,
@@ -32,16 +36,27 @@ const SidebarHeader = sidebarProps => {
     );
   }
 
+  const annotate = () => {
+    if ($.isEmptyObject(annotations)) showAnnotations();
+    else updateShowRemoveAnnotationsModalA(true);
+  }
+
+  const removeAnnotations = () => {
+    if (!$.isEmptyObject(annotations)) updateShowRemoveAnnotationsModalB(true);
+  }
+
   // all ontologies selected by default
   useEffect(() => {
     $('#all-ontologies').attr('checked', true);
   });
 
+  const removeAnnotationMsg = "Are you sure? This operation is permanent!";
+
   return (
     <React.Fragment>
       <div id="sidebar-header" className="pt-1">
-        <Button variant="outline-dark" onClick={showAnnotations}>Annotate</Button>{'  '}
-        <Button variant="outline-dark">Remove annotations</Button>
+        <Button variant="outline-dark" onClick={annotate}>Annotate</Button>{'  '}
+        <Button variant="outline-dark" onClick={removeAnnotations}>Remove annotations</Button>
       </div>
       <Card className="my-2">
         <Card.Body className="d-flex flex-direction-column justify-content-between pb-1">
@@ -65,6 +80,8 @@ const SidebarHeader = sidebarProps => {
         </Card.Body>
       </Card>
       {showManualAnnotation ? <ManualAnnotationPopUp manualOntologies={manualOntologies} updateManualOntologies={updateManualOntologies} /> : null}
+      {showRemoveAnnotationsModalA ? <RemoveAnnotationsModal resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalA} callback={showAnnotations} removeAnnotationMsg={removeAnnotationMsg} /> : null}
+      {showRemoveAnnotationsModalB ? <RemoveAnnotationsModal resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalB} callback={() => {}} removeAnnotationMsg={removeAnnotationMsg} /> : null}
     </React.Fragment>
   );
 }

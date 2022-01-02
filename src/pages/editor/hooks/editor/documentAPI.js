@@ -38,4 +38,20 @@ const createPost = (user_id, terminology, question, context, selected_ontology, 
     success: data => callback(data)});
 }
 
-export {readDocument, editDocument, createPost};
+const storeAnnotations = (document_id, annotations, callback) => {
+  setUp();
+  $.post({
+    url: apiAddresses.storeAnnotations,
+    data: {document_id: document_id, annotations: annotations},
+    success: () => {console.log("annotations saved"); callback();}});
+}
+
+const getAnnotations = (document_id, callback) => {
+  setUp();
+  $.post({
+    url: apiAddresses.getAnnotations,
+    data: {document_id: document_id},
+    success: data => callback(data['annotations'])});
+}
+
+export {readDocument, editDocument, createPost, storeAnnotations, getAnnotations};

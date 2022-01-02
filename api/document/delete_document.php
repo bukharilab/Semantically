@@ -13,6 +13,7 @@
       // Connect to database & retrieve instance
       $db = Database::connect();
 
+      $results = mysqli_query($db, sprintf("DELETE FROM tbl_primary_annotation WHERE doc_id = '%s'", $document_id));
       // Delete document
       $results = mysqli_query($db, sprintf("DELETE FROM tbl_documents WHERE doc_id = '%s'", $document_id));
 

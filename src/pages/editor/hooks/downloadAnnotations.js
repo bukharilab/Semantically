@@ -42,6 +42,8 @@ const saveAsHTML = async (content, annotations, annotationSelection, definitions
     "code": []
   };
 
+  console.log(content);
+
   const onlySelectedAnnotations = {};
   for (const term in annotationSelection) {
     if (annotationSelection[term] !== -1)
@@ -55,8 +57,7 @@ const saveAsHTML = async (content, annotations, annotationSelection, definitions
 
   for(const term of sortKeys(Object.keys(onlySelectedAnnotations))) {
     const annotation = onlySelectedAnnotations[term];
-
-    schemaJson['code'].push({"@type": "MedicalCode", "name": getTermStr(term), "codingSystem": annotation.acronym, "link": annotation.annotatedClass['@id']});
+    schemaJson['code'].push({"@type": "MedicalCode", "name": getTermStr(term, text), "codingSystem": annotation.acronym, "link": annotation.annotatedClass['@id']});
     if(hasHighlights) {
       const url = annotation.annotatedClass.links.self;
       const def = url in definitions ? definitions[url] : await getDefinition(url);
