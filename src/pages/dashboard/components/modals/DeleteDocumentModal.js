@@ -6,6 +6,7 @@ import {deleteDocument} from '../../hooks/dashboardAPIs';
 export default function DeleteDocumentModal({updateShowDelDocModal, documents, 
     updateDocuments, doc_id}) {
   const handleClose = () => updateShowDelDocModal(false);
+  console.log(doc_id);
 
   const submit = () => {
     deleteDocument(doc_id, () => {

@@ -1,10 +1,17 @@
+import React, {useState} from 'react';
 import {Card, Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import DeleteDocumentModal from '../components/modals/DeleteDocumentModal';
 
-export default function DocumentCard(deleteDocProps) {
-  const {doc_id, doc_name, description, showDelDocModal} = deleteDocProps;
-  const deleteDoc = () => deleteDocProps.updateShowDelDocModal(true);
+export default function DocumentCard(documentCardProps) {
+  const [showDelDocModal, updateShowDelDocModal] = useState(false);
+  const {doc_id, doc_name, description} = documentCardProps;
+  const deleteDoc = () => updateShowDelDocModal(true);
+  const deleteDocProps = {
+    ...documentCardProps,
+    showDelDocModal: showDelDocModal, updateShowDelDocModal: updateShowDelDocModal
+  };
+
   return (
     <>
       <Card style={{ width: '18rem' }} className="document-card">
