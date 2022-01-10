@@ -65,7 +65,7 @@ const DocumentEditor = editorProps => {
           <Highlights {...editorProps} />
         </> : null
       }
-      {showRemoveAnnotationsModalC ? <RemoveAnnotationsModal 
+      {showRemoveAnnotationsModalC ? <RemoveAnnotationsModal documentId={documentId}
       resetAnnotations={resetAnnotations} 
       updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalC} 
       callback={() => {updateContent(awaitingContent); editor.redo();}}

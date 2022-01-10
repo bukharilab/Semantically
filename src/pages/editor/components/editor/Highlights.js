@@ -24,6 +24,7 @@ const Highlights = ({ highlights, currentHighlight, setCurrentHighlight, annotat
       const from = Number(term.substring(0, divider))-1;
       const to = Number(term.substring(divider+1, term.length));
 
+      console.log(from + '-' + to);
       const start = editor.getClientRectAtPosition(from);
       const end = editor.getClientRectAtPosition(to);
       const width = end.left - start.left;

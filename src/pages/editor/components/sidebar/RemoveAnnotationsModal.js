@@ -1,11 +1,14 @@
 import {Modal, Button} from 'react-bootstrap';
+import {deleteAllAnnotations} from '../../hooks/editor/documentAPI';
 
-export default function RemoveAnnotationsModal({resetAnnotations, updateShowRemoveAnnotationsModal, callback, removeAnnotationMsg}) {
+export default function RemoveAnnotationsModal({documentId, resetAnnotations, updateShowRemoveAnnotationsModal, callback, removeAnnotationMsg}) {
   const handleClose = () => updateShowRemoveAnnotationsModal(false);
   const submit = () => {
       resetAnnotations();
       handleClose();
       callback();
+      deleteAllAnnotations(documentId);
+      console.log(documentId);
   }
 
   return (

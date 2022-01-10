@@ -1,41 +1,23 @@
 <?php
   include_once '../config/headers.php';
   include_once '../config/database.php';
+  include_once '../config/response.php';
 
-  // Check if POST request
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get user id and content
-    $document_id = $_POST['document_id'];
-    $content = $_POST['content'];
+  if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
-    // Check if document id given
-    if ($document_id) {
-      // Connect to database & retrieve instance
-      $db = Database::connect();
+  session_start();
+	$user_id = $_SESSION['user_id'];
+	if (!$user_id) user_id_error();
 
-      // Edit the document's content
-      $results = mysqli_query($db, sprintf("UPDATE tbl_documents SET content = '%s' WHERE doc_id = '%s'", $content, $document_id));
+  $document_id = $_POST['document_id'];
+  $content = $_POST['content'];
+  if (!$document_id && !$content) invalid_argument_error();
 
-      // Check if document was edited
-      if ($results) {
-        // Turn to JSON & output
-        http_response_code(200);
-        echo json_encode(array('message' => 'success'));
+  // Connect to database & retrieve instance
+  $db = Database::connect();
 
-      } else {
-        // Convert to JSON & output error msg
-        http_response_code(500);
-        echo json_encode(array('message' => mysqli_error($db)));
-      }
+  // Edit the document's content
+  $results = mysqli_query($db, sprintf("UPDATE tbl_documents SET content = '%s' WHERE doc_id = '%s'", $content, $document_id));
 
-    } else {
-      // Convert to JSON & output error msg
-      http_response_code(400);
-      echo json_encode(array('message' => 'User id not given'));
-    }
-
-  } else {
-    // Convert to JSON & output error msg
-    http_response_code(400);
-    echo json_encode(array('message' => 'Only POST requests are accepted'));
-  }
+  if ($results) success_message("document edited.");
+  else system_error(mysqli_error($db)); 

@@ -14,17 +14,20 @@ const SidebarHeader = sidebarProps => {
   const [manualOntologies, updateManualOntologies] = useState({});
 
   const {
+    documentId,
     updateShowLoader,
     updateShowAccordion,
     annotations,
     updateAnnotations,
     updateLoadHighlights,
     resetAnnotations,
+    updateAnnotationsLoaded,
     content } = sidebarProps;
 
   const showAnnotations = () => {
     updateShowLoader(true);
     resetAnnotations();
+    updateAnnotationsLoaded(false);
     getRecommenderAnnotations(content, showManualAnnotation ? Object.keys(manualOntologies) : undefined,
       (formattedAnnotations) => {
         updateAnnotations(formattedAnnotations);
@@ -80,8 +83,8 @@ const SidebarHeader = sidebarProps => {
         </Card.Body>
       </Card>
       {showManualAnnotation ? <ManualAnnotationPopUp manualOntologies={manualOntologies} updateManualOntologies={updateManualOntologies} /> : null}
-      {showRemoveAnnotationsModalA ? <RemoveAnnotationsModal resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalA} callback={showAnnotations} removeAnnotationMsg={removeAnnotationMsg} /> : null}
-      {showRemoveAnnotationsModalB ? <RemoveAnnotationsModal resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalB} callback={() => {}} removeAnnotationMsg={removeAnnotationMsg} /> : null}
+      {showRemoveAnnotationsModalA ? <RemoveAnnotationsModal documentId={documentId} resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalA} callback={showAnnotations} removeAnnotationMsg={removeAnnotationMsg} /> : null}
+      {showRemoveAnnotationsModalB ? <RemoveAnnotationsModal documentId={documentId} resetAnnotations={resetAnnotations} updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalB} callback={() => {}} removeAnnotationMsg={removeAnnotationMsg} /> : null}
     </React.Fragment>
   );
 }

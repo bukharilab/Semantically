@@ -1,48 +1,39 @@
 <?php
   include_once '../config/headers.php';
   include_once '../config/database.php';
-sleep(5);
-  // Check if POST request
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get user id and content
-    $document_id = $_POST['document_id'];
-    $annotations = $_POST['annotations'];
+  include_once '../config/response.php';
 
-    // Check if document id and annotations are given
-    if ($document_id && $annotations) {
-      // Connect to database & retrieve instance
-      $db = Database::connect();
+  if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
-      $results = mysqli_query($db, sprintf("SELECT anno_id FROM `tbl_primary_annotation` WHERE doc_id = '%s'", $document_id));
+  session_start();
+	$user_id = $_SESSION['user_id'];
+	if (!$user_id) user_id_error();
 
-      if (mysqli_num_rows($results) == 1) {
-        $results = mysqli_query($db, sprintf("UPDATE `tbl_primary_annotation` SET annotations = '%s' WHERE doc_id = '%s'", $annotations, $document_id));
-      } else {
-        session_start();
-        $user_id = $_SESSION['user_id'];
-        $results = mysqli_query($db, sprintf("INSERT INTO `tbl_primary_annotation` (user_id, doc_id, annotations) VALUES ('%s', '%s', '%s')", $user_id, $document_id, $annotations));
-      }
+  $doc_id = $_POST['document_id'];
+  $annotations = $_POST['annotations'];
+  if (!$doc_id && !$annotations) invalid_argument_error();
 
-      // Check if annotations saved
-      if ($results) {
-        // Turn to JSON & output
-        http_response_code(200);
-        echo json_encode(array('message' => 'success'));
+  $annotations = json_decode($annotations, true);
 
-      } else {
-        // Convert to JSON & output error msg
-        http_response_code(500);
-        echo json_encode(array('message' => mysqli_error($db)));
-      }
+  // Connect to database & retrieve instance
+  $db = Database::connect();
 
-    } else {
-      // Convert to JSON & output error msg
-      http_response_code(400);
-      echo json_encode(array('message' => 'Invalid arguments'));
+  $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_primary_annotation` WHERE doc_id = '%s'", $_POST['document_id']));
+  if (mysqli_num_rows($results) > 0) die();
+
+  foreach ($annotations as $annotation) {
+    $results = mysqli_query($db, sprintf("INSERT INTO `tbl_primary_annotation` (doc_id, from_loc, to_loc, text_str, removed) 
+      VALUES ('%s', '%s', '%s', '%s', '%s')", $_POST['document_id'], $annotation['from'], $annotation['to'], $annotation['text'], -1));
+
+    $anno_id = mysqli_insert_id($db);
+    $first_ontology_id = NULL;
+    foreach ($annotation['ontologies'] as $ontology) {
+      $results = mysqli_query($db, sprintf("INSERT INTO `tbl_ontologies` (anno_id, acronym, match_type, link, onto_id) 
+      VALUES ('%s', '%s', '%s', '%s', '%s')", $anno_id, $ontology['acronym'], $ontology['matchType'], $ontology['link'], $ontology['id']));
+      if (!$first_ontology_id) $first_ontology_id = mysqli_insert_id($db);
     }
-
-  } else {
-    // Convert to JSON & output error msg
-    http_response_code(400);
-    echo json_encode(array('message' => 'Only POST requests are accepted'));
+    $results = mysqli_query($db, sprintf("UPDATE `tbl_primary_annotation` SET ontology_id = '%s' WHERE anno_id = '%s'", $first_ontology_id, $anno_id));
   }
+
+  if ($results) success_message("annotations saved.");
+  else system_error(mysqli_error($db));
