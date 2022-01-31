@@ -1,13 +1,11 @@
 import './editor.css';
 
 import React, { useState, useEffect } from 'react';
-import $ from 'jquery';
 import { useParams } from 'react-router-dom';
 
+
 import EditorSidebar from './components/EditorSidebar';
-import Sidebar from './components/sidebar/Sidebar';
-import Publish from './components/publish';
-import DocumentEditor from './components/editor/DocumentEditor';
+import EditorHelper from './components/editorsHelper';
 
 const Editor = () => {
   const { documentId } = useParams();
@@ -23,6 +21,9 @@ const Editor = () => {
   const [removedHighlights, updateRemovedHighlights] = useState([]);
   const [annotationSelection, updateAnnotationSelection] = useState({});
 
+  const [showAccordion, updateShowAccordion] = useState(false);
+  const [loadHighlights, updateLoadHighlights] = useState(false);
+
   const editorProps = {
     documentId: documentId,
     content: content, updateContent: updateContent,
@@ -32,19 +33,15 @@ const Editor = () => {
     highlights: highlights, updateHighlights: updateHighlights,
     currentHighlight: currentHighlight, setCurrentHighlight: setCurrentHighlight,
     removedHighlights: removedHighlights, updateRemovedHighlights: updateRemovedHighlights,
-    annotationSelection: annotationSelection, updateAnnotationSelection: updateAnnotationSelection
+    annotationSelection: annotationSelection, updateAnnotationSelection: updateAnnotationSelection,
+    showAccordion: showAccordion, updateShowAccordion: updateShowAccordion,
+    loadHighlights: loadHighlights, updateLoadHighlights: updateLoadHighlights
   };
-
+  
   return (
     <div className="d-flex flex-row">
       <EditorSidebar />
-      <div id="editor">
-        <Sidebar {...editorProps} />
-        <div style={{ width: '100%'}}>
-          <Publish {...editorProps} />
-          <DocumentEditor {...editorProps} />
-        </div>
-      </div>
+      <EditorHelper {...editorProps} />
     </div>
   );
 }

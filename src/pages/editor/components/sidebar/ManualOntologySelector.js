@@ -7,6 +7,9 @@ const fetchAllOntologies = (updateAllOntologies) => {
   $.ajax({
     url: 'https://data.bioontology.org/ontologies?include=name,acronym&display_links=false&display_context=false&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f',
     dataType: 'JSON',
+    xhrFields: {
+      withCredentials: false
+    },
     success: data => {
       const ontologies = {};
       for (const ontology of data) {

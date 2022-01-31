@@ -1,65 +1,98 @@
-import React, {useState, useEffect} from 'react';
-import {Accordion, Card, Button, Modal} from 'react-bootstrap';
-import $ from 'jquery';
+import React, { useState, useEffect } from "react";
+import {
+  Accordion,
+  Card,
+  Button,
+  Modal,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
+import $ from "jquery";
 
-import sortKeys from '../../hooks/sidebar/sortKeys';
-import getTermStr from '../../hooks/sidebar/getTermString';
-import getDefinition from '../../hooks/sidebar/getDefinition';
-import getRemovedHighlights from '../../hooks/editor/getRemovedHighlights';
+import sortKeys from "../../hooks/sidebar/sortKeys";
+import getTermStr from "../../hooks/sidebar/getTermString";
+import getDefinition from "../../hooks/sidebar/getDefinition";
+import getRemovedHighlights from "../../hooks/editor/getRemovedHighlights";
+import { checkRecommendation } from "../../hooks/editor/documentAPI";
 
-import LookUp from '../LookUp';
-import AskQuestion from '../AskQuestion';
+import LookUp from "../LookUp";
+import AskQuestion from "../AskQuestion";
+import PopupRecommendation from "../PopupRecommendation";
 
 const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
-    for (const {from, to, acronym, annotatedClass} of annotation) {
+    for (const { from, to, acronym, link } of annotation) {
       const toggle = `${from}-${to}-${acronym}`;
-      const url = annotatedClass.links.self;
       console.log(toggle);
-      $(`.${toggle}`).click(() => {setDefinition(url); console.log(toggle);});
+      $(`.${toggle}`).click(() => {
+        setDefinition(link);
+        console.log(toggle);
+      });
     }
   }
-}
+};
 
-const removeHighlight = (currentHighlight, setCurrentHighlight, highlights, updateHighlights) => {
+const removeHighlight = (
+  currentHighlight,
+  setCurrentHighlight,
+  highlights,
+  updateHighlights
+) => {
   delete highlights[currentHighlight];
-  updateHighlights({...highlights});
-  setCurrentHighlight('');
-}
+  updateHighlights({ ...highlights });
+  setCurrentHighlight("");
+};
 
 // show in NCBOTree
-const showInTree = text => {
-  while (document.querySelector('#tree > .root > span') !== null) setTimeout(() => {}, 100);
-  const listItem = [...document.querySelectorAll('#tree li')].filter(li => li.innerText.toLowerCase() === text.toLowerCase());
+const showInTree = (text) => {
+  while (document.querySelector("#tree > .root > span") !== null)
+    setTimeout(() => {}, 100);
+  const listItem = [...document.querySelectorAll("#tree li")].filter(
+    (li) => li.innerText.toLowerCase() === text.toLowerCase()
+  );
   if (listItem.length > 0) listItem[0].scrollIntoView();
   console.log(listItem);
-}
+};
 
-const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateDefinitions,
-  updateHighlights, loadHighlights, highlights, updateLoadHighlights, currentHighlight,
-  setCurrentHighlight, annotationSelection, updateAnnotationSelection, content }) => {
-
+const SidebarAccordion = ({
+  annotations,
+  updateAnnotations,
+  definitions,
+  updateDefinitions,
+  updateHighlights,
+  loadHighlights,
+  highlights,
+  updateLoadHighlights,
+  currentHighlight,
+  setCurrentHighlight,
+  annotationSelection,
+  updateAnnotationSelection,
+  content,
+}) => {
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [openLookUpModal, updateOpenLookUpModal] = useState(false);
   const [openPostModal, updateOpenPostModal] = useState(false);
 
-
-  const [setDefinitionListeners, updateSetDefinitionListeners] = useState(false);
+  const [setDefinitionListeners, updateSetDefinitionListeners] =
+    useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
   // console.log(currentHighlight)
   const annotatedTerms = sortKeys(Object.keys(annotations));
   const removedHighlights = getRemovedHighlights(annotationSelection);
-//   console.log(annotations);
-  console.log('refresh');
+  //   console.log(annotations);
+  console.log("refresh");
 
-  const setDefinition = url => {
+  const setDefinition = (url) => {
     if (!(url in definitions)) {
-      getDefinition(url).then(def => updateDefinitions({...definitions, [url]: def}));
-      return 'Loading...';
+      getDefinition(url).then((def) =>
+        updateDefinitions({ ...definitions, [url]: def })
+      );
+      return "Loading...";
     } else {
       return definitions[url];
     }
-  }
+  };
 
   if (!setDefinitionListeners) {
     console.log("here");
@@ -76,11 +109,11 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     updateLoadHighlights(false);
   }
 
-//   useEffect(() => {
-//     for (const term in annotatedTerms) {
-//       $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.links.self));
-//     }
-//   });
+  //   useEffect(() => {
+  //     for (const term in annotatedTerms) {
+  //       $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.link));
+  //     }
+  //   });
 
   // Switch annotations
   useEffect(() => {
@@ -92,53 +125,214 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     // if (currentHighlight) {
     //   const tree = $("#tree")[0].NCBOTree;
     //   const ontology = annotations[currentHighlight][ontologyIdx];
-    //   console.log(ontology.annotatedClass['@id']);
+    //   console.log(ontology['id']);
     //   showInTree(annotations[currentHighlight][ontologyIdx].text);
-    //   tree.jumpToClass(ontology.annotatedClass['@id']);
-      // change NCBO tree
-
+    //   tree.jumpToClass(ontology['id']);
+    // change NCBO tree
   }, [currentHighlight, ontologyIdx]);
 
-  if (!currentHighlight) return null;
+  ///////Asim
+  //// Asim
+  const [timeoutId, updateTimeoutId] = useState(0);
+  const [reply, setReply] = useState([]);
+  const [check, setCheck] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
 
+  useEffect(() => {
+    updateOntologyIdx(0);
+    if (currentHighlight) {
+      setCheck([]);
+      //let word = getTermStr(currentHighlight, content);
+      //console.log("annontation switch", word);
+      clearTimeout(timeoutId);
+      updateTimeoutId(
+        setTimeout(() => checkRecommendation("0", setCheck), 1000)
+      );
+    }
+  }, [currentHighlight]);
+
+  const fetch_reply = () => {
+    // alert("you have message");
+    // console.log("check", check);
+    setReply(check);
+    // console.log("check after", check);
+    // setModalShow(true);
+    updateOpenLookUpModal(true);
+  };
+
+  if (!currentHighlight) return null;
   return (
     <React.Fragment>
-    {removedHighlights.includes(currentHighlight) ?
-      <Card className="p-4 text-center"><Button variant="outline-success" size="sm" style={{width: 'fit-content'}} className="mx-auto"
-        onClick={() => updateAnnotationSelection({...annotationSelection, [currentHighlight]: 0})}>reannotate</Button></Card> :
-      <div><Card>
-        <Card.Header className="d-flex justify-content-between">
-          <span>{annotations[currentHighlight][annotationSelection[currentHighlight]].acronym}</span>
-          <div>
-            { annotations[currentHighlight].length > 1 ?
-              <Button variant="outline-info" size="sm" onClick={() => updateOpenOntologyModal(true)}>change</Button> : null }{' '}
-            <Button variant="outline-danger" size="sm" onClick={() => updateAnnotationSelection({...annotationSelection, [currentHighlight]: -1})}>{'delete'}</Button>
+      {removedHighlights.includes(currentHighlight) ? (
+        <Card className="p-4 text-center">
+          <Button
+            variant="outline-success"
+            size="sm"
+            style={{ width: "fit-content" }}
+            className="mx-auto"
+            onClick={() =>
+              updateAnnotationSelection({
+                ...annotationSelection,
+                [currentHighlight]: 0,
+              })
+            }
+          >
+            reannotate
+          </Button>
+        </Card>
+      ) : (
+        <div>
+          <Card>
+            <Card.Header className="d-flex justify-content-between">
+              <span>
+                {
+                  annotations[currentHighlight][
+                    annotationSelection[currentHighlight]
+                  ].acronym
+                }
+              </span>
+              <div>
+                {annotations[currentHighlight].length > 1 ? (
+                  <Button
+                    variant="outline-info"
+                    size="sm"
+                    onClick={() => updateOpenOntologyModal(true)}
+                  >
+                    change
+                  </Button>
+                ) : null}{" "}
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() =>
+                    updateAnnotationSelection({
+                      ...annotationSelection,
+                      [currentHighlight]: -1,
+                    })
+                  }
+                >
+                  {"delete"}
+                </Button>
+              </div>
+            </Card.Header>
+            <Card.Body>
+              <Card.Text>
+                {setDefinition(
+                  annotations[currentHighlight][
+                    annotationSelection[currentHighlight]
+                  ].link
+                )}
+              </Card.Text>
+            </Card.Body>
+            {openOntologyModal ? (
+              <OntologyModal
+                term={currentHighlight}
+                updateOpenOntologyModal={updateOpenOntologyModal}
+                annotations={annotations}
+                definitions={definitions}
+                setDefinition={setDefinition}
+                annotationSelection={annotationSelection}
+                updateAnnotationSelection={updateAnnotationSelection}
+                content={content}
+              />
+            ) : null}
+            {openLookUpModal ? (
+              <LookUp
+                checkData={check}
+                updateOpenLookUpModal={updateOpenLookUpModal}
+              />
+            ) : null}
+            {openPostModal ? (
+              <AskQuestion
+                word={getTermStr(currentHighlight, content)}
+                ontology={
+                  annotations[currentHighlight][
+                    annotationSelection[currentHighlight]
+                  ]
+                }
+                updateOpenPostModal={updateOpenPostModal}
+                updateOpenLookUpModal={updateOpenLookUpModal}
+                currentHighlight={currentHighlight}
+                annotationSelection={annotationSelection}
+                annotations={annotations}
+              />
+            ) : null}
+            {/* add by Asim */}
+            {/* <div className="row">
+              {console.log("reply", reply)}
+              {reply.map((element) => {
+                return (
+                  <div className="col-md-4" key={element.post_id}>
+                    <PopupRecommendation
+                      terminology={element.terminology}
+                      reply_content={element.reply_content}
+                      post_reply_id={element.post_reply_id}
+                      ontology_link={element.ontology_link}
+                      show={modalShow}
+                      onHide={() => setModalShow(false)}
+                      flag_1={"1"}
+                      flag_2={"2"}
+                      confidence_score={element.confidence_score}
+                    />
+                  </div>
+                );
+              })}
+            </div> */}
+          </Card>
+          <div className="text-center">
+            <Container>
+              <Row>
+                <Col>
+                  <Button
+                    variant="link"
+                    style={{ "box-shadow": "none", color: "red" }}
+                    onClick={fetch_reply}
+                    className="recommendation"
+                  >
+                    {console.log("check size", Object.keys(check).length)}
+                    {/* {element.flag === "0" ? "New Recommendation" : ""} */}
+                    {Object.keys(check).length > 0 ? "New Recommendation" : ""}
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    variant="link"
+                    style={{ "box-shadow": "none" }}
+                    onClick={() => updateOpenPostModal(true)}
+                  >
+                    Need Help?
+                  </Button>
+                </Col>
+              </Row>
+            </Container>
           </div>
-        </Card.Header>
-        <Card.Body>
-          <Card.Text>
-            {setDefinition(annotations[currentHighlight][annotationSelection[currentHighlight]].annotatedClass.links.self)}
-          </Card.Text>
-        </Card.Body>
-        {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} annotationSelection={annotationSelection} updateAnnotationSelection={updateAnnotationSelection} content={content} /> : null}
-        {openLookUpModal ? <LookUp word={getTermStr(currentHighlight, content)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} updateOpenLookUpModal={updateOpenLookUpModal}/> : null}
-        {openPostModal ? <AskQuestion word={getTermStr(currentHighlight, content)} ontology={annotations[currentHighlight][annotationSelection[currentHighlight]]} updateOpenPostModal={updateOpenPostModal} updateOpenLookUpModal={updateOpenLookUpModal} currentHighlight={currentHighlight} annotationSelection={annotationSelection} annotations={annotations} /> : null}
-      </Card>
-      <div className="text-right"><Button variant="link" style={{'box-shadow': 'none'}} onClick={() => updateOpenLookUpModal(true)}>Need Help?</Button></div></div>
-    }
+        </div>
+      )}
     </React.Fragment>
   );
-}
+};
 
-const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions, setDefinition, ontologyIdx, annotationSelection, updateAnnotationSelection, content }) => {
+const OntologyModal = ({
+  term,
+  updateOpenOntologyModal,
+  annotations,
+  definitions,
+  setDefinition,
+  ontologyIdx,
+  annotationSelection,
+  updateAnnotationSelection,
+  content,
+}) => {
   const closeModal = () => updateOpenOntologyModal(false);
-  const getDef = url => {
-    return definitions[url] ? definitions[url] : 'loading...';
-  }
+  const getDef = (url) => {
+    return definitions[url] ? definitions[url] : "loading...";
+  };
 
   useEffect(() => {
     for (const ontology of annotations[term]) {
-      $(`.modal-toggle-${ontology.acronym}`).click(() => setDefinition(ontology.annotatedClass.links.self));
+      $(`.modal-toggle-${ontology.acronym}`).click(() =>
+        setDefinition(ontology.link)
+      );
     }
   });
 
@@ -156,35 +350,49 @@ const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions,
       </Modal.Header>
       <Modal.Body>
         <Accordion defaultActiveKey={`${term}-modal-0`} id="sidebar-accordion">
-          {annotations[term].map((ontology, idx) =>
-          <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={`${term}-modal-${idx}`} className={`d-flex justify-content-between ${ontology.from}-${ontology.to}-${ontology.acronym} modal-toggle-${ontology.acronym}`}>
-              <span>{ontology.acronym}</span>
-              {ontologyIdx != idx ?
-                <Button variant="outline-primary" size="sm" onClick={() => {
-                    updateAnnotationSelection({...annotationSelection, [term]: idx});
-                    updateOpenOntologyModal(false);
-                }}>select</Button>
-                : null}
-            </Accordion.Toggle>
-            <Accordion.Collapse eventKey={`${term}-modal-${idx}`} className={`p-2 p-0 accordion-card`}>
-              <Card>
-                <Card.Body>
-                  <Card.Text>
-                    {getDef(ontology.annotatedClass.links.self)}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Accordion.Collapse>
-          </Card>
-          )}
+          {annotations[term].map((ontology, idx) => (
+            <Card>
+              <Accordion.Toggle
+                as={Card.Header}
+                eventKey={`${term}-modal-${idx}`}
+                className={`d-flex justify-content-between ${ontology.from}-${ontology.to}-${ontology.acronym} modal-toggle-${ontology.acronym}`}
+              >
+                <span>{ontology.acronym}</span>
+                {ontologyIdx != idx ? (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => {
+                      updateAnnotationSelection({
+                        ...annotationSelection,
+                        [term]: idx,
+                      });
+                      updateOpenOntologyModal(false);
+                    }}
+                  >
+                    select
+                  </Button>
+                ) : null}
+              </Accordion.Toggle>
+              <Accordion.Collapse
+                eventKey={`${term}-modal-${idx}`}
+                className={`p-2 p-0 accordion-card`}
+              >
+                <Card>
+                  <Card.Body>
+                    <Card.Text>{getDef(ontology.link)}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Accordion.Collapse>
+            </Card>
+          ))}
         </Accordion>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={closeModal}>Close</Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
 export default SidebarAccordion;

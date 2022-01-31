@@ -25,7 +25,7 @@ const saveAsJSON = async (content, annotations, annotationSelection, definitions
 
   for(const term in onlySelectedAnnotations) {
     const annotation = onlySelectedAnnotations[term];
-    const url = annotation.annotatedClass.links.self;
+    const url = annotation.link;
     const def = url in definitions ? definitions[url] : await getDefinition(url);
     updateDefinitions({...definitions, [url]: def});
 
@@ -42,6 +42,8 @@ const saveAsHTML = async (content, annotations, annotationSelection, definitions
     "code": []
   };
 
+  console.log(content);
+
   const onlySelectedAnnotations = {};
   for (const term in annotationSelection) {
     if (annotationSelection[term] !== -1)
@@ -55,10 +57,9 @@ const saveAsHTML = async (content, annotations, annotationSelection, definitions
 
   for(const term of sortKeys(Object.keys(onlySelectedAnnotations))) {
     const annotation = onlySelectedAnnotations[term];
-
-    schemaJson['code'].push({"@type": "MedicalCode", "name": getTermStr(term), "codingSystem": annotation.acronym, "link": annotation.annotatedClass['@id']});
+    schemaJson['code'].push({"@type": "MedicalCode", "name": getTermStr(term, text), "codingSystem": annotation.acronym, "link": annotation.ontologyId});
     if(hasHighlights) {
-      const url = annotation.annotatedClass.links.self;
+      const url = annotation.link;
       const def = url in definitions ? definitions[url] : await getDefinition(url);
       updateDefinitions({...definitions, [url]: def});
       annText += text.substring(ended, annotation.from - 1) + `<span class="tippy" title="${def}">${text.substring(annotation.from - 1, annotation.to)}</span>`;

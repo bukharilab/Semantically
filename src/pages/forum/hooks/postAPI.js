@@ -1,11 +1,12 @@
-import $ from 'jquery';
-import {apiAddresses} from '../../../appInfo';
+import $ from "jquery";
+import { apiAddresses } from "../../../appInfo";
 
-const setUp = () => $.ajaxSetup({
-  xhrFields: {
-      withCredentials: true
-  }
-});
+const setUp = () =>
+  $.ajaxSetup({
+    xhrFields: {
+      withCredentials: true,
+    },
+  });
 
 const createPost = (question, terminology, ontology, context, callback) => {
   setUp();
@@ -15,38 +16,57 @@ const createPost = (question, terminology, ontology, context, callback) => {
       question: question,
       terminology: terminology,
       ontology: ontology,
-      context: context},
-    success: data => callback(data['post_id'])});
-}
+      context: context,
+    },
+    success: (data) => callback(data["post_id"]),
+  });
+};
 
 const readPost = (post_id, callback) => {
   setUp();
   $.post({
     url: apiAddresses.readPost,
-    data: {post_id: post_id},
-    success: data => callback(data['post'], data['replies'])});
-}
+    data: { post_id: post_id },
+    success: (data) => callback(data["post"], data["replies"]),
+  });
+};
 
-const getPosts = callback => {
+const getPosts = (callback) => {
   setUp();
   $.post({
     url: apiAddresses.getPosts,
-    success: data => callback(data['posts'])});
-}
+    success: (data) => callback(data["posts"]),
+  });
+};
 
-const getAllPosts = callback => {
+const getAllPosts = (callback) => {
   setUp();
   $.post({
     url: apiAddresses.getAllPosts,
-    success: data => callback(data['all_posts'])});
-}
+    success: (data) => callback(data["all_posts"]),
+  });
+};
 
-const replyPost = (post_id, ontology, content, callback) => {
+const replyPost = (
+  post_id,
+  ontology,
+  ontology_link,
+  content,
+  confidence_score,
+  callback
+) => {
   setUp();
   $.post({
     url: apiAddresses.replyPost,
-    data: {post_id: post_id, ontology: ontology, content: content},
-    success: () => callback()});
-}
+    data: {
+      post_id: post_id,
+      ontology: ontology,
+      ontology_link: ontology_link,
+      content: content,
+      confidence_score: confidence_score,
+    },
+    success: () => callback(),
+  });
+};
 
-export {createPost, getPosts, getAllPosts, readPost, replyPost};
+export { createPost, getPosts, getAllPosts, readPost, replyPost };

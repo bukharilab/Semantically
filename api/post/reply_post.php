@@ -9,7 +9,9 @@
       $user_id = $_SESSION['user_id'];
       $post_id = $_POST['post_id'];
       $ontology = $_POST['ontology'];
+      $ontology_link = $_POST['ontology_link'];
       $reply_content = $_POST['content'];
+      $confidence_score=$_POST['confidence_score'];
 
       // Check if project id given
       if ($user_id) {
@@ -19,7 +21,7 @@
           //fetch the expert data
           $time_stamp = date("Y-m-d H:i:s");
           // Insert the expert reply into databasr
-          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_post_reply` (user_id, post_id,ontology,reply_content,time_stamp) VALUES ('%s', '%s', '%s', '%s', '%s')", $user_id, $post_id, $ontology, $reply_content, $time_stamp));
+          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_post_reply` (user_id, post_id,ontology,ontology_link,reply_content,confidence_score,flag,time_stamp) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s','%s')", $user_id, $post_id, $ontology, $ontology_link,$reply_content,$confidence_score,'0',$time_stamp));
           // Check if document created
           if ($results) {
               http_response_code(200);

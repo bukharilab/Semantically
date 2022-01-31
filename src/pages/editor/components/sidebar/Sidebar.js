@@ -7,22 +7,10 @@ import Logo from '../../../../logo.png';
 
 const Sidebar = editorProps => {
   const [showLoader, updateShowLoader] = useState(false);
-  const [showAccordion, updateShowAccordion] = useState(false);
-  const [loadHighlights, updateLoadHighlights] = useState(false);
-
-  const resetAnnotations = () => {
-    editorProps.updateAnnotations({});
-    editorProps.updateHighlights({});
-    editorProps.setCurrentHighlight('');
-    editorProps.updateDefinitions({});
-  }
 
   const sidebarProps = {
     ...editorProps,
-    showLoader: showLoader, updateShowLoader: updateShowLoader,
-    showAccordion: showAccordion, updateShowAccordion: updateShowAccordion,
-    loadHighlights: loadHighlights, updateLoadHighlights: updateLoadHighlights,
-    resetAnnotations: resetAnnotations
+    showLoader: showLoader, updateShowLoader: updateShowLoader
   }
 
   return (

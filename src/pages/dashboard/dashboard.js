@@ -10,7 +10,6 @@ import {getDocuments} from './hooks/dashboardAPIs';
 
 const Dashboard = ({loggedIn}) => {
   const [showNewDocModal, updateShowNewDocModal] = useState(false);
-  const [showDelDocModal, updateShowDelDocModal] = useState(false);
   const [documents, updateDocuments] = useState([]);
   const newDocModalProps = {
     updateShowNewDocModal: updateShowNewDocModal
@@ -18,9 +17,7 @@ const Dashboard = ({loggedIn}) => {
 
   const docCardProps = {
     documents: documents,
-    updateDocuments: updateDocuments,
-    showDelDocModal: showDelDocModal,
-    updateShowDelDocModal: updateShowDelDocModal
+    updateDocuments: updateDocuments
   };
 
   // fetch user documents
