@@ -92,7 +92,7 @@ export default function App() {
             <Login />
           </Route>
           <Route path="/documentation">
-            <Users />
+            <div />
           </Route>
           <Route path="/">
             <Home />

@@ -1,0 +1,19 @@
+{
+    "name": "semantically/semantically",
+    "description": "Semantically API",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Semantically\\Semantically\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Steve Mbouadeu",
+            "email": "mbouadeus@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.4"
+    }
+}

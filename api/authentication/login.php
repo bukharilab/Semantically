@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
   include_once '../config/headers.php';
   include_once '../config/database.php';
 
@@ -44,5 +45,59 @@
   } else {
     // Convert to JSON & output error msg
     http_response_code(400);
+=======
+  // Headers
+  header('Access-Control-Allow-Origin: *');
+  header('Content-Type: application/json');
+
+  include_once '../config/database.php';
+  session_start();
+
+  // Check if POST request
+  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Get user id and content
+    $email = $_GET['email'];
+    $password = $_GET['password']; // google id
+    //$token = $_GET['token'];
+
+    // Connect to database & retrieve instance
+    $db = Database::connect();
+
+    // Check if user registered
+   // if ($email && $password) {
+    $sql = "SELECT * FROM Users WHERE email='$email' && password='$password'";
+    $result = mysqli_query($db,$sql);
+    echo $result;
+    $_SESSION['myid'] = $value;
+
+
+        //$result = mysqli_query($db, sprintf("SELECT user_id FROM User WHERE email='%s' && password='%s'", $email, $password));
+        // echo implode(" ", mysqli_fetch_row($result));
+
+        // if ($result) {
+        //     // user registered
+        //     if ($token) {
+        //         // // Create new session
+        //         $user_id = mysqli_fetch_row($result);
+        //         // $user_id = '2';
+        //         $result = mysqli_query($db, sprintf("INSERT INTO LoginSession (user_id, token) VALUES ('%s', '%s')", $user_id, $token));
+
+        //         if ($result) {
+        //             // Login successful
+        //             echo json_encode(array('message' => 'success', 'session_id' => mysqli_insert_id($db)));
+        //         } else {
+        //             // Login unsuccessful
+        //             echo json_encode(array('message' => mysqli_error($db)));
+        //         }
+        //     } else {
+        //         // create token for manual login
+        //     }
+        // } else {
+        //     echo json_encode(array('message' => 'User is not registered'));
+        // }
+    }
+  } else {
+    // Convert to JSON & output error msg
+>>>>>>> f2d3a9592247871bc431ce55190befeafc0cd8d5
     echo json_encode(array('message' => 'Only POST requests are accepted'));
   }

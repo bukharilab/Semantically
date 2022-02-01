@@ -1,17 +1,9 @@
 <?php
-<<<<<<< HEAD
   include_once '../config/headers.php';
-=======
-  // Headers
-  header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/json');
-
->>>>>>> f2d3a9592247871bc431ce55190befeafc0cd8d5
   include_once '../config/database.php';
 
   // Check if POST request
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-<<<<<<< HEAD
       // Get user id and content
       $first_name = $_POST['first_name'];
       $last_name = $_POST['last_name'];
@@ -52,38 +44,4 @@
       // Convert to JSON & output error msg
       http_response_code(400);
       echo json_encode(array('message' => 'Only POST requests are accepted'));
-=======
-    // Get user id and content
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
-    $password = $_POST['password']; // google id
-
-    // Check if document id given
-    if ($first_name && $last_name && $email && $password) {
-      // Connect to database & retrieve instance
-      $db = Database::connect();
-
-      // Creatte new user
-      $results = mysqli_query($db, sprintf("INSERT INTO User (first_name, last_name, email, password) VALUES ('%s', '%s', '%s', '%s')", $first_name, $last_name, $email, $password));
-
-      // User was created
-      if ($results) {
-        // Turn to JSON & output
-        echo json_encode(array('message' => 'success'));
-
-      } else {
-        // Convert to JSON & output error msg
-        echo json_encode(array('message' => mysqli_error($db)));
-      }
-
-    } else {
-      // Convert to JSON & output error msg
-      echo json_encode(array('message' => 'Invalid arguments'));
-    }
-
-  } else {
-    // Convert to JSON & output error msg
-    echo json_encode(array('message' => 'Only POST requests are accepted'));
->>>>>>> f2d3a9592247871bc431ce55190befeafc0cd8d5
   }
