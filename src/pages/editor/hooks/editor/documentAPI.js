@@ -110,10 +110,10 @@ const getAnnotations = (document_id, callback) => {
 
 ///Added by Asim
 
-const checkRecommendation = (flag, callback) => {
+const checkRecommendation = (term, callback) => {
   $.post({
     url: apiAddresses.checkRecommendation,
-    data: { flag: flag },
+    data: { term: term },
     success: (data) => callback(data["message"]),
   });
 };
