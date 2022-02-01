@@ -142,11 +142,11 @@ const SidebarAccordion = ({
     updateOntologyIdx(0);
     if (currentHighlight) {
       setCheck([]);
-      //let word = getTermStr(currentHighlight, content);
+      let word = getTermStr(currentHighlight, content);
       //console.log("annontation switch", word);
       clearTimeout(timeoutId);
       updateTimeoutId(
-        setTimeout(() => checkRecommendation("0", setCheck), 1000)
+        setTimeout(() => checkRecommendation(word,"0", setCheck), 1000)
       );
     }
   }, [currentHighlight]);
@@ -257,27 +257,6 @@ const SidebarAccordion = ({
                 annotations={annotations}
               />
             ) : null}
-            {/* add by Asim */}
-            {/* <div className="row">
-              {console.log("reply", reply)}
-              {reply.map((element) => {
-                return (
-                  <div className="col-md-4" key={element.post_id}>
-                    <PopupRecommendation
-                      terminology={element.terminology}
-                      reply_content={element.reply_content}
-                      post_reply_id={element.post_reply_id}
-                      ontology_link={element.ontology_link}
-                      show={modalShow}
-                      onHide={() => setModalShow(false)}
-                      flag_1={"1"}
-                      flag_2={"2"}
-                      confidence_score={element.confidence_score}
-                    />
-                  </div>
-                );
-              })}
-            </div> */}
           </Card>
           <div className="text-center">
             <Container>
