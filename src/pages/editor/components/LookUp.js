@@ -10,30 +10,55 @@ import {
   FormControl,
   Container,
 } from "react-bootstrap";
-import { recommendationFlag } from "../hooks/editor/documentAPI";
+import { recommendationFlag} from "../hooks/editor/documentAPI";
+import { postVoting} from "../hooks/editor/documentAPI";
+import { useParams } from "react-router-dom";
 
-const LookUp = ({ checkData, updateOpenLookUpModal }) => {
+const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
+  const { documentId } = useParams();
+  // const documentId = '2';
+  console.log("docid", documentId);
   const closeModal = () => updateOpenLookUpModal(false);
   const [flag, setFlag] = useState("");
+  const [st_vote, setVote] = useState("");
   const [timeoutId, updateTimeoutId] = useState(0);
   const askQuestion = () => {
     closeModal();
     //updateOpenPostModal(true);
   };
-  const acceptRecommendation = (post_reply_id) => {
+  const acceptRecommendation = (post_reply_id,acronym,onto_link) => {
     setFlag([]);
+    const divider = term.indexOf('-');
+    const from = Number(term.substring(0, divider))-1;
+    const to = Number(term.substring(divider+1, term.length));
+    console.log("while accpet",from, 'asim',to);
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(post_reply_id, "1", setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,"1", setFlag), 1000)
     );
     alert("Accepted");
+    
+  };
+
+  const insertVoting = (post_reply_id,vote) => {
+    setVote([]);
+    console.log("post reply id vote",post_reply_id);
+    clearTimeout(timeoutId);
+    updateTimeoutId(
+      setTimeout(() => postVoting(post_reply_id,vote,setVote), 1000)
+    );
+    console.log("setvotre",st_vote);
   };
 
   const rejectRecommendation = (post_reply_id) => {
     setFlag([]);
+    const divider = term.indexOf('-');
+    const from = Number(term.substring(0, divider))-1;
+    const to = Number(term.substring(divider+1, term.length));
+    console.log("while accpet",from, 'asim',to);
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(post_reply_id, "2", setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,"","", "2", setFlag), 1000)
     );
 
     alert("rejected");
@@ -74,8 +99,7 @@ const LookUp = ({ checkData, updateOpenLookUpModal }) => {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      onClick={() =>
-                        acceptRecommendation(element.post_reply_id)
+                      onClick={()=>insertVoting(element.post_reply_id,'1')
                       }
                     >
                       Accept
@@ -83,8 +107,7 @@ const LookUp = ({ checkData, updateOpenLookUpModal }) => {
                     <Button
                       variant="outline-info"
                       size="sm"
-                      onClick={() =>
-                        rejectRecommendation(element.post_reply_id)
+                      onClick={() =>rejectRecommendation(element.post_reply_id)
                       }
                     >
                       Reject
@@ -142,12 +165,20 @@ const LookUp = ({ checkData, updateOpenLookUpModal }) => {
                           fontSize: 16,
                         }}
                       >
-                        Ontology Link:
+                        <a
+                          href={
+                            element.ontology_link +
+                            "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f"
+                          }
+                          target={"_blank"}
+                        >
+                          Ontology Link:
+                        </a>
                       </Col>
                     </Row>
-                    <Row>
+                    {/* <Row>
                       <Col>{element.ontology_link}</Col>
-                    </Row>
+                    </Row> */}
                     <Row>
                       <Col
                         style={{

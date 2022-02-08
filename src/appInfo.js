@@ -25,6 +25,7 @@ const apiAddresses = {
   getAnnotations: `${apiAddress}/document/get_annotations.php`,
   checkRecommendation: `${apiAddress}/post/check_recommendation.php`,
   recommendationFlag: `${apiAddress}/post/recommendation_flag.php`,
+  postVoting: `${apiAddress}/post/post_voting.php`
 };
 
 const postAddresses = {

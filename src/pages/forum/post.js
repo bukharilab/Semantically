@@ -133,7 +133,7 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
 
   ///// Add by asim
   const [tree, setTree] = useState(null);
-  const [confidence, setConfidence] = useState(25);
+  const [confidence, setConfidence] = useState(0);
   const [ontology_link, setOntologyLink] = useState("");
 
   useEffect(() => {
@@ -209,6 +209,8 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
             </Form.Label>
             <Col sm="8">
               <RangeSlider
+              min={0}
+              max={10}
                 value={confidence}
                 onChange={(e) => setConfidence(e.target.value)}
                 tooltipLabel={(currentValue) => `${currentValue}%`}

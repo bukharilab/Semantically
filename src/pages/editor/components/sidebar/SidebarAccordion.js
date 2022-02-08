@@ -81,7 +81,7 @@ const SidebarAccordion = ({
   const annotatedTerms = sortKeys(Object.keys(annotations));
   const removedHighlights = getRemovedHighlights(annotationSelection);
   //   console.log(annotations);
-  console.log("refresh");
+  console.log("refresh",currentHighlight);
 
   const setDefinition = (url) => {
     if (!(url in definitions)) {
@@ -137,16 +137,17 @@ const SidebarAccordion = ({
   const [reply, setReply] = useState([]);
   const [check, setCheck] = useState([]);
   const [modalShow, setModalShow] = useState(false);
+  //const[word, setWord] = useState("");
 
   useEffect(() => {
     updateOntologyIdx(0);
     if (currentHighlight) {
       setCheck([]);
-      let word = getTermStr(currentHighlight, content);
+      let current_word = getTermStr(currentHighlight, content);
       //console.log("annontation switch", word);
       clearTimeout(timeoutId);
       updateTimeoutId(
-        setTimeout(() => checkRecommendation(word, setCheck), 1000)
+        setTimeout(() => checkRecommendation(current_word, setCheck), 1000)
       );
     }
   }, [currentHighlight]);
@@ -239,6 +240,7 @@ const SidebarAccordion = ({
             {openLookUpModal ? (
               <LookUp
                 checkData={check}
+                term={currentHighlight}
                 updateOpenLookUpModal={updateOpenLookUpModal}
               />
             ) : null}
