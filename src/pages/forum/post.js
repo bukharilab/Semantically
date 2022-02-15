@@ -13,7 +13,8 @@ import Sidebar from "../../components/Sidebar";
 import RangeSlider from "react-bootstrap-range-slider";
 import { useParams } from "react-router-dom";
 
-import { readPost, replyPost } from "./hooks/postAPI";
+import { readPost, replyPost,postVoting } from "./hooks/postAPI";
+import { element } from "prop-types";
 
 export default function Post() {
   const { postId } = useParams();
@@ -24,6 +25,9 @@ export default function Post() {
   const [context, setContext] = useState("");
   const [name, setName] = useState("");
   const [replies, setReplies] = useState([]);
+  //Asim
+  const [timeoutId, updateTimeoutId] = useState(0);
+  const [st_vote, setVote] = useState("");
 
   const updateReplies = () => {
     readPost(
@@ -48,8 +52,21 @@ export default function Post() {
       }
     );
   };
+
+  //Up vote
+const insertVoting = (post_reply_id,vote_up,vote_down) => {
+    setVote([]);
+    console.log("post reply id vote",post_reply_id);
+    clearTimeout(timeoutId);
+    updateTimeoutId(
+      setTimeout(() => postVoting(post_reply_id,vote_up,vote_down,setVote), 1000)
+    );
+    console.log("setvotre",st_vote);
+  };
+
+
   // fetch post info
-  useEffect(() => updateReplies(), []);
+  useEffect(() => updateReplies(), [st_vote]);
 
   return (
     <div className="app">
@@ -91,28 +108,29 @@ export default function Post() {
               updateReplies={updateReplies}
             />
           ) : null}
-
-          {replies.map(({ ontology, reply_content, first_name, last_name }) => (
+          {console.log("reply_post",replies)} 
+          {replies.map(({ post_reply_id,ontology, reply_content, first_name, last_name,upvote,downvote }) => (
             <Card style={{ width: "auto" }} className="mt-5">
               <Card.Body>
                 <Card.Title>{ontology}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">{`${first_name} ${last_name}`}</Card.Subtitle>
                 <Card.Text>{reply_content}</Card.Text>
                 <div className="text-right">
+                <strong>{upvote}&nbsp;&nbsp;&nbsp;</strong>
                   <Button
                     variant="outline-success"
                     size="sm"
                     className="mr-3"
-                    disabled
+                    onClick={()=>insertVoting(post_reply_id,'1','0')}
                   >
-                    UpVote
+                    UpVote  
                   </Button>
-                  <strong>{" 0 "}</strong>
+                  <strong>{downvote}</strong>
                   <Button
                     variant="outline-danger"
                     size="sm"
                     className="ml-3"
-                    disabled
+                    onClick={() =>insertVoting(post_reply_id,'0','1')}
                   >
                     DownVote
                   </Button>
@@ -203,9 +221,10 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
               </Col>
             </Row>
           </Container>
-          <Form.Group as={Row} controlId="exampleForm.SelectCustomSizeLg">
-            <Form.Label column sm="4">
-              Expert Confidence Level
+          <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
+            <Form.Label column sm="6">
+              <strong>Expert Confidence Level</strong> 
+              <p>Min value =0 and Max value=10</p>
             </Form.Label>
             <Col sm="8">
               <RangeSlider
@@ -213,9 +232,10 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
               max={10}
                 value={confidence}
                 onChange={(e) => setConfidence(e.target.value)}
-                tooltipLabel={(currentValue) => `${currentValue}%`}
+                tooltipLabel={(currentValue) => `${currentValue}`}
                 tooltip="on"
               />
+              
             </Col>
           </Form.Group>
 
@@ -239,7 +259,7 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
         </Button>
         <Button
           variant="primary"
-          onClick={() =>
+          onClick={() =>{ontology_link != "" && confidence > 0 ?
             replyPost(
               postId,
               ontology,
@@ -250,7 +270,8 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
                 updateReplies();
                 closeModal();
               }
-            )
+            ):alert("select vocubulary and cofidence score")
+          }
           }
         >
           Post

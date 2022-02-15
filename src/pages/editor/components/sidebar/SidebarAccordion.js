@@ -144,7 +144,6 @@ const SidebarAccordion = ({
     if (currentHighlight) {
       setCheck([]);
       let current_word = getTermStr(currentHighlight, content);
-      //console.log("annontation switch", word);
       clearTimeout(timeoutId);
       updateTimeoutId(
         setTimeout(() => checkRecommendation(current_word, setCheck), 1000)
@@ -153,11 +152,7 @@ const SidebarAccordion = ({
   }, [currentHighlight]);
 
   const fetch_reply = () => {
-    // alert("you have message");
-    // console.log("check", check);
     setReply(check);
-    // console.log("check after", check);
-    // setModalShow(true);
     updateOpenLookUpModal(true);
   };
 

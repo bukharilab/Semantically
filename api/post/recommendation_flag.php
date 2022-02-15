@@ -25,7 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = Database::connect();
         $time_stamp=date("Y-m-d H:i:s");
         // Create document
-        $results = mysqli_query($db, sprintf("UPDATE `tbl_post_reply` SET flag = $flag WHERE post_reply_id = $post_reply_id"));
+        $results = mysqli_query($db, sprintf("UPDATE `tbl_post_reply` SET flag= '%s' WHERE post_reply_id='%s'", $flag,$post_reply_id));
+        
         // Check if document createdc
         if ($results) {
           if($flag === '1'){

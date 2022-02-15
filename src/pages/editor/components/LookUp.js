@@ -11,7 +11,7 @@ import {
   Container,
 } from "react-bootstrap";
 import { recommendationFlag} from "../hooks/editor/documentAPI";
-import { postVoting} from "../hooks/editor/documentAPI";
+
 import { useParams } from "react-router-dom";
 
 const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
@@ -26,6 +26,8 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     closeModal();
     //updateOpenPostModal(true);
   };
+
+  //Accept recommendation
   const acceptRecommendation = (post_reply_id,acronym,onto_link) => {
     setFlag([]);
     const divider = term.indexOf('-');
@@ -34,34 +36,25 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     console.log("while accpet",from, 'asim',to);
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,"1", setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,"1",setFlag), 1000)
     );
     alert("Accepted");
+    closeModal();
     
   };
-
-  const insertVoting = (post_reply_id,vote) => {
-    setVote([]);
-    console.log("post reply id vote",post_reply_id);
-    clearTimeout(timeoutId);
-    updateTimeoutId(
-      setTimeout(() => postVoting(post_reply_id,vote,setVote), 1000)
-    );
-    console.log("setvotre",st_vote);
-  };
-
+//reject recommendation
   const rejectRecommendation = (post_reply_id) => {
     setFlag([]);
     const divider = term.indexOf('-');
     const from = Number(term.substring(0, divider))-1;
     const to = Number(term.substring(divider+1, term.length));
-    console.log("while accpet",from, 'asim',to);
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,"","", "2", setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,"","", "-1",setFlag), 1000)
     );
 
     alert("rejected");
+    closeModal();
   };
 
   console.log("check data", checkData);
@@ -99,7 +92,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      onClick={()=>insertVoting(element.post_reply_id,'1')
+                      onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.onto_link)
                       }
                     >
                       Accept

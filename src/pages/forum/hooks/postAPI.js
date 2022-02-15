@@ -69,4 +69,22 @@ const replyPost = (
   });
 };
 
-export { createPost, getPosts, getAllPosts, readPost, replyPost };
+const postVoting = (post_reply_id,vote_up,vote_down,callback) =>{
+  setUp();
+  $.post({
+    url: apiAddresses.postVoting,
+    data: {post_reply_id: post_reply_id, vote_up: vote_up, vote_down:vote_down },
+    success: (data) => callback(data["message"]),
+  });
+  };
+
+  const deletePost =(post_id,callback) =>{
+    setUp();
+    $.post({
+      url: apiAddresses.deletePost,
+      data: {post_id: post_id},
+      success: (data) => callback(data["message"]),
+    });
+  };
+
+export { createPost, getPosts, getAllPosts, readPost, replyPost,postVoting,deletePost };

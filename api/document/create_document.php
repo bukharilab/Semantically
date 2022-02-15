@@ -12,6 +12,7 @@
   $doc_name = $_POST['doc_name'];
 	$desc = $_POST['description'];
 	$content = $_POST['content'];
+	//$content = mysql_real_escape_string(trim($content));
 
 	if (!$doc_name && !$desc) invalid_argument_error();
 

@@ -15,7 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = Database::connect();
         // Query for all projects
         //$results = mysqli_query($db, sprintf("SELECT * FROM `post_reply` WHERE term = '%s'", $term));
-        $results = mysqli_query($db, sprintf("SELECT tbl_create_post.post_id,tbl_create_post.terminology,tbl_post_reply.post_reply_id,tbl_post_reply.reply_content,tbl_post_reply.ontology,tbl_post_reply.ontology_link,tbl_post_reply.confidence_score,tbl_post_reply.flag FROM `tbl_create_post` INNER JOIN tbl_post_reply ON tbl_create_post.post_id = tbl_post_reply.post_id
+        $results = mysqli_query($db, sprintf("SELECT tbl_create_post.post_id,tbl_create_post.terminology,tbl_post_reply.post_reply_id,tbl_post_reply.reply_content,tbl_post_reply.ontology,
+        tbl_post_reply.ontology_link,tbl_post_reply.confidence_score,tbl_post_reply.flag 
+        FROM `tbl_create_post` INNER JOIN tbl_post_reply ON tbl_create_post.post_id = tbl_post_reply.post_id
          WHERE tbl_create_post.user_id='%s' AND tbl_create_post.terminology = '%s' AND tbl_post_reply.flag='%s'", $user_id,$term,'0'));
         //$results = mysqli_query($db, sprintf("SELECT tbl_create_post.post_id,tbl_create_post.terminology,tbl_post_reply.post_reply_id,tbl_post_reply.reply_content,tbl_post_reply.ontology,tbl_post_reply.ontology_link,tbl_post_reply.flag,tbl_post_reply.confidence_score FROM `tbl_create_post` INNER JOIN tbl_post_reply ON tbl_create_post.post_id = tbl_post_reply.post_id WHERE tbl_create_post.user_id='%s' AND tbl_post_reply.flag='%s'", $user_id,$flag));
         // Check if document created

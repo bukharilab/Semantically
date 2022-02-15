@@ -123,20 +123,12 @@ const recommendationFlag = (doc_id,post_reply_id,from_loc,to_loc,acronym,onto_li
   setUp();
   $.post({
     url: apiAddresses.recommendationFlag,
-    data: {doc_id:doc_id, post_reply_id: post_reply_id, from_loc:from_loc, to_loc:to_loc,acronym:acronym, onto_link:onto_link ,flag: flag },
+    data: {doc_id:doc_id, post_reply_id: post_reply_id, from_loc:from_loc, to_loc:to_loc,acronym:acronym, onto_link:onto_link,flag: flag },
     success: (data) => callback(data["message"]),
   });
 };
 
-const postVoting = (post_reply_id,vote,callback) =>{
-  console.log("postvoting is called");
-  setUp();
-  $.post({
-    url: apiAddresses.postVoting,
-    data: {post_reply_id: post_reply_id, vote: vote },
-    success: (data) => callback(data["message"]),
-  });
-  };  
+  
 
 export {
   readDocument,
@@ -149,5 +141,4 @@ export {
   deleteAllAnnotations,
   checkRecommendation,
   recommendationFlag,
-  postVoting,
 };

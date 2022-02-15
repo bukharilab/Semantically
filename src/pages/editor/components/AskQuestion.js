@@ -9,6 +9,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
   const [context, updateContext] = useState("");
   const questions = [
     "Which ontology should I use?",
+    "What is the suitable ontology vocabulary?",
     "Does this ontology best describe this terminology?"
   ];
   const [question, updateQuestion] = useState(0);
@@ -47,6 +48,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
           <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
             <Form.Label>Question</Form.Label>
             <Form.Control as="select" size="md" value={question} onChange={evt => updateQuestion(evt.target.value)} custom>
+            
               {questions.map((question, index) => <option value={index}>{question}</option>)}
             </Form.Control>
           </Form.Group>
@@ -57,7 +59,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
             <Form.Control as="textarea" rows={3} value={context} onChange={evt => updateContext(evt.target.value)} placeholder="Elaborate on your question..." />
           </Form.Group>
         </Row>
-        {question == 1 ?
+        {question == 2 ?
         <Row className="mb-1">
         <Form.Group as={Col} controlId="exampleForm.SelectCustomSizeLg">
           <Form.Label>Select Ontology</Form.Label>

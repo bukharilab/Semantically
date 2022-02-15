@@ -17,7 +17,7 @@
   $db = Database::connect();
 
   // Edit the document's content
-  $results = mysqli_query($db, sprintf("UPDATE tbl_documents SET content = '%s' WHERE doc_id = '%s'", $content, $document_id));
+  $results = mysqli_query($db, sprintf("UPDATE tbl_documents SET content = '%s' WHERE doc_id = '%s'", addslashes($content), $document_id));
 
   if ($results) success_message("document edited.");
   else system_error(mysqli_error($db)); 
