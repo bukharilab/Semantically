@@ -2,6 +2,7 @@ import React,{useState} from 'react';
 import {Card, Button, Modal, Row, Form, Col, Accordion, FormControl, Dropdown} from 'react-bootstrap';
 import {createPost} from '../../forum/hooks/postAPI';
 import {postAddresses} from '../../../appInfo';
+import {Link} from "react-router-dom";
 
 
 const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, annotationSelection, annotations}) => {
@@ -21,7 +22,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
 
   const submit = () => {
     createPost(questions[question], word, acronyms[questionOntology], context, post_id => {
-      window.open(`${postAddresses.post}/${post_id}`, '_blank');
+     window.open(`${postAddresses.post}/${post_id}`,"_self");
       closeModal();
     });
   }

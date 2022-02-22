@@ -24,10 +24,10 @@ const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
     for (const { from, to, acronym, link } of annotation) {
       const toggle = `${from}-${to}-${acronym}`;
-      console.log(toggle);
+      console.log("toogle-1",toggle, link);
       $(`.${toggle}`).click(() => {
         setDefinition(link);
-        console.log(toggle);
+        console.log("toggle-2",toggle);
       });
     }
   }
@@ -69,6 +69,7 @@ const SidebarAccordion = ({
   annotationSelection,
   updateAnnotationSelection,
   content,
+  editor
 }) => {
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [openLookUpModal, updateOpenLookUpModal] = useState(false);
@@ -81,7 +82,7 @@ const SidebarAccordion = ({
   const annotatedTerms = sortKeys(Object.keys(annotations));
   const removedHighlights = getRemovedHighlights(annotationSelection);
   //   console.log(annotations);
-  console.log("refresh",currentHighlight);
+  console.log("refresh is",currentHighlight);
 
   const setDefinition = (url) => {
     if (!(url in definitions)) {
@@ -95,7 +96,7 @@ const SidebarAccordion = ({
   };
 
   if (!setDefinitionListeners) {
-    console.log("here");
+    console.log("here setdef");
     setGetDefinitionListeners(annotations, setDefinition);
     updateSetDefinitionListeners(true);
   }

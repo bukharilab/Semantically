@@ -41,7 +41,7 @@ const EditorHelper = editorProps => {
         storedAnnotations[term].onto_id = annotations[term][0].id;
         storedAnnotations[term].ontologies = annotations[term];
       }
-      console.log(storedAnnotations);
+      console.log("Store annotation",storedAnnotations);
       storeAnnotations(documentId, JSON.stringify(storedAnnotations));
     }
   };
@@ -63,8 +63,9 @@ const EditorHelper = editorProps => {
   // retrieve annotations
   useEffect(() => {
     if (editor && content) {
+      console.log("editor update");
       getAnnotations(documentId, (annotations, ontologySelection, annotationDeletion) => {
-        console.log(annotations);
+        console.log("annotations",annotations, ontologySelection, annotationDeletion);
         if (!$.isEmptyObject(annotations)) {
           updateAnnotationsLoaded(true);
           updateAnnotations(annotations);

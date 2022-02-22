@@ -11,17 +11,21 @@ import {
   Container,
 } from "react-bootstrap";
 import { recommendationFlag} from "../hooks/editor/documentAPI";
+//import EditorHelper from "./components/editorsHelper";
 
 import { useParams } from "react-router-dom";
+
+
+
 
 const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
   const { documentId } = useParams();
   // const documentId = '2';
   console.log("docid", documentId);
-  const closeModal = () => updateOpenLookUpModal(false);
   const [flag, setFlag] = useState("");
-  const [st_vote, setVote] = useState("");
+  //const [calleditor, setEditor] = useState(false);
   const [timeoutId, updateTimeoutId] = useState(0);
+  const closeModal = () => {updateOpenLookUpModal(false);}
   const askQuestion = () => {
     closeModal();
     //updateOpenPostModal(true);
@@ -60,6 +64,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
   console.log("check data", checkData);
 
   return (
+    <>
     <Modal
       show={true}
       size="md"
@@ -111,16 +116,6 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                   eventKey={`${index}-modal-0`}
                   className={`p-2 p-0 accordion-card`}
                 >
-                  {/* <Card>
-                    <Card.Body>
-                      <Card.Text>
-                        {
-                          "Omnis nihil blanditiis autem numquam autem sit. Quia earum rerum id at. Omnis tempora ea vitae ut corrupti sequi ut. Dignissimos accusamus et in. Nemo perferendis quam quis aut qui consequatur amet. Autem adipisci laboriosam totam et."
-                        }
-                      </Card.Text>
-                      
-                    </Card.Body>
-                  </Card> */}
                   <Container>
                     <Row>
                       <Col
@@ -198,6 +193,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
         <Button onClick={closeModal}>Close</Button>
       </Modal.Footer>
     </Modal>
+    </>
   );
 };
 

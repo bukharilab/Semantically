@@ -20,11 +20,7 @@ import {
 
 const DocumentEditor = editorProps => {
   const {documentId, content, updateContent, editor, updateEditor, annotations, resetAnnotations} = editorProps;
-
-  console.log("trix word",content.split(' ').length);
-//   else if(newContent.split(' ').length > 10){
-//     console.log("greter than 10 size");
-// }
+  
   const [awaitingContent, updateAwaitingContent] = useState("");
   const trixEditorProps = {
     value: content,
@@ -59,7 +55,7 @@ const DocumentEditor = editorProps => {
 
   const [timeoutId, updateTimeoutId] = useState(0);
   useEffect(() => {
-    if(content.split(' ').length < 100){
+    if(content.split(' ').length < 500){
     if (contentRetrived) {
       clearTimeout(timeoutId);
       updateTimeoutId(setTimeout(() => editDocument(documentId, content), 1000));

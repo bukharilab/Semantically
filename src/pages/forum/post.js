@@ -28,6 +28,7 @@ export default function Post() {
   //Asim
   const [timeoutId, updateTimeoutId] = useState(0);
   const [st_vote, setVote] = useState("");
+  const [allOntologies, updateAllOntologies] = useState({});
 
   const updateReplies = () => {
     readPost(
@@ -52,6 +53,25 @@ export default function Post() {
       }
     );
   };
+
+  ///// fetch all acronuyms
+  useEffect(()=>{
+    $.ajax({
+      url: 'https://data.bioontology.org/ontologies?include=name,acronym&display_links=false&display_context=false&apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f',
+      dataType: 'JSON',
+      xhrFields: {
+        withCredentials: false
+      },
+      success: data => {
+        const ontologies = {};
+        console.log("data",data);
+        for (const ontology of data) {
+          ontologies[ontology['acronym']] = ontology['acronym'];
+        }
+        console.log("acronyms",ontologies);
+        updateAllOntologies(ontologies);
+      }});
+  },[]);
 
   //Up vote
 const insertVoting = (post_reply_id,vote_up,vote_down) => {
@@ -106,6 +126,7 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
               updateOpenAnswerModal={updateOpenAnswerModal}
               postId={postId}
               updateReplies={updateReplies}
+              allOntologies={allOntologies}
             />
           ) : null}
           {console.log("reply_post",replies)} 
@@ -144,15 +165,18 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
   );
 }
 
-function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
+function AnswerModal({ postId, updateReplies, updateOpenAnswerModal,allOntologies }) {
   const closeModal = () => updateOpenAnswerModal(false);
   const [ontology, setOntology] = useState("NCIT");
   const [content, setContent] = useState("");
-
   ///// Add by asim
   const [tree, setTree] = useState(null);
   const [confidence, setConfidence] = useState(0);
   const [ontology_link, setOntologyLink] = useState("");
+  
+  //const [loadedAllOntologies, updateLoadedAllOntologies] = useState(false);
+  console.log("all ontology",allOntologies);
+  console.log("ontology type",typeof(allOntologies));
 
   useEffect(() => {
     console.log(ontology);
@@ -173,6 +197,11 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
     });
   }, [ontology]);
 
+  
+  
+  
+
+
   return (
     <Modal.Dialog size="lg">
       <Modal.Body>
@@ -187,8 +216,8 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
                 onChange={(evt) => setOntology(evt.target.value)}
                 custom
               >
-                <option value="LOINC">LOINC</option>
-                <option value="VO">VO</option>
+                {Object.keys(allOntologies).map((key) => {return (<option value={key}>{key}</option>)})}
+                {/* <option value="VO">VO</option>
                 <option value="DOID">DOID</option>
                 <option value="GSSO">GSSO</option>
                 <option value="ICPC2P">ICPC2P</option>
@@ -210,7 +239,7 @@ function AnswerModal({ postId, updateReplies, updateOpenAnswerModal }) {
                 <option value="IOBC">IOBC</option>
                 <option value="CANCO">CANCO</option>
                 <option value="CCONT">CCONT</option>
-                <option value="NCRO">NCRO</option>
+                <option value="NCRO">NCRO</option> */}
               </Form.Control>
             </Form.Group>
           </Row>
