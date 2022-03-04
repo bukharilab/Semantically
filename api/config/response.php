@@ -11,7 +11,7 @@
   }
 
   function error_message($message, $status_code) {
-    http_response_code(400);
+    http_response_code($status_code);
     echo json_encode(array('error' => $message));
   }
 
