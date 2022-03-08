@@ -1,3 +1,4 @@
+import './App.css';
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -13,8 +14,8 @@ import {
 } from "react-bootstrap";
 
 import Home from './pages/home';
-import Login from './pages/login';
-import Register from './pages/register';
+// import Login from './pages/login';
+// import Register from './pages/register';
 import Survey from './pages/survey';
 
 import Logo from './logo.png';
@@ -26,7 +27,7 @@ export default function App() {
     <nav className="navbar mb-5" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
         <Link className="navbar-item" to="/">
-          <img src={Logo} width="112" height="28" />
+          <img src={Logo} width="200" height="50" />
         </Link>
 
         <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -68,12 +69,9 @@ export default function App() {
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <a className="button is-primary" href="https://demo.semantically.risonstudio.com" target="_blank">
-                <strong>Demo</strong>
-              </a>
-              <Link className="button is-light" to="/login">
+              <a className="button is-medium" href="https://app.gosemantically.com/login">
                 Log in
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -82,17 +80,8 @@ export default function App() {
       {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/register">
-            <Register />
-          </Route>
           <Route path="/survey">
             <Survey />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/documentation">
-            <Users />
           </Route>
           <Route path="/">
             <Home />

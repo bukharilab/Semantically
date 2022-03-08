@@ -21,6 +21,9 @@ const formatAnnotations = (results) => {
     for (const annotation of res['annotations']) {
       let key = annotation['from'] + "-" + annotation['to'];
       annotation['acronym'] = acronym;
+      annotation['link'] = annotation['annotatedClass']['links']['self'];
+      annotation['id'] = annotation['annotatedClass']['@id'];
+
       if (key in formattedRes) {
         formattedRes[key].push(annotation);
       } else {
@@ -59,6 +62,7 @@ const getRecommenderAnnotations = (text, ontologies, callback) => {
       ontologyUrl += ontology + ',';
     }
   }
+  console.log(encodeURI(text));
   const url = 'https://data.bioontology.org/recommender?input='
     + encodeURIComponent(text)
     + ontologyUrl

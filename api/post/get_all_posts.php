@@ -23,7 +23,7 @@
     // Turn to JSON & output
     $res = array();
     while ($row = mysqli_fetch_assoc($results)) {
-        // get all post responses
+        // get post responses
         $reponses = mysqli_query($db, sprintf("SELECT post_reply_id FROM `tbl_post_reply` WHERE post_id = '%s'", $row['post_id']));
         $row['responses'] = mysqli_num_rows($reponses);
         $res[] = $row;

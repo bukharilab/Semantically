@@ -38,4 +38,45 @@ const createPost = (user_id, terminology, question, context, selected_ontology, 
     success: data => callback(data)});
 }
 
-export {readDocument, editDocument, createPost};
+const storeAnnotations = (document_id, annotations) => {
+  setUp();
+  // console.log(annotations);
+  $.post({
+    url: apiAddresses.storeAnnotations,
+    data: {document_id: document_id, annotations: annotations},
+    success: () => console.log("annotations saved")});
+}
+
+const deleteAllAnnotations = (document_id) => {
+  setUp();
+  $.post({
+    url: apiAddresses.deleteAllAnnotations,
+    data: {document_id: document_id},
+    success: () => {console.log("all annotations deleted");}});
+}
+
+const changeOntologySelection = (document_id, annotation_id, ontology_id) => {
+  setUp();
+  $.post({
+    url: apiAddresses.changeOntologySelection,
+    data: {document_id: document_id, anno_id: annotation_id, ontology_id: ontology_id},
+    success: () => console.log("ontology changed")});
+}
+
+const changeDeleteAnnotation = (document_id, annotation_id, status) => {
+  setUp();
+  $.post({
+    url: apiAddresses.changeDeleteAnnotation,
+    data: {document_id: document_id, anno_id: annotation_id, status: status},
+    success: () => {console.log("annotation delete status changed");}});
+}
+
+const getAnnotations = (document_id, callback) => {
+  setUp();
+  $.post({
+    url: apiAddresses.getAnnotations,
+    data: {document_id: document_id},
+    success: data => callback(data['annotations'], data['ontology_selection'], data['anno_deletion'])});
+}
+
+export {readDocument, editDocument, createPost, storeAnnotations, changeOntologySelection, getAnnotations, changeDeleteAnnotation, deleteAllAnnotations};

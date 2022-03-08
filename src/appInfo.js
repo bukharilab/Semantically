@@ -1,5 +1,5 @@
 // const apiAddress = 'https://api.gosemantically.com';
-const apiAddress = 'http://localhost:3001';
+const apiAddress = 'http://api.gosemantically.com:3001';
 
 const apiAddresses = {
   checkLoggedIn: `${apiAddress}/authentication/loggedin.php`,
@@ -15,7 +15,12 @@ const apiAddresses = {
   readPost: `${apiAddress}/post/read_post.php`,
   replyPost: `${apiAddress}/post/reply_post.php`,
   getPosts: `${apiAddress}/post/get_posts.php`,
-  getAllPosts: `${apiAddress}/post/get_all_posts.php`
+  getAllPosts: `${apiAddress}/post/get_all_posts.php`,
+  storeAnnotations: `${apiAddress}/document/store_annotations.php`,
+  deleteAllAnnotations: `${apiAddress}/document/delete_all_annotations.php`,
+  changeOntologySelection: `${apiAddress}/document/change_ontology_selection.php`,
+  changeDeleteAnnotation: `${apiAddress}/document/change_delete_annotation.php`,
+  getAnnotations: `${apiAddress}/document/get_annotations.php`
 };
 
 const postAddresses = {

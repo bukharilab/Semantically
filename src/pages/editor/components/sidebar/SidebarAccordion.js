@@ -12,11 +12,10 @@ import AskQuestion from '../AskQuestion';
 
 const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
-    for (const {from, to, acronym, annotatedClass} of annotation) {
+    for (const {from, to, acronym, link} of annotation) {
       const toggle = `${from}-${to}-${acronym}`;
-      const url = annotatedClass.links.self;
       console.log(toggle);
-      $(`.${toggle}`).click(() => {setDefinition(url); console.log(toggle);});
+      $(`.${toggle}`).click(() => {setDefinition(link); console.log(toggle);});
     }
   }
 }
@@ -78,7 +77,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
 
 //   useEffect(() => {
 //     for (const term in annotatedTerms) {
-//       $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.links.self));
+//       $(`toggle-${term}`).click(() => setDefinition(annotations[term][0].annotatedClass.link));
 //     }
 //   });
 
@@ -92,9 +91,9 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
     // if (currentHighlight) {
     //   const tree = $("#tree")[0].NCBOTree;
     //   const ontology = annotations[currentHighlight][ontologyIdx];
-    //   console.log(ontology.annotatedClass['@id']);
+    //   console.log(ontology['id']);
     //   showInTree(annotations[currentHighlight][ontologyIdx].text);
-    //   tree.jumpToClass(ontology.annotatedClass['@id']);
+    //   tree.jumpToClass(ontology['id']);
       // change NCBO tree
 
   }, [currentHighlight, ontologyIdx]);
@@ -117,7 +116,7 @@ const SidebarAccordion = ({ annotations, updateAnnotations, definitions, updateD
         </Card.Header>
         <Card.Body>
           <Card.Text>
-            {setDefinition(annotations[currentHighlight][annotationSelection[currentHighlight]].annotatedClass.links.self)}
+            {setDefinition(annotations[currentHighlight][annotationSelection[currentHighlight]].link)}
           </Card.Text>
         </Card.Body>
         {openOntologyModal ? <OntologyModal term={currentHighlight} updateOpenOntologyModal={updateOpenOntologyModal} annotations={annotations} definitions={definitions} setDefinition={setDefinition} annotationSelection={annotationSelection} updateAnnotationSelection={updateAnnotationSelection} content={content} /> : null}
@@ -138,7 +137,7 @@ const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions,
 
   useEffect(() => {
     for (const ontology of annotations[term]) {
-      $(`.modal-toggle-${ontology.acronym}`).click(() => setDefinition(ontology.annotatedClass.links.self));
+      $(`.modal-toggle-${ontology.acronym}`).click(() => setDefinition(ontology.link));
     }
   });
 
@@ -171,7 +170,7 @@ const OntologyModal = ({term, updateOpenOntologyModal, annotations, definitions,
               <Card>
                 <Card.Body>
                   <Card.Text>
-                    {getDef(ontology.annotatedClass.links.self)}
+                    {getDef(ontology.link)}
                   </Card.Text>
                 </Card.Body>
               </Card>
