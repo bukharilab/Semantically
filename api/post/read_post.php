@@ -22,11 +22,17 @@
               $post_res = $results->fetch_assoc();
               $results = mysqli_query($db, sprintf("SELECT first_name, last_name FROM `tbl_login` WHERE user_id = '%s'", $post_res['user_id']));
               $user_res = $results->fetch_assoc();
+             
               $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_post_reply` WHERE post_id = '%s'", $post_res['post_id']));
+              //by asim
+              $vote_res=array();
               $replies_res = array();
               while ($row = mysqli_fetch_assoc($results)) {
                   $res = mysqli_query($db, sprintf("SELECT first_name, last_name FROM `tbl_login` WHERE user_id = '%s'", $row['user_id']));
-                  $replies_res[] = array_merge($row, $res->fetch_assoc());
+                  //by asim
+                  $results_vote = mysqli_query($db, sprintf("SELECT SUM(vote_up) AS upvote,SUM(vote_down) AS downvote FROM `tbl_vote` WHERE post_reply_id = '%s'", $row['post_reply_id']));
+                  $replies_res[] = array_merge($row, $res->fetch_assoc(),$results_vote->fetch_assoc());
+                  
               }
               // Turn to JSON & output
               http_response_code(200);

@@ -19,9 +19,30 @@ const Dashboard = ({loggedIn}) => {
     documents: documents,
     updateDocuments: updateDocuments
   };
+  //////////////////// for Wilson algorithm testing
+  var stats  = require('simple-statistics');
+  const lower_bound = (upvotes,n,confidence) => {
+    // var upvotes=9;
+    // var n=18;
+    // var confidence=0.95;
+    // for performance purposes you might consider memoize the calcuation for z
+    const z = stats.probit(1-(1-confidence)/2);
+  
+    // p̂, the fraction of upvotes
+    const phat = 1.0 * upvotes / n;
+  
+    const result=(phat + z*z / (2*n) - z * Math.sqrt((phat * (1 - phat) + z*z / (4*n)) / n)) / (1 + z*z/n);
+    //console.log("results",(result*100),"%");
+    //console.log("results",result.toFixed(3)*100,"%");
+    console.log("results",result);
+  }
+
+  ////////////////////////End
 
   // fetch user documents
   useEffect(() => getDocuments(updateDocuments), []);
+
+  useEffect(()=>lower_bound(4,4,0.95),[]);
 
   return (
     <>

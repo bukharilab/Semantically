@@ -8,6 +8,15 @@ import RemoveAnnotationsModal from '../sidebar/RemoveAnnotationsModal';
 
 import Highlights from './Highlights';
 import {readDocument, editDocument} from '../../hooks/editor/documentAPI';
+import {
+  Card,
+  Button,
+  Modal,
+  Form,
+  Col,
+  Row,
+  Container,
+} from "react-bootstrap";
 
 const DocumentEditor = editorProps => {
   const {documentId, content, updateContent, editor, updateEditor, annotations, resetAnnotations} = editorProps;
@@ -18,11 +27,12 @@ const DocumentEditor = editorProps => {
     placeHolder: 'Enter text here...',
     onChange: (html, newContent) => {
       if (!$.isEmptyObject(annotations) && !awaitingContent) {
-        console.log(newContent);
+        console.log("new content",newContent);
         updateAwaitingContent(newContent);
         editor.undo();
         updateShowRemoveAnnotationsModalC(true);
-      } else updateContent(newContent);
+      } 
+      else updateContent(newContent);
     },
     onEditorReady: editor => updateEditor(editor) && editor.insertString(content),
     autoFocus: true,
@@ -31,6 +41,7 @@ const DocumentEditor = editorProps => {
   const [contentRetrived, updateContentRetrieved] = useState(false);
   const [retrievingContent, updateRetrievingContent] = useState(false);
   const [showRemoveAnnotationsModalC, updateShowRemoveAnnotationsModalC] = useState(false);
+  const [contentSize, updateContentSize] = useState(false);
 
   // fetch document content
   if (!contentRetrived && !retrievingContent) {
@@ -44,9 +55,14 @@ const DocumentEditor = editorProps => {
 
   const [timeoutId, updateTimeoutId] = useState(0);
   useEffect(() => {
+    if(content.split(' ').length < 500){
     if (contentRetrived) {
       clearTimeout(timeoutId);
       updateTimeoutId(setTimeout(() => editDocument(documentId, content), 1000));
+    }}
+    else{
+      console.log("content length is",content.split(' ').length);
+      updateContentSize(true);
     }
   }, [content]);
 
@@ -59,6 +75,7 @@ const DocumentEditor = editorProps => {
 
   return (
     <div>
+      
       {contentRetrived ?
         <>
           <TrixEditor {...trixEditorProps} />
@@ -70,8 +87,35 @@ const DocumentEditor = editorProps => {
       updateShowRemoveAnnotationsModal={updateShowRemoveAnnotationsModalC} 
       callback={() => {updateContent(awaitingContent); editor.redo();}}
       removeAnnotationMsg={removeAnnotationMsg} /> : null}
+      {contentSize ? (<CheckContentSize updateContentSize={updateContentSize}/>) : null }
     </div>
   )
-};
+}
+
+function CheckContentSize({updateContentSize}){
+  const closeModal = () => updateContentSize(false);
+  return (
+    <>
+    <Modal
+          show={true}
+          onHide={closeModal}
+          backdrop="static"
+          keyboard={false}
+        >
+        <Modal.Header closeButton>
+        <Modal.Title>Content Size</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        Content Word Size must be less than 100
+        </Modal.Body>
+        <Modal.Footer>
+        <Button variant="danger" onClick={closeModal}>OK</Button>
+        </Modal.Footer>
+    </Modal>
+    </>
+
+  )
+}
+
 
 export default DocumentEditor;

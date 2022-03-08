@@ -10,6 +10,14 @@ const Forum = () => {
   const [key, setKey] = useState('home');
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
+// add by asim for post deletion
+const postCardProps = {
+  allPosts: allPosts,
+  setAllPosts: setAllPosts,
+  posts: posts,
+  setPosts:setPosts
+};
+const [del, setDelete] = useState(false);
 
   // fetch posts
   useEffect(() => getPosts(posts => {
@@ -33,7 +41,7 @@ const Forum = () => {
           onSelect={(k) => setKey(k)}>
           <Tab eventKey="home" title="My Questions">
             <div className="py-4">
-            {posts.map(post => <ForumCard {...post} publicPost={false} />)}
+            {posts.map(post => <ForumCard {...post} publicPost={false} {...postCardProps}/>)}
             </div>
           </Tab>
           <Tab eventKey="public" title="Public">
