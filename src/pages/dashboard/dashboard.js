@@ -32,8 +32,8 @@ const Dashboard = ({loggedIn}) => {
     const phat = 1.0 * upvotes / n;
   
     const result=(phat + z*z / (2*n) - z * Math.sqrt((phat * (1 - phat) + z*z / (4*n)) / n)) / (1 + z*z/n);
-    //console.log("results",(result*100),"%");
-    //console.log("results",result.toFixed(3)*100,"%");
+    console.log("phat",phat);
+    console.log("probit",z);
     console.log("results",result);
   }
 

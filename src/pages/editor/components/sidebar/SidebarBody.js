@@ -11,6 +11,7 @@ const SidebarBody = sidebarProps => {
   // reset annotation selection
   useEffect(() => {
     if (!annotationsLoaded) {
+      console.log("annotations load");
       const selection = {};
       Object.keys(annotations)
         .forEach(term => selection[term] = 0);

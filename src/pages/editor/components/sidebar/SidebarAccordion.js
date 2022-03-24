@@ -69,7 +69,7 @@ const SidebarAccordion = ({
   annotationSelection,
   updateAnnotationSelection,
   content,
-  editor
+  updateRecord
 }) => {
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [openLookUpModal, updateOpenLookUpModal] = useState(false);
@@ -236,7 +236,12 @@ const SidebarAccordion = ({
             {openLookUpModal ? (
               <LookUp
                 checkData={check}
+                annotations={annotations}
+                currentHighlight={currentHighlight}
+                annotationSelection={annotationSelection}
+                updateAnnotationSelection={updateAnnotationSelection}
                 term={currentHighlight}
+                updateRecord={updateRecord}
                 updateOpenLookUpModal={updateOpenLookUpModal}
               />
             ) : null}

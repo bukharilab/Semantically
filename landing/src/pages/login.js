@@ -1,6 +1,6 @@
 import React from "react";
 import { GoogleLogin } from 'react-google-login';
-import login from '';
+//import login from '';
 
 export default function Login() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
@@ -33,7 +33,7 @@ export default function Login() {
             <div className="field">
               <label for="email" className="label">Email</label>
               <div className="control has-icons-left">
-                <input type="email" className="input" value={email} onChange={} required />
+                <input type="email" className="input" value={email} onChange={""} required />
                 <span className="icon is-small is-left">
                   <i className="fa fa-envelope"></i>
                 </span>
@@ -55,7 +55,7 @@ export default function Login() {
               </label>
             </div>
             <div className="field pt-4 text-center">
-              <button className="button is-primary" onClick={() => login(email, password)}>
+              <button className="button is-primary">
                 Login
               </button>
             </div>

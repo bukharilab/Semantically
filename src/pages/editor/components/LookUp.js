@@ -18,9 +18,10 @@ import { useParams } from "react-router-dom";
 
 
 
-const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
+const LookUp = ({ checkData, term,annotations,updateOpenLookUpModal,currentHighlight,annotationSelection,updateAnnotationSelection }) => {
   const { documentId } = useParams();
   // const documentId = '2';
+  console.log("current","current");
   console.log("docid", documentId);
   const [flag, setFlag] = useState("");
   //const [calleditor, setEditor] = useState(false);
@@ -30,6 +31,20 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     closeModal();
     //updateOpenPostModal(true);
   };
+  
+  /////////////asim
+  // let index = 0;
+  
+  // console.log("current",annotations);
+  // for (let i = 0; i < annotations[currentHighlight].length; i++) {
+  //   console.log("current highlight",annotations[currentHighlight].length);
+  //   if (annotations[currentHighlight][i].acronym === acronym) {
+  //     index = i;
+  //   }
+  // }
+  // console.log("current",index);
+
+///////////
 
   //Accept recommendation
   const acceptRecommendation = (post_reply_id,acronym,onto_link) => {
@@ -37,14 +52,24 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     const divider = term.indexOf('-');
     const from = Number(term.substring(0, divider))-1;
     const to = Number(term.substring(divider+1, term.length));
-    console.log("while accpet",from, 'asim',to);
+    console.log("while accpet",onto_link);
     clearTimeout(timeoutId);
     updateTimeoutId(
       setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,"1",setFlag), 1000)
     );
-    alert("Accepted");
-    closeModal();
     
+    alert("Accepted");
+    closeModal(); 
+    let index = 0;
+    for (let i = 0; i < annotations[currentHighlight].length; i++) {
+      console.log("current highlight",annotations[currentHighlight].length);
+      if (annotations[currentHighlight][i].acronym === acronym) {
+        index = i;
+      }
+    }
+    console.log("current",index);
+    updateAnnotationSelection({...annotationSelection, [currentHighlight]: index});
+    //updateRecord(true);
   };
 //reject recommendation
   const rejectRecommendation = (post_reply_id) => {
@@ -97,7 +122,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.onto_link)
+                      onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.ontology_link)
                       }
                     >
                       Accept

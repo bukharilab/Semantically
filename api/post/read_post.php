@@ -30,7 +30,8 @@
               while ($row = mysqli_fetch_assoc($results)) {
                   $res = mysqli_query($db, sprintf("SELECT first_name, last_name FROM `tbl_login` WHERE user_id = '%s'", $row['user_id']));
                   //by asim
-                  $results_vote = mysqli_query($db, sprintf("SELECT SUM(vote_up) AS upvote,SUM(vote_down) AS downvote FROM `tbl_vote` WHERE post_reply_id = '%s'", $row['post_reply_id']));
+                 //$results_count = mysqli_query($db, sprintf("SELECT vote_up,vote_down FROM `tbl_vote` WHERE user_id = '%s' AND post_reply_id = '%s'", $row['user_id'], $row['post_reply_id']));
+                  $results_vote = mysqli_query($db, sprintf("SELECT  SUM(vote_up) AS upvote,SUM(vote_down) AS downvote FROM `tbl_vote` WHERE post_reply_id = '%s'", $row['post_reply_id']));
                   $replies_res[] = array_merge($row, $res->fetch_assoc(),$results_vote->fetch_assoc());
                   
               }

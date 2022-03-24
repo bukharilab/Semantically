@@ -17,6 +17,8 @@ const EditorHelper = editorProps => {
     updateDefinitions, updateShowAccordion, updateLoadHighlights } = editorProps;
 
   const [annotationsLoaded, updateAnnotationsLoaded] = useState(false);
+  
+
 
   const resetAnnotations = () => {
     updateAnnotations({});
@@ -34,7 +36,6 @@ const EditorHelper = editorProps => {
         const divider = term.indexOf('-');
         const from = Number(term.substring(0, divider))-1;
         const to = Number(term.substring(divider+1, term.length));
-
         storedAnnotations[term].from = from;
         storedAnnotations[term].to = to;
         storedAnnotations[term].text = getTermStr(term, content);
@@ -49,6 +50,7 @@ const EditorHelper = editorProps => {
   // save ontology change
   useEffect(() => {
     if (currentHighlight) {
+      console.log("Save ontology");
       if (annotationSelection[currentHighlight] != -1) {
         const annotation = annotations[currentHighlight][annotationSelection[currentHighlight]];
         changeOntologySelection(documentId, annotation.annotation_id, annotation.ontologyId);
@@ -63,20 +65,23 @@ const EditorHelper = editorProps => {
   // retrieve annotations
   useEffect(() => {
     if (editor && content) {
-      console.log("editor update");
+      console.log("editor content value", editor, content);
       getAnnotations(documentId, (annotations, ontologySelection, annotationDeletion) => {
-        console.log("annotations",annotations, ontologySelection, annotationDeletion);
         if (!$.isEmptyObject(annotations)) {
           updateAnnotationsLoaded(true);
           updateAnnotations(annotations);
           updateAnnotationSelection(getAnnotationSelection(ontologySelection, annotationDeletion, annotations));
           updateShowAccordion(true);
           updateLoadHighlights(true);
+          console.log("annotations",annotations, ontologySelection, annotationDeletion);
         }
       });
     }
   }, [editor]);
 
+
+
+  //////////////
   const editorHelperProps = {
     ...editorProps,
     annotationsLoaded: annotationsLoaded, updateAnnotationsLoaded: updateAnnotationsLoaded,

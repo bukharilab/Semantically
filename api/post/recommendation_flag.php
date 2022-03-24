@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
             http_response_code(200);
             // Turn to JSON & output
-            echo json_encode(array('message' => 'updated success'));
+            echo json_encode(array('message' => $onto_link));
           }
           else{
             http_response_code(200);

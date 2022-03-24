@@ -22,7 +22,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
 
   const submit = () => {
     createPost(questions[question], word, acronyms[questionOntology], context, post_id => {
-     window.open(`${postAddresses.post}/${post_id}`,"_self");
+     //window.open(`${postAddresses.post}/${post_id}`,"_self");
       closeModal();
     });
   }

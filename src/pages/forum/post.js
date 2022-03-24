@@ -130,7 +130,7 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
             />
           ) : null}
           {console.log("reply_post",replies)} 
-          {replies.map(({ post_reply_id,ontology, reply_content, first_name, last_name,upvote,downvote }) => (
+          {replies.map(({ post_reply_id,ontology, reply_content, first_name, last_name,upvote,downvote,vote_down,vote_up }) => (
             <Card style={{ width: "auto" }} className="mt-5">
               <Card.Body>
                 <Card.Title>{ontology}</Card.Title>
@@ -142,18 +142,21 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
                     variant="outline-success"
                     size="sm"
                     className="mr-3"
+                    disabled={vote_up==="1"?"false":""}
                     onClick={()=>insertVoting(post_reply_id,'1','0')}
                   >
-                    UpVote  
+                    UpVote{vote_up}
                   </Button>
                   <strong>{downvote}</strong>
+                
                   <Button
                     variant="outline-danger"
                     size="sm"
                     className="ml-3"
+                    disabled={vote_down==="1"?"false":""}
                     onClick={() =>insertVoting(post_reply_id,'0','1')}
                   >
-                    DownVote
+                    DownVote {vote_down}
                   </Button>
                 </div>
               </Card.Body>

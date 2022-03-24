@@ -45,6 +45,7 @@ const DocumentEditor = editorProps => {
 
   // fetch document content
   if (!contentRetrived && !retrievingContent) {
+    console.log("annotations doc");
     updateRetrievingContent(true);
     readDocument(documentId,
       content => {

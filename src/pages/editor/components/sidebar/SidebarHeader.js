@@ -31,7 +31,7 @@ const SidebarHeader = sidebarProps => {
     getRecommenderAnnotations(content, showManualAnnotation ? Object.keys(manualOntologies) : undefined,
       (formattedAnnotations) => {
         updateAnnotations(formattedAnnotations);
-        console.log(formattedAnnotations);
+        console.log("formatted",formattedAnnotations);
         updateShowAccordion(true);
         updateShowLoader(false);
         updateLoadHighlights(true);
