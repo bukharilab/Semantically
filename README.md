@@ -47,6 +47,20 @@ React Js, Flask
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:KlAtU1dfN6UC) | A Sociotechnical Framework for Semantic Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/360380925_A_Sociotechnical_Framework_for_Semantic_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:kNdYIx-mwKoC) | Towards Structured Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/359427284_Towards_Structured_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 
+# Installation and Deployment
+## Database setup
+```bash
+  1. Download and install Xampp or Wamp on your system 
+  2. Create new database using PhpMySQL with the name 'semantically_db'
+  3. Import the 'semantically_db'
+  4. Open 'Semantically => api => config'  folder then 'database.php' file and setup database path
+  5. Open 'Semantically => src' folder then 'appinfo.js' and setup php folder path 
+```
+## Run Semantically
+```bash
+  1. npm start
+```
+
 # Project Demo Click to watch
 [![Demo CountPages alpha](https://github.com/bukharilab/Semantically/blob/master/landing/src/demo_img.png)](https://gosemantically.com/)
 
