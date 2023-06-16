@@ -2,15 +2,15 @@
 # A Socio-technical Approach for Biomedical Content Authoring and Structured Web Publishing
 
 Because of the unprecedented growth in biomedical research and in clinical practices, a huge volume of biomedical contents such as research papers, clinical notes, and biomedical reports, etc. have been produced
-in recent years. According to the 2018 online molecular biology database collection [1], there are 1737 large-scale biological databases and over 30 million citations for biomedical literature available at PubMed
-with a tenfold increase per annum [2]. Efficient practices for accessing biomedical publications are key to allowing a timely transfer of information from the scientific research community to peer investigators and
+in recent years. According to the 2018 online molecular biology database collection, there are 1737 large-scale biological databases and over 30 million citations for biomedical literature available at PubMed
+with a tenfold increase per annum. Efficient practices for accessing biomedical publications are key to allowing a timely transfer of information from the scientific research community to peer investigators and
 other healthcare practitioners. This explosive growth in the biomedical domain has introduced several access-level challenges for researchers and practitioners. Shah et al. define researchers struggle as ‘‘a
 researcher studying the allelic variations in a gene would want to know all the pathways that are affected by that gene, the drugs whose effects could be modulated by the allelic variations in the gene, and any
-disease that could be caused by the gene and the clinical trials that have studied drugs or diseases related to that gene” [3]. This valuable information is available in the contents available on the web but still opaque
+disease that could be caused by the gene and the clinical trials that have studied drugs or diseases related to that gene”. This valuable information is available in the contents available on the web but still opaque
 to information retrieval and knowledge extraction search engines because of the missing machine-interpretable metadata (semantic annotations). Search engines require the metadata to properly index
-contents in a context-aware fashion for precise search of biomedical literature and to foster secondary activities such as automatic integration for meta-analysis [4] [5]. Incorporating machine-interpretable
+contents in a context-aware fashion for precise search of biomedical literature and to foster secondary activities such as automatic integration for meta-analysis. Incorporating machine-interpretable
 semantic annotations at the pre-publication stage (while first-time drafting) of biomedical contents and preserving them during online publishing is indeed desirable and will be a great value addition towards the
-broader semantic web vision [6]. However, both these processes are complex and require deep technical and/or domain knowledge. Therefore, a state-of-the-art freely accessible biomedical semantic content
+broader semantic web vision. However, both these processes are complex and require deep technical and/or domain knowledge. Therefore, a state-of-the-art freely accessible biomedical semantic content
 authoring and publishing framework would be a game-changer. In the following sections, I summarize the current status of research in the semantic content authoring and publishing domain and highlights the
 position of this proposal.
 
