@@ -48,7 +48,7 @@ React Js, Flask
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:kNdYIx-mwKoC) | Towards Structured Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/359427284_Towards_Structured_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 
 # Project Demo
-[![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)](https://www.youtube.com/watch?v=ek1j272iAmc)
+[![Demo CountPages alpha](#)](https://www.youtube.com/watch?v=YGkpw8RW5tc)
 
 # Project Log
 ![alt text](https://github.com/ahmadchan/Semantically/blob/master/logo.png)
