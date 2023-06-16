@@ -48,7 +48,7 @@ React Js, Flask
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:kNdYIx-mwKoC) | Towards Structured Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/359427284_Towards_Structured_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 
 # Project Demo
-[![Demo CountPages alpha](https://github.com/bukharilab/Semantically/tree/master/landing/src/semantically-1080p.mov)](https://gosemantically.com/)
+[![Demo CountPages alpha](https://github.com/bukharilab/Semantically/tree/master/landing/src/demo_img.png)](https://gosemantically.com/)
 
 # Project Log
 ![alt text](https://github.com/ahmadchan/Semantically/blob/master/logo.png)
