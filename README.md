@@ -30,9 +30,7 @@ React Js, Flask
 - [Dr.Syed Ahmad Chan Bukhari (PI)](https://www.stjohns.edu/academics/faculty/syed-ahmad-chan-bukhari)
 - [Asim Abbas (Team Lead)](https://www.linkedin.com/in/asim-abbas-b2891ab8/)
 - [Steve Mbouadeu](https://www.linkedin.com/in/stevembouadeu/)
-- [Steve Mbouadeu](https://www.linkedin.com/in/stevembouadeu/)
 - [Dr,Fazel Keshtkar](https://www.stjohns.edu/academics/faculty/fazel-keshtkar)
-- [Dr.Tahir Hameed](https://www.merrimack.edu/profiles/tahir-hameed/)
 
 ## Published Research Papers
 
