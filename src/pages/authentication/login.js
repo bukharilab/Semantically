@@ -26,6 +26,7 @@ export default function Login({loggedIn, setLoggedIn, setAlert}) {
               buttonText={"Sign in"}
               onSuccess={(data) => {
                 console.log(data);
+                console.log(data['profile_rank']);
                 const email = data.profileObj.email;
                 const googleId = data.profileObj.googleId;
                 login(email, googleId, setLoggedIn, setAlert);

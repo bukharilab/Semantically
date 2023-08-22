@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Dropdown from 'react-bootstrap/Dropdown';
 import {
   Accordion,
   Card,
@@ -9,17 +10,16 @@ import {
   Col,
 } from "react-bootstrap";
 import $ from "jquery";
-
+import Personalize from "../Personalize"
 import sortKeys from "../../hooks/sidebar/sortKeys";
 import getTermStr from "../../hooks/sidebar/getTermString";
 import getDefinition from "../../hooks/sidebar/getDefinition";
 import getRemovedHighlights from "../../hooks/editor/getRemovedHighlights";
 import { checkRecommendation } from "../../hooks/editor/documentAPI";
-
+import { apiAddresses } from "../../../../appInfo";
 import LookUp from "../LookUp";
 import AskQuestion from "../AskQuestion";
 import PopupRecommendation from "../PopupRecommendation";
-
 const setGetDefinitionListeners = (annotations, setDefinition) => {
   for (const annotation of Object.values(annotations)) {
     for (const { from, to, acronym, link } of annotation) {
@@ -74,7 +74,7 @@ const SidebarAccordion = ({
   const [openOntologyModal, updateOpenOntologyModal] = useState(false);
   const [openLookUpModal, updateOpenLookUpModal] = useState(false);
   const [openPostModal, updateOpenPostModal] = useState(false);
-
+  
   const [setDefinitionListeners, updateSetDefinitionListeners] =
     useState(false);
   const [ontologyIdx, updateOntologyIdx] = useState(0);
@@ -84,6 +84,61 @@ const SidebarAccordion = ({
   //   console.log(annotations);
   console.log("refresh is",currentHighlight);
 
+  const [menu, setMenu] = useState(false);
+  const [personalize, updatePersonalize] = useState(false);
+  const [expert, updateShowExpert] = useState(["20"])
+  const [showExpert, updateExpert] = useState(false)
+  const [ID, updateID] = useState(23)
+  //Displays Menu for choosing type of post
+  ////Sebastian Chalarca
+  //----------------------------------------------------------------//
+  const openAskQuestionModal = () => {
+    updateOpenPostModal(!openPostModal)
+    updateExpert(false)
+  }
+  
+  //Get Current user's ID for calculating personalized recommendations.
+    $.post({
+       url: apiAddresses.getUser_ID,
+       success: (data) => {
+          console.log(data["data"][0]['user_id'])
+          updateID(data["data"][0]['user_id'])
+          
+          
+       }
+       
+       
+          
+         
+      });
+    
+  const openPersonalizeModal = () => {
+   
+   updatePersonalize(!personalize)
+  }
+  
+  
+  const ShowMenu = () => {
+    
+    
+    return(
+     <div>
+        <Dropdown>
+      <Dropdown.Toggle variant="success" id="dropdown-basic">
+        Select post type
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item onClick = {openAskQuestionModal}> Social Technical </Dropdown.Item>
+        <Dropdown.Item onClick = {openPersonalizeModal}> Personalized Recommendation </Dropdown.Item>
+        
+      </Dropdown.Menu>
+    </Dropdown>
+     </div>
+    )
+  }
+  
+  //---------------------------------------------------------------//
   const setDefinition = (url) => {
     if (!(url in definitions)) {
       getDefinition(url).then((def) =>
@@ -228,6 +283,7 @@ const SidebarAccordion = ({
                 updateOpenLookUpModal={updateOpenLookUpModal}
               />
             ) : null}
+             
             {openPostModal ? (
               <AskQuestion
                 word={getTermStr(currentHighlight, content)}
@@ -241,8 +297,19 @@ const SidebarAccordion = ({
                 currentHighlight={currentHighlight}
                 annotationSelection={annotationSelection}
                 annotations={annotations}
-              />
+                showExpert={showExpert}
+                updateShowExpert={updateShowExpert}
+                updateExpert={updateExpert}
+                expert={expert}
+              >
+                
+                </AskQuestion>
+
+              
             ) : null}
+            {personalize ? (
+                    <Personalize updatePersonalize = {updatePersonalize} updateOpenPostModal={updateOpenPostModal} updateExpert={updateExpert} showExpert={showExpert} updateShowExpert={updateShowExpert} expert={expert} updateID={updateID} ID={ID}/> 
+                  ) : null}
           </Card>
           <div className="text-center">
             <Container>
@@ -263,10 +330,17 @@ const SidebarAccordion = ({
                   <Button
                     variant="link"
                     style={{ "box-shadow": "none" }}
-                    onClick={() => updateOpenPostModal(true)}
+                    onClick= {(() => setMenu(true))}
                   >
                     Need Help?
-                  </Button>
+                  </Button> 
+                  {menu ? (
+                 <ShowMenu setMenu={setMenu}/>
+                      
+                
+            ) : null}
+                  
+  
                 </Col>
               </Row>
             </Container>

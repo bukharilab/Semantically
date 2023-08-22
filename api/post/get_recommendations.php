@@ -22,7 +22,7 @@
         // Turn to JSON & output
         $res = array();
         while ($row = mysqli_fetch_assoc($results)) $res[] = $row;
-
+        
         echo json_encode(array('data' => $res));
       } else {
         // Convert to JSON & output error msg

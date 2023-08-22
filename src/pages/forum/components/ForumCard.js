@@ -1,8 +1,9 @@
 import React,{useState} from 'react';
 import { Card, Button, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import DeletePostModal from '../components/models/DeletePostModel';
 
+import DeletePostModal from '../components/models/DeletePostModel';
+import 'react-router-dom';
 export default function ForumCard({
   post_id,
   post_title,
@@ -14,8 +15,9 @@ export default function ForumCard({
   posts,
   setPosts}) {
   const [showDelPostModal, updateShowDelPostModal] = useState(false);
+  const [knowledgeGraph, updateKnowledgeGraph] = useState(false);
   const deletePost = () => updateShowDelPostModal(true);  
-  
+  const openKnowledgeGraph = () => updateKnowledgeGraph(true);
   
   const deletePostProps = {
     post_id:post_id,
@@ -41,7 +43,7 @@ export default function ForumCard({
           <Card.Link>
             <Link to={`/post/${post_id}`}>open</Link>
           </Card.Link>
-
+             
           {!publicPost ? (
             <Card.Link>
               <Button variant="link" onClick={deletePost}>
@@ -50,9 +52,15 @@ export default function ForumCard({
             </Card.Link>
           ) : null}
           {/* {!publicPost ? <Card.Link href="#">delete</Card.Link> : null} */}
+          <Card.Link>
+            
+             
+            
+          </Card.Link>
         </Card.Body>
       </Card>
       {showDelPostModal ? <DeletePostModal {...deletePostProps} /> : null}
+      
     </div>
   );
 }

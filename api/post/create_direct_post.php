@@ -11,7 +11,8 @@
       $terminology = $_POST['terminology'];
       $curr_ontology = $_POST['ontology'];
       $post_content = $_POST['context'];
-      //$expert_id = $_POST['expertID'];
+      $expert_id = $_POST['expertID'];
+      //echo $expert_id;
       //isset($POST['expertID']);
       // Check if project id given
       if ($user_id) {
@@ -20,15 +21,14 @@
           $db = Database::connect();
           $time_stamp=date("Y-m-d H:i:s");
           // Create document
-          /*
-          if($expert_id) {
+          
+          
             
-          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_create_post` (user_id, post_title, terminology, curr_ontology, post_content,time_stamp, expert_id) VALUES ('%s', '%s', '%s','%s', '%s', '%s')", $user_id, $post_title, $terminology, $curr_ontology, $post_content,$time_stamp,$expert_id));
-          }
-          */
+          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_create_post` (user_id, post_title, terminology, curr_ontology, post_content,time_stamp, expert_id) VALUES ('%s', '%s', '%s','%s', '%s', '%s', '%d')", $user_id, $post_title, $terminology, $curr_ontology, $post_content,$time_stamp,$expert_id));
+          
+          
 
-          //else if($expert_id = null)
-          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_create_post` (user_id, post_title, terminology, curr_ontology, post_content,time_stamp) VALUES ('%s', '%s', '%s','%s', '%s', '%s')", $user_id, $post_title, $terminology, $curr_ontology, $post_content,$time_stamp));
+          
           // Check if document created
           if ($results) {
             http_response_code(200);

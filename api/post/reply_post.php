@@ -8,6 +8,7 @@
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Session start and Get user id
       session_start();
+      
       $user_id = $_SESSION['user_id'];
       $post_id = $_POST['post_id'];
       $ontology = $_POST['ontology'];

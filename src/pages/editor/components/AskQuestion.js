@@ -3,11 +3,12 @@ import {Card, Button, Modal, Row, Form, Col, Accordion, FormControl, Dropdown} f
 import {createPost} from '../../forum/hooks/postAPI';
 import {postAddresses} from '../../../appInfo';
 import {Link} from "react-router-dom";
+import {createDirectPost} from '../../forum/hooks/postAPI';
 
-
-const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, annotationSelection, annotations}) => {
-
+const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, annotationSelection, annotations, expert, updateShowExpert, showExpert, updateExpert}) => {
+  
   const [context, updateContext] = useState("");
+  const [expertID, updateExpertID] = useState(0);
   const questions = [
     "Which ontology should I use?",
     "What is the suitable ontology vocabulary?",
@@ -21,10 +22,21 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
   const closeModal = () => updateOpenPostModal(false);
 
   const submit = () => {
+    updateExpertID(expert[0])
+    if(showExpert){
+      alert(expert[0])
+      createDirectPost(questions[question], word, acronyms[questionOntology], context, expert[0], post_id => {
+         window.open(`${postAddresses.post}/${post_id}`,"_self");
+         closeModal();
+       });
+    }
+    else {
     createPost(questions[question], word, acronyms[questionOntology], context, post_id => {
      window.open(`${postAddresses.post}/${post_id}`,"_self");
       closeModal();
+    
     });
+  }
   }
   return (
     <Modal
@@ -32,6 +44,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      
     >
       <Modal.Header closeButton onHide={closeModal}>
         <Modal.Title id="contained-modal-title-vcenter">
@@ -39,8 +52,33 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-5">
-
+        
         <Form>
+         
+         {showExpert ? (
+          <div>
+            <table id = "tableFormat" class = "table">
+              <th  id = "headerRow"> Expert Credentials </th>
+              <tbody> 
+                  <tr>
+                    <th> ID </th>
+                    <th> User name </th>
+                    <th> Weighted score</th>
+                    <th> Similarity score</th>
+                  </tr>
+                  <tr>
+                    <td>{expert[0]}</td>
+                    <td>{expert[1]}</td>
+                    <td>{expert[2]}</td>
+                    <td>{expert[3]}</td>
+                  </tr>
+              </tbody>
+            </table> 
+         </div>
+         ):null
+         
+         }
+       
         <Row className="mb-1">
           <Form.Group as={Col} controlId="term">
             <Form.Label>Terminology</Form.Label>
@@ -74,6 +112,7 @@ const AskQuestion = ({word, ontology, updateOpenPostModal, currentHighlight, ann
       <Modal.Footer>
       <Button onClick={closeModal} variant="secondary">Close</Button>
     <Button variant="primary" onClick={() => submit()}>Submit</Button>
+    
       </Modal.Footer>
     </Modal>
   )

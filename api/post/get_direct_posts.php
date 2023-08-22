@@ -8,12 +8,13 @@
     //     echo json_encode(array('message' => 'Only POST requests are accepted'));
     //     die();
     // }
-
+    session_start();
+    $user_id = $_SESSION['user_id'];
     // Connect to database & retrieve instance
     $db = Database::connect();
 
     // Query for all posts
-    $results = mysqli_query($db, sprintf("SELECT * FROM tbl_create_post"));
+    $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_create_post` where expert_id = '%d'",$user_id));
 
     if (!$results) {
         http_response_code(404);
@@ -31,4 +32,4 @@
     }
 
     http_response_code(200);
-    echo json_encode(array('all_posts' => $res));
+    echo json_encode(array('direct_posts' => $res));

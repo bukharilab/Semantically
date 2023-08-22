@@ -16,9 +16,9 @@ import Logout from './pages/authentication/logout';
 import Register from './pages/authentication/register';
 import Survey from './pages/authentication/survey';
 import Account from './pages/account/account';
-
+import KnowledgeGraph from './pages/forum/KnowledgeGraph';
 import AlertMessage from './components/Alert';
-
+import TestGraph from './pages/forum/TestGraph';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [alert, setAlert] = useState({});
@@ -28,7 +28,7 @@ function App() {
     alert: alert,
     setAlert: setAlert,
   };
-
+  
   // Check if session still active
   if (!loggedIn) checkLoggedIn(setLoggedIn);
 
@@ -39,11 +39,13 @@ function App() {
       <Route path="/login" render={() => <Login {...appProps} />} />
       <Route path="/logout" render={() => <Logout {...appProps} />} />
       <Route path="/register" render={() => <Register {...appProps} />} />
+      <Route path="/KnowledgeGraph/:post_id" render={() => <KnowledgeGraph {...appProps}/> }/>
       <Route path="/survey" component={Survey} />
       <Route path="/myaccount" component={Account} />
       <Route path="/posts" component={Forum} />
       <Route path="/post/:postId" component={Post} />
       <Route path="/document/:documentId" component={Editor} />
+      <Route path="/TestGraph" component={TestGraph}/>
       <Route path="/" render={() => <Dashboard {...appProps} />} />
     </Switch></BrowserRouter>
     </>
