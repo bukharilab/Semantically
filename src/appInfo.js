@@ -1,5 +1,5 @@
-// const apiAddress = 'https://api.gosemantically.com';
-const apiAddress = "http://localhost:8080/Semantically-master/api";
+ const apiAddress = 'https://api.gosemantically.com';
+//const apiAddress = "http://localhost:8080/Semantically-master/api";
 
 const apiAddresses = {
   checkLoggedIn: `${apiAddress}/authentication/loggedin.php`,
