@@ -34,6 +34,16 @@ const setUp = () =>
     })
     
   };
+  const getTermResults = (terminology, callback) =>{
+    setUp();
+    $.post({
+       url: apiAddresses.getTermResults,
+       data: {
+         terminology: terminology
+       },
+       success: (data) => callback(data["terminology"]),
+    })
+  }
 const createDirectPost = (question, terminology, ontology, context, expertID, callback) => {
   setUp();
   $.post({
@@ -122,4 +132,4 @@ const postVoting = (post_reply_id,vote_up,vote_down,callback) =>{
     });
   };
 
-export { createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies,deletePost };
+export { createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults,deletePost };

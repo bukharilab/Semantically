@@ -1,5 +1,7 @@
- const apiAddress = 'https://api.gosemantically.com';
-//const apiAddress = "http://localhost:8080/Semantically-master/api";
+import { getTermResults } from "./pages/forum/hooks/postAPI";
+
+// const apiAddress = 'https://api.gosemantically.com';
+const apiAddress = "http://localhost:8080/Semantically/api";
 
 const apiAddresses = {
   checkLoggedIn: `${apiAddress}/authentication/loggedin.php`,
@@ -28,7 +30,8 @@ const apiAddresses = {
   postVoting: `${apiAddress}/post/post_voting.php`,
   deletePost: `${apiAddress}/post/delete_post.php`,
   getUser_ID: `${apiAddress}/post/get_ID.php`,
-  getUserReplies: `${apiAddress}/post/get_replies.php`
+  getUserReplies: `${apiAddress}/post/get_replies.php`,
+  getTermResults: `${apiAddress}/post/get_replies_terms.php`
 };
 
 const postAddresses = {

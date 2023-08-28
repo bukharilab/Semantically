@@ -19,10 +19,10 @@
       $username = $_ENV['USER'];
       $password = $_ENV['PASS'];
       */
-      $host = $_ENV['HOST_NAME'];
-      $database = $_ENV['DATABASE'];
-      $username = $_ENV['USER'];
-      $password = $_ENV['PASS'];
+      $host = "localhost";
+      $database = "asim_semantically_dev";
+      $username = "root";
+      $password = "";
       
       // Connect to database and store instance
       $conn = mysqli_connect($host, $username, $password, $database);

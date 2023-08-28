@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import './forum.css';
 import Sidebar from '../../components/Sidebar';
 import ForumCard from './components/ForumCard';
-import {Button, Tabs, Tab} from 'react-bootstrap';
+import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
-import {getPosts, getAllPosts, getDirectPosts, getUserReplies} from './hooks/postAPI';
+import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults} from './hooks/postAPI';
 import { Graph } from "react-d3-graph";
 import {Link} from "react-router-dom";
 import * as d3 from "d3"
@@ -15,8 +15,10 @@ const Forum = () => {
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [directPosts, setDirectPosts] = useState([]);
-
-
+  const [searchForUser, setSearchUser] = useState(false);
+  const [searchMedicalTerm, setSearchMedicalTerm] = useState(false)
+  const [term, setTerm] = useState(false)
+  const [terminologyResults, setTerminologyResults] = useState([])
   const [inputData, setInputData] = useState("");
   const [replies, setReplies] = useState([]);
   const [name, setName] = useState("");
@@ -49,7 +51,10 @@ const resetGraph = () => {
   setReset(false)
   setTitle(false)
 }
-const searchUser = (a) => {
+const searchInput = (a) => {
+  resetGraph()
+  d3.selectAll("svg").remove()
+  if(searchForUser) { 
   
   setTitle(true)
   console.log("Before flush",nodeArray)
@@ -67,7 +72,7 @@ const searchUser = (a) => {
     setName(replies[0].first_name+" "+replies[0].last_name)
     
     nodeArray.push({id: name, color: "purple"})
-    
+  
   {replies.map((val)=> {
     
     
@@ -100,74 +105,65 @@ const searchUser = (a) => {
   }
   
   )
+  
+  }
   Chart(data)
-  }
+  
   });
   
-  //setNodeArray({id:a, color: "red"})
-  //displayGraph();
 }
-
-/*
-const searchUser = (a) => {
-
+if(searchMedicalTerm){
   setTitle(true)
-  console.log("Before flush",nodeArray)
-  setReset(true)
-  console.log("After flush",nodeArray)
-  var name = a;
-  setName(a)
-  const myName = name.split(" ");
-  console.log(myName[0],myName[1])
-  getUserReplies(myName[0], myName[1], replies => {
-    console.log("Retrieval of data successful");
-    setReplies(replies);
-    console.log(replies[0].first_name)
-    console.log(replies)
-    setName(replies[0].first_name+" "+replies[0].last_name)
-    
-    nodeArray.push({id: name, color: "purple"})
-    
-  {replies.map((val)=> {
-    
-    
-    nodeArray.push({id: val.reply_content, color: "blue"})
-    nodeArray.push({id: val.ontology, color: "magenta"})
-    nodeArray.push({id: val.profile_rank, color: "orange"})
-    
-    nodeArray.push({id: val.vote_up, color: "green"})
-    nodeArray.push({id: val.vote_down, color: "red"})
-
-   
-    linkArray.push({source: val.profile_rank, target: name})
-
-    //linkArray.push({source: val.reply_content, target: name})
-    linkArray.push({source: val.ontology, target: val.reply_content})
-    linkArray.push({source: val.reply_content, target: name});
-    
-    linkArray.push({source: val.vote_up, target: val.reply_content})
-    linkArray.push({source: val.vote_down, target: val.reply_content})
-    
-    
-   console.log(nodeArray)      
-  }
- 
-  )
-  showGraph(true)
-  }
+console.log("Before flush",nodeArray)
+setReset(true)
+console.log("After flush",nodeArray)
+var term = a;
+setTerm(term)
+getTermResults(term, terminology =>
+  {
+    console.log("Retrieval of data successful", terminology);
+     setTerminologyResults(terminology)
+     console.log(terminologyResults)
+     nodeArray.push({id: term, group:5})
+     {terminology.map((val) => {
+      console.log("Start insertion")
+      
+      nodeArray.push({id: val.curr_ontology,  group: 1})
+      nodeArray.push({id: val.post_content, group: 2})
+      
+      linkArray.push({source: val.curr_ontology, target: term, value: 10, distance: 100})
+      linkArray.push({source: val.post_content, target: val.curr_ontology, value: 10, distance: 100})
+      
+     
+     }
+      )
+     
+     }
+     Chart(data)
   });
   
+  
+}
   //setNodeArray({id:a, color: "red"})
   //displayGraph();
+  
 }
-*/
+
+
 const data = {
-  //nodes: [{ id: pTitleString, color: "red"}, { id: "Sally", color: "purple"}, { id: "Alice" }],
+  
   nodes: nodeArray,
   links: linkArray,
 };
 
-
+const openUserSearchBar = () => {
+     setSearchMedicalTerm(false)
+     setSearchUser(true)
+}
+const openMedicalTerm = () => {
+     setSearchUser(false)
+     setSearchMedicalTerm(true)
+}
 const Chart = (data) => {
     
   // Specify the dimensions of the chart.
@@ -290,31 +286,7 @@ const Chart = (data) => {
   return svg.node();
 };
 
-// the graph configuration, just override the ones you need
-const myConfig = {
-  nodeHighlightBehavior: true,
-  node: {
-    color: "lightgreen",
-    size: 1000,
-    highlightStrokeColor: "blue",
-    fontSize: 15,
-  },
-  link: {
-    highlightColor: "lightblue",
-  },
-};
 
-
-      
-      
-const onClickNode = function(nodeId) {
- 
-  
-};
-
-const onClickLink = function(source, target) {
-  window.alert(`Clicked link between ${source} and ${target}`);
-};
 
 const [del, setDelete] = useState(false);
 
@@ -355,18 +327,53 @@ const [del, setDelete] = useState(false);
           </Tab>
           
           <Tab eventKey="knowledge_graph" title="Knowledge Graph">
-          
+          <h1> Knowledge Graph </h1>
+        <p> Choose what to search for and input to the search bar for results</p>
+         <Dropdown>
+      <Dropdown.Toggle variant="success" id="dropdown-basic">
+        Search type
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item onClick={() => openUserSearchBar()}> User </Dropdown.Item>
+        <Dropdown.Item onClick={() => openMedicalTerm()}> Medical term </Dropdown.Item>
+        
+      </Dropdown.Menu>
+    </Dropdown>
+
+          {searchForUser ?
+          (
+
             <div className="py-4">
+              <h2> Search for a user</h2>
             <TextField
           id="outlined-basic"
           variant="outlined"
           onChange={inputHandler}
           label="Search for an expert"
         />
-
+        <Button onClick={() => searchInput(inputData)}> Search </Button>
+        </div>
+          ):null}
+          {searchMedicalTerm ?
+          (
+            <div className="py-4">
+              <h2> Search for a medical term</h2>
+            <TextField
+          id="outlined-basic"
+          variant="outlined"
+          onChange={inputHandler}
+          label="Search for a medical term"
+        />
+        <Button onClick={() => searchInput(inputData)}> Search </Button>
+        </div>
+          ):null}
+            <div className="py-4">
+            
+        
             <p> {inputData}</p>
-            <Button onClick={() => searchUser(inputData)}> Search </Button>
-            <Button onClick={() => Chart(data)}> Generate Graph</Button>
+            
+           
             {title ? (
                  <h2> Search results for: {name} </h2>
             ) :null}
