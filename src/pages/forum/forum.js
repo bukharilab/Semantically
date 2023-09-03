@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar';
 import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
-import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults} from './hooks/postAPI';
+import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology} from './hooks/postAPI';
 import { Graph } from "react-d3-graph";
 import {Link} from "react-router-dom";
 import * as d3 from "d3"
@@ -25,6 +25,9 @@ const Forum = () => {
   const [reset, setReset] = useState(false)
   const [title, setTitle] = useState(false)
   const [graph, showGraph] = useState(false)
+
+  const [searchOntology, setSearchOntology] = useState(false)
+  const [onto, setOntology] = useState(false)
     const[nodeArray, setNodeArray] = useState([]);
     const[linkArray, setLinkArray] = useState([]);
   let inputHandler = (e) => {
@@ -77,8 +80,12 @@ const searchInput = (a) => {
     
     
     nodeArray.push({id: val.reply_content, group: 1})
+    if(!nodeArray.find(n => n.id === val.ontology)){
     nodeArray.push({id: val.ontology, group: 2})
+    }
+    if(!nodeArray.find(n => n.id === val.profile_rank)){
     nodeArray.push({id: val.profile_rank, group: 3})
+    }
     /*
     nodeArray.push({id: val.vote_up, group: 3})
     
@@ -127,10 +134,12 @@ getTermResults(term, terminology =>
      nodeArray.push({id: term, group:5})
      {terminology.map((val) => {
       console.log("Start insertion")
-      
+      if(!nodeArray.find(n => n.id === val.curr_ontology)){
       nodeArray.push({id: val.curr_ontology,  group: 1})
+      }
+      if(!nodeArray.find(n => n.id === val.post_content)){
       nodeArray.push({id: val.post_content, group: 2})
-      
+      }
       linkArray.push({source: val.curr_ontology, target: term, value: 10, distance: 100})
       linkArray.push({source: val.post_content, target: val.curr_ontology, value: 10, distance: 100})
       
@@ -146,7 +155,40 @@ getTermResults(term, terminology =>
 }
   //setNodeArray({id:a, color: "red"})
   //displayGraph();
-  
+  if(searchOntology){
+    setTitle(true)
+  console.log("Before flush",nodeArray)
+  setReset(true)
+  console.log("After flush",nodeArray)
+  var ontologyInput = a;
+  setOntology(ontologyInput)
+  getOntology(ontologyInput, ontology =>
+    {
+      console.log("Retrieval of data successful", ontology);
+       
+       
+       nodeArray.push({id: ontologyInput, group:5})
+       {ontology.map((val) => {
+        console.log("Start insertion")
+        if(!nodeArray.find(n => n.id === val.terminology)){
+        nodeArray.push({id: val.terminology,  group: 1})
+        }
+        if(!nodeArray.find(n => n.id === val.post_content)){
+        nodeArray.push({id: val.post_content, group: 2})
+        }
+        linkArray.push({source: val.terminology, target: ontologyInput, value: 10, distance: 100})
+        linkArray.push({source: val.post_content, target: val.terminology, value: 10, distance: 100})
+        
+       
+       }
+        )
+       
+       }
+       Chart(data)
+    });
+    
+    
+  }
 }
 
 
@@ -158,11 +200,18 @@ const data = {
 
 const openUserSearchBar = () => {
      setSearchMedicalTerm(false)
+     setSearchOntology(false)
      setSearchUser(true)
 }
 const openMedicalTerm = () => {
      setSearchUser(false)
+     setSearchOntology(false)
      setSearchMedicalTerm(true)
+}
+const openOntologySearch = () => {
+  setSearchOntology(true)
+  setSearchUser(false)
+  setSearchMedicalTerm(false)
 }
 const Chart = (data) => {
     
@@ -327,7 +376,10 @@ const [del, setDelete] = useState(false);
           </Tab>
           
           <Tab eventKey="knowledge_graph" title="Knowledge Graph">
-          <h1> Knowledge Graph </h1>
+            <div class="jumbotron bg-dark text-white">
+            <h1> Knowledge Graph </h1>
+            </div>
+          
         <p> Choose what to search for and input to the search bar for results</p>
          <Dropdown>
       <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -337,7 +389,7 @@ const [del, setDelete] = useState(false);
       <Dropdown.Menu>
         <Dropdown.Item onClick={() => openUserSearchBar()}> User </Dropdown.Item>
         <Dropdown.Item onClick={() => openMedicalTerm()}> Medical term </Dropdown.Item>
-        
+        <Dropdown.Item onClick={() => openOntologySearch()}> Ontology </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -368,6 +420,19 @@ const [del, setDelete] = useState(false);
         <Button onClick={() => searchInput(inputData)}> Search </Button>
         </div>
           ):null}
+          {searchOntology ?
+          (
+            <div className="py-4">
+              <h2> Search for an ontology</h2>
+            <TextField
+          id="outlined-basic"
+          variant="outlined"
+          onChange={inputHandler}
+          label="Search for an ontology"
+        />
+        <Button onClick={() => searchInput(inputData)}> Search </Button>
+        </div>
+          ):null}
             <div className="py-4">
             
         
@@ -382,23 +447,7 @@ const [del, setDelete] = useState(false);
        </div>
 
             
-  <p> Replies: </p>
-            {replies.map((val)=> (
-                    
-                   
-                    <tr key={val.post_reply_id}>
-                       <td > {val.reply_content} </td>
-                      
-                       
-                    </tr>
-                   
-                  ))
-                
-                  }
-                  <br></br>
-                  {reset ? (
-                     <Button onClick={() => resetGraph()}> Reset Graph</Button>
-                  ) :null}
+  
               </div>
 
 
