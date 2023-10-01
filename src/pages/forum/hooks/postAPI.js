@@ -44,15 +44,15 @@ const setUp = () =>
        success: (data) => callback(data["terminology"]),
     })
   }
-  const getOntology = (ontology, callback) => {
+  const getOntology = (ontology, callback) =>{
     setUp();
     $.post({
-      url: apiAddresses.getOntology,
-      data: {
-        ontology: ontology
-      },
-      success: (data) => callback(data["ontology"]),
-   })
+       url: apiAddresses.getOntology,
+       data: {
+         ontology: ontology
+       },
+       success: (data) => callback(data["ontology"]),
+    })
   }
 const createDirectPost = (question, terminology, ontology, context, expertID, callback) => {
   setUp();
@@ -142,4 +142,4 @@ const postVoting = (post_reply_id,vote_up,vote_down,callback) =>{
     });
   };
 
-export { createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults, getOntology, deletePost };
+export { createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults, getOntology,deletePost };

@@ -22,12 +22,10 @@ const Forum = () => {
   const [inputData, setInputData] = useState("");
   const [replies, setReplies] = useState([]);
   const [name, setName] = useState("");
-  const [reset, setReset] = useState(false)
+  const [searchOntology, setSearchOntology] = useState([]);
   const [title, setTitle] = useState(false)
-  const [graph, showGraph] = useState(false)
-
-  const [searchOntology, setSearchOntology] = useState(false)
-  const [onto, setOntology] = useState(false)
+  const [ontology, setOntology] = useState(false)
+  const [ontologyResults, setOntologyResults] = useState([])
     const[nodeArray, setNodeArray] = useState([]);
     const[linkArray, setLinkArray] = useState([]);
   let inputHandler = (e) => {
@@ -51,7 +49,7 @@ const resetGraph = () => {
   setNodeArray([])
   setLinkArray([])
   setReplies([])
-  setReset(false)
+  
   setTitle(false)
 }
 const searchInput = (a) => {
@@ -61,7 +59,7 @@ const searchInput = (a) => {
   
   setTitle(true)
   console.log("Before flush",nodeArray)
-  setReset(true)
+  
   console.log("After flush",nodeArray)
   var name = a;
   setName(a)
@@ -77,32 +75,47 @@ const searchInput = (a) => {
     nodeArray.push({id: name, color: "purple"})
   
   {replies.map((val)=> {
-    
-    
+    if(!nodeArray.find(n => n.id === val.reply_content)){
     nodeArray.push({id: val.reply_content, group: 1})
+    }
     if(!nodeArray.find(n => n.id === val.ontology)){
-    nodeArray.push({id: val.ontology, group: 2})
+      nodeArray.push({id: val.ontology, group: 2})
     }
     if(!nodeArray.find(n => n.id === val.profile_rank)){
     nodeArray.push({id: val.profile_rank, group: 3})
     }
-    /*
-    nodeArray.push({id: val.vote_up, group: 3})
+    if(!(val.vote_up == null)){
+      if(!nodeArray.find(n => n.id === val.vote_up)){
+      nodeArray.push({id: val.vote_up, group: 4})
+      
+      }
+      linkArray.push({source: val.vote_up, target: val.reply_content, value: 10, distance: 100})
+      
+      
+    }
+    if(!(val.vote_down == null)){
+      if(!nodeArray.find(n => n.id === val.vote_down)){
+      nodeArray.push({id: val.vote_down, group: 4})
+      
+      }
+      linkArray.push({source: val.vote_down, target: val.reply_content, value: 10, distance: 100})
+      
+      
+    }
     
-    nodeArray.push({id: val.vote_down, group: 5})
-    */
-   
+     
+
     linkArray.push({source: val.profile_rank, target: name, value: 10, distance: 100})
 
     
-    linkArray.push({source: val.ontology, target: val.reply_content, value: 10, distance: 100})
-    /*
-    linkArray.push({source: val.vote_up, target: val.reply_content, value: 10, distance: 100})
+    linkArray.push({source: val.ontology, target: name, value: 10, distance: 100})
     
     
-    linkArray.push({source: val.vote_down, target: val.reply_content, value: 10, distance: 100})
-*/
-    linkArray.push({source: val.reply_content, target: name, value: 10, distance: 100});
+    
+    
+    
+
+    linkArray.push({source: val.reply_content, target: val.ontology, value: 10, distance: 100});
     
    
     
@@ -114,15 +127,17 @@ const searchInput = (a) => {
   )
   
   }
-  Chart(data)
+  Chart(data, replies)
   
   });
   
 }
 if(searchMedicalTerm){
+  resetGraph()
+  d3.selectAll("svg").remove()
   setTitle(true)
 console.log("Before flush",nodeArray)
-setReset(true)
+
 console.log("After flush",nodeArray)
 var term = a;
 setTerm(term)
@@ -134,12 +149,13 @@ getTermResults(term, terminology =>
      nodeArray.push({id: term, group:5})
      {terminology.map((val) => {
       console.log("Start insertion")
+      
       if(!nodeArray.find(n => n.id === val.curr_ontology)){
-      nodeArray.push({id: val.curr_ontology,  group: 1})
+        nodeArray.push({id: val.curr_ontology, group: 1})
       }
-      if(!nodeArray.find(n => n.id === val.post_content)){
+      
       nodeArray.push({id: val.post_content, group: 2})
-      }
+      
       linkArray.push({source: val.curr_ontology, target: term, value: 10, distance: 100})
       linkArray.push({source: val.post_content, target: val.curr_ontology, value: 10, distance: 100})
       
@@ -148,7 +164,7 @@ getTermResults(term, terminology =>
       )
      
      }
-     Chart(data)
+     Chart(data,terminologyResults)
   });
   
   
@@ -156,27 +172,27 @@ getTermResults(term, terminology =>
   //setNodeArray({id:a, color: "red"})
   //displayGraph();
   if(searchOntology){
+    
     setTitle(true)
   console.log("Before flush",nodeArray)
-  setReset(true)
+  
   console.log("After flush",nodeArray)
-  var ontologyInput = a;
-  setOntology(ontologyInput)
-  getOntology(ontologyInput, ontology =>
+  var ontology_term = a;
+  setOntology(ontology_term)
+  getOntology(ontology_term, ontology_result =>
     {
-      console.log("Retrieval of data successful", ontology);
-       
-       
-       nodeArray.push({id: ontologyInput, group:5})
-       {ontology.map((val) => {
+      console.log("Retrieval of data successful", ontology_result);
+       setOntologyResults(ontology_result)
+       console.log(ontologyResults)
+       nodeArray.push({id: ontology_term, group:5})
+       {ontology_result.map((val) => {
         console.log("Start insertion")
         if(!nodeArray.find(n => n.id === val.terminology)){
         nodeArray.push({id: val.terminology,  group: 1})
         }
-        if(!nodeArray.find(n => n.id === val.post_content)){
         nodeArray.push({id: val.post_content, group: 2})
-        }
-        linkArray.push({source: val.terminology, target: ontologyInput, value: 10, distance: 100})
+        
+        linkArray.push({source: val.terminology, target: ontology_term, value: 10, distance: 100})
         linkArray.push({source: val.post_content, target: val.terminology, value: 10, distance: 100})
         
        
@@ -184,7 +200,7 @@ getTermResults(term, terminology =>
         )
        
        }
-       Chart(data)
+       Chart(data, ontologyResults)
     });
     
     
@@ -208,12 +224,28 @@ const openMedicalTerm = () => {
      setSearchOntology(false)
      setSearchMedicalTerm(true)
 }
-const openOntologySearch = () => {
+const openOntologySearchBar = () => {
   setSearchOntology(true)
-  setSearchUser(false)
   setSearchMedicalTerm(false)
+  setSearchUser(false)
 }
-const Chart = (data) => {
+function redirectToPost (e, f){
+console.log(e[0].id)
+var nodeData = e[0].id;
+f.map((val) => {
+ if(val.reply_content == nodeData)
+    window.open("http://localhost:3000/post/"+val.post_id)
+    if(val.terminology == nodeData)
+    window.open("http://localhost:3000/post/"+val.post_id)
+    if(val.cur_ontology == nodeData)
+    window.open("http://localhost:3000/post/"+val.post_id)
+})
+ 
+
+}
+//------------------------------------------------------------------//
+//Graph Generation code
+const Chart = (data, replyData) => {
     
   // Specify the dimensions of the chart.
   const width = 928;
@@ -226,8 +258,8 @@ const Chart = (data) => {
   // so that re-evaluating this cell produces the same result.
   const links = data.links.map(d => ({...d}));
   const nodes = data.nodes.map(d => ({...d}));
-  console.log(links)
-  console.log(nodes)
+  console.log("Links",links)
+  console.log("Nodes",nodes)
   // Create a simulation with several forces.
   const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).distance(linkDistance).id(d => d.id))
@@ -261,7 +293,21 @@ const Chart = (data) => {
     .join("circle")
       .attr("r", 20)
       .attr("fill", d => color(d.group))
+    .on("click",function(d){
+      console.log("Clicked",replyData)
       
+      var data = d3.select(this).data()
+      
+      redirectToPost(data, replyData)
+        
+         
+      
+       
+      
+      
+      
+    });
+
 
   node.append("title")
       .text(d => d.id);
@@ -376,10 +422,9 @@ const [del, setDelete] = useState(false);
           </Tab>
           
           <Tab eventKey="knowledge_graph" title="Knowledge Graph">
-            <div class="jumbotron bg-dark text-white">
-            <h1> Knowledge Graph </h1>
-            </div>
-          
+          <div class="jumbotron bg-dark text-white">
+          <h1> Knowledge Graph </h1>
+          </div>
         <p> Choose what to search for and input to the search bar for results</p>
          <Dropdown>
       <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -389,7 +434,7 @@ const [del, setDelete] = useState(false);
       <Dropdown.Menu>
         <Dropdown.Item onClick={() => openUserSearchBar()}> User </Dropdown.Item>
         <Dropdown.Item onClick={() => openMedicalTerm()}> Medical term </Dropdown.Item>
-        <Dropdown.Item onClick={() => openOntologySearch()}> Ontology </Dropdown.Item>
+        <Dropdown.Item onClick={() => openOntologySearchBar()}> Ontology </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
 
@@ -420,8 +465,10 @@ const [del, setDelete] = useState(false);
         <Button onClick={() => searchInput(inputData)}> Search </Button>
         </div>
           ):null}
-          {searchOntology ?
+
+{searchOntology ?
           (
+
             <div className="py-4">
               <h2> Search for an ontology</h2>
             <TextField
@@ -436,18 +483,22 @@ const [del, setDelete] = useState(false);
             <div className="py-4">
             
         
-            <p> {inputData}</p>
+            
             
            
             {title ? (
+              
                  <h2> Search results for: {name} </h2>
             ) :null}
        <div id="graph">
 
        </div>
-
+       {replies.map((val) =>{
+        <li> {val.post_reply_id}</li>
+       })}
             
   
+                  
               </div>
 
 

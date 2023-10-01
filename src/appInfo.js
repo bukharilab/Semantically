@@ -1,7 +1,7 @@
 import { getTermResults } from "./pages/forum/hooks/postAPI";
 
 // const apiAddress = 'https://api.gosemantically.com';
-const apiAddress = "http://localhost:8080/Semantically/api";
+const apiAddress = "http://localhost:8080/Semantically-master/api";
 
 const apiAddresses = {
   checkLoggedIn: `${apiAddress}/authentication/loggedin.php`,
@@ -32,7 +32,7 @@ const apiAddresses = {
   getUser_ID: `${apiAddress}/post/get_ID.php`,
   getUserReplies: `${apiAddress}/post/get_replies.php`,
   getTermResults: `${apiAddress}/post/get_replies_terms.php`,
-  getOntology: `${apiAddress}/post/get_replies_ontology.php`
+  getOntology: `${apiAddress}/post/get_ontology.php`
 };
 
 const postAddresses = {

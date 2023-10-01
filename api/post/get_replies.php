@@ -32,7 +32,7 @@
            $time_stamp = date("Y-m-d H:i:s");
           
   //         // Insert the expert reply into databasr
-           $results = mysqli_query($db, sprintf("SELECT tbl_post_reply.post_reply_id, ontology, first_name, last_name, reply_content, profile_rank, vote_up, vote_down FROM tbl_post_reply INNER JOIN tbl_login on tbl_login.user_id = tbl_post_reply.user_id LEFT JOIN tbl_vote on tbl_vote.post_reply_id = tbl_post_reply.post_reply_id WHERE first_name = '%s' and last_name = '%s'",$first_name, $last_name));
+           $results = mysqli_query($db, sprintf("SELECT tbl_post_reply.post_reply_id, tbl_create_post.post_id,ontology, first_name, last_name, reply_content, profile_rank, vote_up, vote_down FROM tbl_post_reply INNER JOIN tbl_login on tbl_login.user_id = tbl_post_reply.user_id LEFT JOIN tbl_vote on tbl_vote.post_reply_id = tbl_post_reply.post_reply_id LEFT JOIN tbl_create_post on tbl_create_post.post_id = tbl_post_reply.post_id WHERE first_name = '%s' and last_name = '%s'",$first_name, $last_name));
                    // Check if document created
           if ($results) {
               $res = array();

@@ -12,7 +12,6 @@ import {
 import Sidebar from "../../components/Sidebar";
 import RangeSlider from "react-bootstrap-range-slider";
 import { useParams } from "react-router-dom";
-import KnowledgeGraph from './KnowledgeGraph';
 import { readPost, replyPost,postVoting } from "./hooks/postAPI";
 import { element } from "prop-types";
 import {Link} from "react-router-dom"
@@ -122,16 +121,11 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
                   >
                     Answer
                   </Button>
-                  {console.log("gamer-time",JSON.stringify(replies))}
+                  
                   
 
                   
-                  <Link to={{pathname: '/KnowledgeGraph/20', state: {postId: postId, post_title: title, terminology: terminology,
-          curr_ontology: ontology,
-          post_content: context,
-          name: name, 
-          
-          replies: JSON.stringify(replies)}}}> Knowledge Graph </Link>
+                  
           
                 </div>
               </div>
