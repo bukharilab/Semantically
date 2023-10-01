@@ -11,6 +11,9 @@ import * as d3 from "d3"
 
 
 const Forum = () => {
+
+  //This is where all states of data are instantiated. These are used to store data for the graph components and user inputs in the Knowledge Graph tab
+  //States are a react component which are
   const [key, setKey] = useState('home');
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
@@ -45,6 +48,8 @@ const postCardProps = {
   directPosts: directPosts,
   setDirectPosts: setDirectPosts
 };
+
+//This function resets the graph data to avoid duplication of data. All data is reset so that it reflects the current data being used for visualization.
 const resetGraph = () => {
   setNodeArray([])
   setLinkArray([])
@@ -52,6 +57,10 @@ const resetGraph = () => {
   
   setTitle(false)
 }
+
+//This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
+//Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
+//For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
 const searchInput = (a) => {
   resetGraph()
   d3.selectAll("svg").remove()
@@ -65,16 +74,20 @@ const searchInput = (a) => {
   setName(a)
   const myName = name.split(" ");
   console.log(myName[0],myName[1])
+  //Sends an api call to the database.
   getUserReplies(myName[0], myName[1], replies => {
+
     console.log("Retrieval of data successful");
+    //This line of code updates the state of the replies array to the replies retrieved from the database. This will be used for when users click on a node, the replies array will be used to compare to the node's reply content and then redirect to the page that leads to the page with the corresponding post id.
     setReplies(replies);
     console.log(replies[0].first_name)
     console.log(replies)
     setName(replies[0].first_name+" "+replies[0].last_name)
-    
+    //Push the root node first.
     nodeArray.push({id: name, color: "purple"})
-  
+  //For every object in the array, a node will be generated and linked to its related node.
   {replies.map((val)=> {
+    //If statements are used to make sure that no two nodes with the same exact data can be replicated. In d3.js, if a node with the same exact data is found in the array used to generate the nodes, it will not link with any nodes and will float away.
     if(!nodeArray.find(n => n.id === val.reply_content)){
     nodeArray.push({id: val.reply_content, group: 1})
     }
@@ -84,6 +97,7 @@ const searchInput = (a) => {
     if(!nodeArray.find(n => n.id === val.profile_rank)){
     nodeArray.push({id: val.profile_rank, group: 3})
     }
+    //Also, if statements are used to ensure that no null values are used.
     if(!(val.vote_up == null)){
       if(!nodeArray.find(n => n.id === val.vote_up)){
       nodeArray.push({id: val.vote_up, group: 4})
@@ -127,6 +141,8 @@ const searchInput = (a) => {
   )
   
   }
+  //After all the nodeArray and LinkArray arrays are populated, the function will generate a graph with the data.
+  //The process is the same for the medical term and ontology inputs but with different data being retrieved from the api.
   Chart(data, replies)
   
   });
@@ -207,13 +223,13 @@ getTermResults(term, terminology =>
   }
 }
 
-
+// This is the data that will be used for generating the nodes, links and their values to represent the data as a knowledge graph.
 const data = {
   
   nodes: nodeArray,
   links: linkArray,
 };
-
+//These functions are used for switching between different search query prompts when the user selects a dropdown item.
 const openUserSearchBar = () => {
      setSearchMedicalTerm(false)
      setSearchOntology(false)
@@ -229,6 +245,8 @@ const openOntologySearchBar = () => {
   setSearchMedicalTerm(false)
   setSearchUser(false)
 }
+
+//This function is for redirecting a user to a specific post based on the data from the node that was clicked.
 function redirectToPost (e, f){
 console.log(e[0].id)
 var nodeData = e[0].id;
@@ -316,6 +334,7 @@ const Chart = (data, replyData) => {
       .data(nodes)
       .enter()
       .append("text")
+      //Sets the text for each node.
         .text(function (d) { return d.id; })
         .style("text-anchor", "middle")
         .style("fill", "#000")
@@ -421,11 +440,21 @@ const [del, setDelete] = useState(false);
             </div> 
           </Tab>
           
+
+          {/* 
+          From down here, you will find the code that defines the knowledge graph tab.
+          
+
+          */}
           <Tab eventKey="knowledge_graph" title="Knowledge Graph">
           <div class="jumbotron bg-dark text-white">
+
+
           <h1> Knowledge Graph </h1>
           </div>
         <p> Choose what to search for and input to the search bar for results</p>
+
+        {/* Dropdown component for the user to select between different search query types (Expert, Medical term, Ontology) */}
          <Dropdown>
       <Dropdown.Toggle variant="success" id="dropdown-basic">
         Search type
@@ -437,7 +466,7 @@ const [del, setDelete] = useState(false);
         <Dropdown.Item onClick={() => openOntologySearchBar()}> Ontology </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
-
+         
           {searchForUser ?
           (
 
@@ -452,6 +481,8 @@ const [del, setDelete] = useState(false);
         <Button onClick={() => searchInput(inputData)}> Search </Button>
         </div>
           ):null}
+
+          
           {searchMedicalTerm ?
           (
             <div className="py-4">

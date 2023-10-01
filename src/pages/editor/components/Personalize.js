@@ -17,7 +17,8 @@ const Personalize = ({updatePersonalize, updateOpenPostModal, expert, updateShow
        
        
        const [data, setData] = useState([])
-       
+       //This function retrieves data from a web server that has the data for experts and their names and ranks.
+       //This code currently does not work as the web server hosting this data requires private access.
        const fetchData = () => {
        
         //Add conditional statement 
@@ -43,6 +44,8 @@ const Personalize = ({updatePersonalize, updateOpenPostModal, expert, updateShow
        }
        return (
            <div>
+
+            {/* When the dropdown item for personalized recommendations is clicked in the document editor interface, it will open this modal and prompt the user to select an expert.*/}
              <Modal 
              show={true}
              size="lg"
