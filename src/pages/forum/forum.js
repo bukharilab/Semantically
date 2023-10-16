@@ -34,6 +34,7 @@ const Forum = () => {
   let inputHandler = (e) => {
 
     setInputData(e.target.value)
+
   }
 
   
@@ -58,10 +59,14 @@ const resetGraph = () => {
   setTitle(false)
 }
 
+const processQuery = (a) => {
+     
+}
 //This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
 const searchInput = (a) => {
+
   resetGraph()
   d3.selectAll("svg").remove()
   if(searchForUser) { 
@@ -103,7 +108,7 @@ const searchInput = (a) => {
       nodeArray.push({id: val.vote_up, group: 4})
       
       }
-      linkArray.push({source: val.vote_up, target: val.reply_content, value: 10, distance: 100})
+      linkArray.push({source: val.vote_up, target: val.reply_content, value: 10, distance: 200})
       
       
     }
@@ -112,24 +117,24 @@ const searchInput = (a) => {
       nodeArray.push({id: val.vote_down, group: 4})
       
       }
-      linkArray.push({source: val.vote_down, target: val.reply_content, value: 10, distance: 100})
+      linkArray.push({source: val.vote_down, target: val.reply_content, value: 10, distance: 200})
       
       
     }
     
      
 
-    linkArray.push({source: val.profile_rank, target: name, value: 10, distance: 100})
+    linkArray.push({source: val.profile_rank, target: name, value: 10, distance: 200})
 
     
-    linkArray.push({source: val.ontology, target: name, value: 10, distance: 100})
+    linkArray.push({source: val.ontology, target: name, value: 10, distance: 200})
     
     
     
     
     
 
-    linkArray.push({source: val.reply_content, target: val.ontology, value: 10, distance: 100});
+    linkArray.push({source: val.reply_content, target: val.ontology, value: 10, distance: 200});
     
    
     
@@ -172,15 +177,15 @@ getTermResults(term, terminology =>
       
       nodeArray.push({id: val.post_content, group: 2})
       
-      linkArray.push({source: val.curr_ontology, target: term, value: 10, distance: 100})
-      linkArray.push({source: val.post_content, target: val.curr_ontology, value: 10, distance: 100})
+      linkArray.push({source: val.curr_ontology, target: term, value: 10, distance: 200})
+      linkArray.push({source: val.post_content, target: val.curr_ontology, value: 10, distance: 200})
       
      
      }
       )
      
      }
-     Chart(data,terminologyResults)
+     Chart(data,terminology)
   });
   
   
@@ -206,17 +211,18 @@ getTermResults(term, terminology =>
         if(!nodeArray.find(n => n.id === val.terminology)){
         nodeArray.push({id: val.terminology,  group: 1})
         }
+        if(!nodeArray.find(n => n.id === val.post_content)){
         nodeArray.push({id: val.post_content, group: 2})
-        
-        linkArray.push({source: val.terminology, target: ontology_term, value: 10, distance: 100})
-        linkArray.push({source: val.post_content, target: val.terminology, value: 10, distance: 100})
+        }
+        linkArray.push({source: val.terminology, target: ontology_term, value: 10, distance: 200})
+        linkArray.push({source: val.post_content, target: val.terminology, value: 10, distance: 200})
         
        
        }
         )
        
        }
-       Chart(data, ontologyResults)
+       Chart(data, ontology_result)
     });
     
     
@@ -251,12 +257,14 @@ function redirectToPost (e, f){
 console.log(e[0].id)
 var nodeData = e[0].id;
 f.map((val) => {
- if(val.reply_content == nodeData)
+
+   if(val.reply_content == nodeData)
     window.open("http://localhost:3000/post/"+val.post_id)
-    if(val.terminology == nodeData)
+
+   else if(val.post_content == nodeData)
     window.open("http://localhost:3000/post/"+val.post_id)
-    if(val.cur_ontology == nodeData)
-    window.open("http://localhost:3000/post/"+val.post_id)
+
+   
 })
  
 
@@ -266,8 +274,8 @@ f.map((val) => {
 const Chart = (data, replyData) => {
     
   // Specify the dimensions of the chart.
-  const width = 928;
-  const height = 600;
+  const width = 1500;
+  const height = 800;
 
   // Specify the color scale.
   const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -309,13 +317,13 @@ const Chart = (data, replyData) => {
     .selectAll()
     .data(nodes)
     .join("circle")
-      .attr("r", 20)
+      .attr("r", 40)
       .attr("fill", d => color(d.group))
     .on("click",function(d){
       console.log("Clicked",replyData)
       
       var data = d3.select(this).data()
-      
+      console.log(data)
       redirectToPost(data, replyData)
         
          
@@ -339,7 +347,7 @@ const Chart = (data, replyData) => {
         .style("text-anchor", "middle")
         .style("fill", "#000")
         .style("font-family", "Arial")
-        .style("font-size", 12);
+        .style("font-size", 16);
    /*
   const text = node.append("text")
   .text(function(d) { return d.id; });
@@ -452,7 +460,7 @@ const [del, setDelete] = useState(false);
 
           <h1> Knowledge Graph </h1>
           </div>
-        <p> Choose what to search for and input to the search bar for results</p>
+        <p> Choose what to search for and input to the search bar for results. To redirect to a post, click on a node.</p>
 
         {/* Dropdown component for the user to select between different search query types (Expert, Medical term, Ontology) */}
          <Dropdown>
