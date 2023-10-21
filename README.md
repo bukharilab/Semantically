@@ -31,6 +31,7 @@ React Js, Flask
 - [Asim Abbas (Team Lead)](https://www.linkedin.com/in/asim-abbas-b2891ab8/)
 - [Steve Mbouadeu](https://www.linkedin.com/in/stevembouadeu/)
 - [Dr,Fazel Keshtkar](https://www.stjohns.edu/academics/faculty/fazel-keshtkar)
+- [Sebastian Chalarca](https://www.linkedin.com/in/sebastian-chalarca-603939201/)
 
 ## Published Research Papers
 

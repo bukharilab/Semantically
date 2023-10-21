@@ -59,9 +59,16 @@ const resetGraph = () => {
   setTitle(false)
 }
 
-const processQuery = (a) => {
-     
+const processQuery = () => {
+  var array = inputData;
+  array = array[0].split(' ')
+  array = array.map(function(a){return a.trim()})
+  var wordCount = array.length
+     for(var i = 0; i < wordCount; i++){
+           console.log(array[i])
+     }
 }
+
 //This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
@@ -529,6 +536,9 @@ const [del, setDelete] = useState(false);
               
                  <h2> Search results for: {name} </h2>
             ) :null}
+            <div>
+              <button type="button" class="btn btn-success" onClick={() => processQuery()}> Test </button>
+            </div>
        <div id="graph">
 
        </div>
