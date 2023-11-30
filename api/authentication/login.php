@@ -43,6 +43,7 @@
     }
   } else {
     // Convert to JSON & output error msg
+    
     http_response_code(400);
     echo json_encode(array('message' => 'Only POST requests are accepted'));
   }

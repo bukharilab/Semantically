@@ -7,18 +7,71 @@ const setUp = () =>
       withCredentials: true,
     },
   });
-
-const createPost = (question, terminology, ontology, context, callback) => {
+  const getAllUsers = (callback) =>{
+   $.post({
+   url: apiAddresses.getAllUsers,
+   success: (data) => callback(data["users"]),
+   })
+  }
+  const createPost = (question, terminology, ontology, context, callback) => {
+    setUp();
+    $.post({
+      url: apiAddresses.createPost,
+      data: {
+        question: question,
+        terminology: terminology,
+        ontology: ontology,
+        context: context,
+        
+      },
+      success: (data) => callback(data["post_id"]),
+    });
+  };
+  const getUserReplies = (first_name, last_name, callback) => {
+    setUp();
+    $.post({
+       url: apiAddresses.getUserReplies,
+       data: {
+         first_name: first_name,
+         last_name: last_name,
+       },
+       success: (data) => callback(data["replies"]),
+    })
+    
+  };
+  const getTermResults = (terminology, callback) =>{
+    setUp();
+    $.post({
+       url: apiAddresses.getTermResults,
+       data: {
+         terminology: terminology
+       },
+       success: (data) => callback(data["terminology"]),
+    })
+  }
+  const getOntology = (ontology, callback) =>{
+    setUp();
+    $.post({
+       url: apiAddresses.getOntology,
+       data: {
+         ontology: ontology
+       },
+       success: (data) => callback(data["ontology"]),
+    })
+  }
+const createDirectPost = (question, terminology, ontology, context, expertID, callback) => {
   setUp();
   $.post({
-    url: apiAddresses.createPost,
+    url: apiAddresses.createDirectPost,
     data: {
       question: question,
       terminology: terminology,
       ontology: ontology,
       context: context,
+      expertID: expertID,
     },
     success: (data) => callback(data["post_id"]),
+    
   });
 };
 
@@ -47,6 +100,13 @@ const getAllPosts = (callback) => {
   });
 };
 
+const getDirectPosts = (callback) => {
+  setUp();
+  $.post({
+    url: apiAddresses.getDirectPosts,
+  success: (data) => callback(data["direct_posts"]),
+  })
+}
 const replyPost = (
   post_id,
   ontology,
@@ -87,4 +147,4 @@ const postVoting = (post_reply_id,vote_up,vote_down,callback) =>{
     });
   };
 
-export { createPost, getPosts, getAllPosts, readPost, replyPost,postVoting,deletePost };
+export { getAllUsers, createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults, getOntology,deletePost };

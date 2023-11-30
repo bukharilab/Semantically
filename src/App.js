@@ -28,7 +28,7 @@ function App() {
     alert: alert,
     setAlert: setAlert,
   };
-
+  
   // Check if session still active
   if (!loggedIn) checkLoggedIn(setLoggedIn);
 
@@ -44,6 +44,7 @@ function App() {
       <Route path="/posts" component={Forum} />
       <Route path="/post/:postId" component={Post} />
       <Route path="/document/:documentId" component={Editor} />
+      
       <Route path="/" render={() => <Dashboard {...appProps} />} />
     </Switch></BrowserRouter>
     </>

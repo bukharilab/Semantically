@@ -9,7 +9,7 @@
 	$user_id = $_SESSION['user_id'];
 	if (!$user_id) user_id_error();
 
-  $doc_name = $_POST['doc_name'];
+    $doc_name = $_POST['doc_name'];
 	$desc = $_POST['description'];
 	$content = $_POST['content'];
 

@@ -18,8 +18,8 @@
   $time_stamp=date("Y-m-d H:i:s");
   // Create document
   $results = mysqli_query($db, sprintf("INSERT INTO `tbl_vote` (post_reply_id,user_id,vote_up,vote_down,time_stamp) 
-  VALUES ('%s', '%s', '%s','%s', '%s')", $post_reply_id,$user_id, $vote_up,$vote_down, $time_stamp));
-  if (mysqli_num_rows($results) > 0) die();
+  VALUES ( '%s', '%s','%s', '%s','%s')", $post_reply_id,$user_id, $vote_up,$vote_down, $time_stamp));
+  //if (mysqli_num_rows($results) > 0) die();
 
   if ($results) success_message("data insert");
   else system_error(mysqli_error($db));

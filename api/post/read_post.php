@@ -31,6 +31,7 @@
                   $res = mysqli_query($db, sprintf("SELECT first_name, last_name FROM `tbl_login` WHERE user_id = '%s'", $row['user_id']));
                   //by asim
                   $results_vote = mysqli_query($db, sprintf("SELECT SUM(vote_up) AS upvote,SUM(vote_down) AS downvote FROM `tbl_vote` WHERE post_reply_id = '%s'", $row['post_reply_id']));
+                  //$replies_res[] = array_merge($row, $res->fetch_assoc());
                   $replies_res[] = array_merge($row, $res->fetch_assoc(),$results_vote->fetch_assoc());
                   
               }

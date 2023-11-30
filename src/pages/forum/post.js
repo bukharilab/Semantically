@@ -12,9 +12,9 @@ import {
 import Sidebar from "../../components/Sidebar";
 import RangeSlider from "react-bootstrap-range-slider";
 import { useParams } from "react-router-dom";
-
 import { readPost, replyPost,postVoting } from "./hooks/postAPI";
 import { element } from "prop-types";
+import {Link} from "react-router-dom"
 
 export default function Post() {
   const { postId } = useParams();
@@ -29,7 +29,11 @@ export default function Post() {
   const [timeoutId, updateTimeoutId] = useState(0);
   const [st_vote, setVote] = useState("");
   const [allOntologies, updateAllOntologies] = useState({});
-
+  
+  const getReplies = (e) =>{
+const replyArray = e.map(newArr => ({post_id: newArr.post_id }))
+console.log(replyArray);
+  }
   const updateReplies = () => {
     readPost(
       postId,
@@ -70,6 +74,7 @@ export default function Post() {
         }
         console.log("acronyms",ontologies);
         updateAllOntologies(ontologies);
+        
       }});
   },[]);
 
@@ -87,7 +92,7 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
 
   // fetch post info
   useEffect(() => updateReplies(), [st_vote]);
-
+  
   return (
     <div className="app">
       <Sidebar />
@@ -108,6 +113,7 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
                 </Card.Subtitle>
                 <Card.Text>{context}</Card.Text>
                 <div className="text-right mt-4">
+                  {console.log()}
                   <Button
                     variant="outline-primary"
                     size="lg"
@@ -115,8 +121,15 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
                   >
                     Answer
                   </Button>
+                  
+                  
+
+                  
+                  
+          
                 </div>
               </div>
+            
             </Card.Body>
           </Card>
         </header>

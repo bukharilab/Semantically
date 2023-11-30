@@ -1,5 +1,7 @@
+import { getTermResults } from "./pages/forum/hooks/postAPI";
+
 // const apiAddress = 'https://api.gosemantically.com';
-const apiAddress = "http://api.gosemantically.com";
+const apiAddress = "http://localhost:8080/Semantically-master/api";
 
 const apiAddresses = {
   checkLoggedIn: `${apiAddress}/authentication/loggedin.php`,
@@ -12,6 +14,8 @@ const apiAddresses = {
   readDocument: `${apiAddress}/document/read_document.php`,
   editDocument: `${apiAddress}/document/edit_document.php`,
   createPost: `${apiAddress}/post/create_post.php`,
+  createDirectPost: `${apiAddress}/post/create_direct_post.php`,
+  getDirectPosts: `${apiAddress}/post/get_direct_posts.php`,
   readPost: `${apiAddress}/post/read_post.php`,
   replyPost: `${apiAddress}/post/reply_post.php`,
   getPosts: `${apiAddress}/post/get_posts.php`,
@@ -24,7 +28,12 @@ const apiAddresses = {
   checkRecommendation: `${apiAddress}/post/check_recommendation.php`,
   recommendationFlag: `${apiAddress}/post/recommendation_flag.php`,
   postVoting: `${apiAddress}/post/post_voting.php`,
-  deletePost: `${apiAddress}/post/delete_post.php`
+  deletePost: `${apiAddress}/post/delete_post.php`,
+  getUser_ID: `${apiAddress}/post/get_ID.php`,
+  getUserReplies: `${apiAddress}/post/get_replies.php`,
+  getTermResults: `${apiAddress}/post/get_replies_terms.php`,
+  getOntology: `${apiAddress}/post/get_ontology.php`,
+  getAllUsers: `${apiAddress}/post/get_users.php`
 };
 
 const postAddresses = {
