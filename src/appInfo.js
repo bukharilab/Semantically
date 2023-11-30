@@ -32,7 +32,8 @@ const apiAddresses = {
   getUser_ID: `${apiAddress}/post/get_ID.php`,
   getUserReplies: `${apiAddress}/post/get_replies.php`,
   getTermResults: `${apiAddress}/post/get_replies_terms.php`,
-  getOntology: `${apiAddress}/post/get_ontology.php`
+  getOntology: `${apiAddress}/post/get_ontology.php`,
+  getAllUsers: `${apiAddress}/post/get_users.php`
 };
 
 const postAddresses = {

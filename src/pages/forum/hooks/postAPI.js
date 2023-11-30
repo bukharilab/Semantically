@@ -7,7 +7,12 @@ const setUp = () =>
       withCredentials: true,
     },
   });
-
+  const getAllUsers = (callback) =>{
+   $.post({
+   url: apiAddresses.getAllUsers,
+   success: (data) => callback(data["users"]),
+   })
+  }
   const createPost = (question, terminology, ontology, context, callback) => {
     setUp();
     $.post({
@@ -142,4 +147,4 @@ const postVoting = (post_reply_id,vote_up,vote_down,callback) =>{
     });
   };
 
-export { createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults, getOntology,deletePost };
+export { getAllUsers, createPost, createDirectPost,getPosts, getAllPosts, getDirectPosts, readPost, replyPost,postVoting, getUserReplies, getTermResults, getOntology,deletePost };

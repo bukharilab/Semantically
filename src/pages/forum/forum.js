@@ -4,11 +4,10 @@ import Sidebar from '../../components/Sidebar';
 import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
-import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology} from './hooks/postAPI';
-import { Graph } from "react-d3-graph";
-import {Link} from "react-router-dom";
+import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology, getAllUsers} from './hooks/postAPI';
+import natural from "natural"
 import * as d3 from "d3"
-
+import nlp from "compromise"
 
 const Forum = () => {
 
@@ -31,6 +30,7 @@ const Forum = () => {
   const [ontologyResults, setOntologyResults] = useState([])
     const[nodeArray, setNodeArray] = useState([]);
     const[linkArray, setLinkArray] = useState([]);
+    const[userNameArray, setUserNameArray] = useState([])
   let inputHandler = (e) => {
 
     setInputData(e.target.value)
@@ -54,21 +54,29 @@ const postCardProps = {
 const resetGraph = () => {
   setNodeArray([])
   setLinkArray([])
-  setReplies([])
+  setReplies([]) 
   
   setTitle(false)
 }
 
-const processQuery = () => {
-  var array = inputData;
-  array = array[0].split(' ')
-  array = array.map(function(a){return a.trim()})
-  var wordCount = array.length
-     for(var i = 0; i < wordCount; i++){
-           console.log(array[i])
-     }
+const processNameQuery = (a) => {
+  var tokenizer = new natural.WordTokenizer()
+  const getName = tokenizer.tokenize(a)
+  let doc = nlp(a).people().text()
+  
+  console.log(getName)
+  console.log(doc)
+  return doc
 }
+const processOntologyQuery = (a) =>{
+  var tokenizer = new natural.SentenceTokenizer()
+  const getOntology = natural.PorterStemmer.tokenizeAndStem(a)
 
+}
+const processTermQuery = (a) =>{
+  let doc = nlp(a)
+  
+}
 //This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
@@ -77,23 +85,19 @@ const searchInput = (a) => {
   resetGraph()
   d3.selectAll("svg").remove()
   if(searchForUser) { 
-  
+  var name = processNameQuery(a)
   setTitle(true)
-  console.log("Before flush",nodeArray)
   
-  console.log("After flush",nodeArray)
-  var name = a;
-  setName(a)
-  const myName = name.split(" ");
-  console.log(myName[0],myName[1])
+  setName(name)
+  console.log(name)
+  var nameArray = name.split(" ")
+  console.log(nameArray)
   //Sends an api call to the database.
-  getUserReplies(myName[0], myName[1], replies => {
+  getUserReplies(nameArray[0], nameArray[1], replies => {
 
     console.log("Retrieval of data successful");
     //This line of code updates the state of the replies array to the replies retrieved from the database. This will be used for when users click on a node, the replies array will be used to compare to the node's reply content and then redirect to the page that leads to the page with the corresponding post id.
     setReplies(replies);
-    console.log(replies[0].first_name)
-    console.log(replies)
     setName(replies[0].first_name+" "+replies[0].last_name)
     //Push the root node first.
     nodeArray.push({id: name, color: "purple"})
@@ -146,8 +150,7 @@ const searchInput = (a) => {
    
     
     
-   console.log(nodeArray)    
-   console.log(linkArray)  
+   
   }
   
   )
@@ -537,7 +540,7 @@ const [del, setDelete] = useState(false);
                  <h2> Search results for: {name} </h2>
             ) :null}
             <div>
-              <button type="button" class="btn btn-success" onClick={() => processQuery()}> Test </button>
+              <button type="button" class="btn btn-success" onClick={() => processNameQuery()}> Test </button>
             </div>
        <div id="graph">
 
