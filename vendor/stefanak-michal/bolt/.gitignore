@@ -1,8 +1,0 @@
-.idea/
-.vscode/
-/index.php
-cert/
-/vendor/
-*.lock
-*.cache
-phpunit.dev.xml
