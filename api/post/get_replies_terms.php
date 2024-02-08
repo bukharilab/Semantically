@@ -24,7 +24,8 @@
            $time_stamp = date("Y-m-d H:i:s");
           
   //         // Insert the expert reply into databasr
-           $results = mysqli_query($db, sprintf("SELECT post_id, terminology, curr_ontology, post_content FROM tbl_create_post WHERE terminology = '%s'",$terminology));
+         //$results = mysqli_query($db, sprintf("SELECT post_id, terminology, curr_ontology, post_content FROM tbl_create_post WHERE terminology = '%s'",$terminology));
+         // $results = 
                    // Check if document created
           if ($results) {
               $res = array();

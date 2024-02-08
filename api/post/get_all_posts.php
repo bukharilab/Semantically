@@ -13,15 +13,29 @@
     $db = Database::connect();
 
     // Query for all posts
-    $results = mysqli_query($db, sprintf("SELECT * FROM tbl_create_post"));
-
+    //$results = mysqli_query($db, sprintf("SELECT * FROM tbl_create_post"));
+    $results = $db->run(
+      'MATCH (post:TblCreatePost)
+      OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
+      WITH post, COUNT(reply) AS responses
+      RETURN post, responses');   
+    
     if (!$results) {
         http_response_code(404);
         echo json_encode(array('message' => mysqli_error($db)));
     }
-
+    
     // Turn to JSON & output
     $res = array();
+    foreach ($results as $record) {
+        $post_id = $record->get('post'); 
+        $responses = $record->get('responses');
+        $postArray = $post_id->toArray();
+        $postArray['properties'] = $postArray['properties']->toArray();
+        $postArray['properties']['responses'] = $responses; 
+        $res[] = $postArray['properties'];
+    }
+    /*
     while ($row = mysqli_fetch_assoc($results)) {
         // get post responses
         $reponses = mysqli_query($db, sprintf("SELECT post_reply_id FROM `tbl_post_reply` WHERE post_id = '%s'", $row['post_id']));
@@ -29,6 +43,6 @@
         $res[] = $row;
 
     }
-
+    */
     http_response_code(200);
     echo json_encode(array('all_posts' => $res));

@@ -24,14 +24,22 @@
            $time_stamp = date("Y-m-d H:i:s");
           
   //         // Insert the expert reply into databasr
-           $results = mysqli_query($db, sprintf("SELECT post_id, terminology, curr_ontology, post_content FROM tbl_create_post WHERE curr_ontology = '%s'",$ontology));
+          $results = $db->run('MATCH(p:TblCreatePost {currOntology: $ont}) RETURN p.postId AS postId, p.terminology AS terminology, p.currOntology AS currOntology, p.postContent AS postContent', ['ont' => $ontology]);
                    // Check if document created
-          if ($results) {
-              $res = array();
-              while ($row = mysqli_fetch_assoc($results)) $res[] = $row;
-              http_response_code(200);
-              echo json_encode(array('ontology' => $res));
           
+          if ($results) {
+            $res = array();
+            foreach ($results as $record) {
+              $res[] = [
+                'post_id' => $record->get('postId'),
+                'terminology' => $record->get('terminology'),
+                'curr_ontology' => $record->get('currOntology'),
+                'post_content' => $record->get('postContent'),
+            ];
+                    
+            }
+            http_response_code(200);
+            echo json_encode(array('ontology' => $res));
 
           } else {
               http_response_code(404);

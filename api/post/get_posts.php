@@ -12,19 +12,23 @@
           // Connect to database & retrieve instance
           $db = Database::connect();
           // Query for all projects
-          $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_create_post` WHERE user_id = '%s'", $user_id));
+          $results = $db->run('MATCH (log:TblLogin {userId: $u_id})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply:TblPostReply) 
+          RETURN log,post,COUNT(reply) AS responses;', ['u_id' => $user_id]);
           // Check if document created
           if ($results) {
               // Turn to JSON & output
               $res = array();
-              while ($row = mysqli_fetch_assoc($results)) {
-                // get post responses
-                $reponses = mysqli_query($db, sprintf("SELECT post_reply_id FROM `tbl_post_reply` WHERE post_id = '%s'", $row['post_id']));
-                $row['responses'] = mysqli_num_rows($reponses);
-                $res[] = $row;
-              }
+            foreach ($results as $record) {
+        $post_id = $record->get('post'); 
+        $responses = $record->get('responses');
+        $postArray = $post_id->toArray();
+        $postArray['properties'] = $postArray['properties']->toArray();
+        $postArray['properties']['responses'] = $responses; 
+        $res[] = $postArray['properties'];
+    }
               http_response_code(200);
               echo json_encode(array('posts' => $res));
+              
           } else {
               http_response_code(404);
               // Convert to JSON & output error msg

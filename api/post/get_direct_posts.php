@@ -14,8 +14,11 @@
     $db = Database::connect();
 
     // Query for all posts
-    $results = mysqli_query($db, sprintf("SELECT * FROM `tbl_create_post` where expert_id = '%d'",$user_id));
-
+    //$results = mysqli_query($db, sprintf("SELECT * FROM `tbl_create_post` where expert_id = '%d'",$user_id));
+    $results = $db->run(<<<'CYPHER'
+         MATCH (all_posts:TblCreatePost {expertId: $exID})
+         RETURN all_posts; 
+         CYPHER, ['exID' => $user_id]);
     if (!$results) {
         http_response_code(404);
         echo json_encode(array('message' => mysqli_error($db)));
@@ -23,13 +26,23 @@
 
     // Turn to JSON & output
     $res = array();
-    while ($row = mysqli_fetch_assoc($results)) {
-        // get post responses
-        $reponses = mysqli_query($db, sprintf("SELECT post_reply_id FROM `tbl_post_reply` WHERE post_id = '%s'", $row['post_id']));
-        $row['responses'] = mysqli_num_rows($reponses);
-        $res[] = $row;
+    foreach($results as $result){
+        $node = $result->get('all_posts');
+        $post_id = $node->getProperty('postId');
+        
+        $responses = $db->run(<<<'CYPHER'
+        MATCH (post:TblCreatePost {postId: $id})-[:reply_to]-(reply:TblPostReply) RETURN post, COUNT(reply) as responses;
+        CYPHER, ['id' => $post_id]);
 
+     foreach ($responses as $record) {
+        $post_id = $record->get('post'); 
+        $responses = $record->get('responses');
+        $postArray = $post_id->toArray();
+        $postArray['properties'] = $postArray['properties']->toArray();
+        $postArray['properties']['responses'] = $responses; 
+        $res[] = $postArray['properties'];
+    
+         }
     }
-
     http_response_code(200);
     echo json_encode(array('direct_posts' => $res));

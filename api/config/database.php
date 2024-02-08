@@ -8,7 +8,11 @@
   $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
   $dotenv->load();
   */
-  
+  require_once '../vendor/autoload.php';
+  use Laudis\Neo4j\Authentication\Authenticate;
+  use Laudis\Neo4j\ClientBuilder;
+
+
   class Database {
     // Database connect
     public static function connect() {
@@ -18,7 +22,7 @@
       $database = $_ENV['DATABASE'];
       $username = $_ENV['USER'];
       $password = $_ENV['PASS'];
-      */
+      
       $host = "localhost";
       $database = "asim_semantically_dev";
       $username = "root";
@@ -26,10 +30,10 @@
       
       // Connect to database and store instance
       $conn = mysqli_connect($host, $username, $password, $database);
+      */
+      $client = ClientBuilder::create()->withDriver('http', 'http://localhost:8081', Authenticate::basic('neo4j','root1234'))->build();
       
-      
-      
-     return $conn;
+      return $client;
 
     }
     
