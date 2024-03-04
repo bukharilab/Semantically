@@ -1,52 +1,51 @@
 <?php 
 // Headers
 include_once '../config/headers.php';
-include_once '../config/database.php';
+include_once '../config/database.php'; // This should now use the Laudis Neo4j client
 
-// Check if POST request
+// Check if it's a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Start session and Get project id
+    // Start session and get user ID and term
     session_start();
     $user_id = $_SESSION['user_id'];
-    $term=$_POST['term'];
-    // Check if project id given
-    if ($user_id) {
-        // Connect to database & retrieve instance
-        $db = Database::connect();
-        // Query for all projects
-        //$results = mysqli_query($db, sprintf("SELECT * FROM `post_reply` WHERE term = '%s'", $term));
-        $results = mysqli_query($db, sprintf("SELECT tbl_create_post.post_id,tbl_create_post.terminology,tbl_post_reply.post_reply_id,tbl_post_reply.reply_content,tbl_post_reply.ontology,
-        tbl_post_reply.ontology_link,tbl_post_reply.confidence_score,tbl_post_reply.flag 
-        FROM `tbl_create_post` INNER JOIN tbl_post_reply ON tbl_create_post.post_id = tbl_post_reply.post_id
-         WHERE tbl_create_post.user_id='%s' AND tbl_create_post.terminology = '%s' AND tbl_post_reply.flag='%s'", $user_id,$term,'0'));
-        //$results = mysqli_query($db, sprintf("SELECT tbl_create_post.post_id,tbl_create_post.terminology,tbl_post_reply.post_reply_id,tbl_post_reply.reply_content,tbl_post_reply.ontology,tbl_post_reply.ontology_link,tbl_post_reply.flag,tbl_post_reply.confidence_score FROM `tbl_create_post` INNER JOIN tbl_post_reply ON tbl_create_post.post_id = tbl_post_reply.post_id WHERE tbl_create_post.user_id='%s' AND tbl_post_reply.flag='%s'", $user_id,$flag));
-        // Check if document created
-        if ($results) {
-            // Turn to JSON & output
-            $res = array();
-            while ($row =mysqli_fetch_assoc($results)) {
-                $res[] = $row;
+    $term = $_POST['term'];
+   
+    // Check if user ID and term are given
+    if ($user_id && $term) {
+        // Connect to Neo4j database & retrieve client instance
+        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
+        $neo4jClient = Database::connect();
+
+        // Prepare the Cypher query
+        /*
+        $query = 'MATCH (p:TblCreatePost)-[:reply_to]-(r:TblPostReply) WHERE p.userId = $user_id AND p.terminology = $term AND r.flag = $flag
+        RETURN p.postId AS post_id, p.terminology, r.replyId AS reply_id, r.replyContent AS reply_content, 
+               r.ontology, r.ontologyLink AS ontology_link, r.confidenceScore AS confidence_score, r.flag';
+        */
+        $query = 'MATCH (u:TblLogin {userId: $user_id})-[:created]-(p:TblCreatePost)-[:reply_to]-(r:TblPostReply) WHERE p.terminology = $term AND r.flag = $flag
+        RETURN collect({postId: p.postId, terminology: p.terminology, post_reply_id: r.postReplyId, reply_content: r.replyContent, ontology: r.ontology, onto_link: r.ontologyLink, confidence_score: r.confidenceScore, flag: r.flag}) AS Recommendation';
+        // Execute the query
+        try {
+            $results = $neo4jClient->run($query, ['user_id' => $user_id, 'term' => $term, 'flag' => 0]);
+
+            $res = [];
+            foreach ($results as $record) {
+                // Convert each record to an associative array
+                $res = $record->get('Recommendation')->toArray();
             }
+
             http_response_code(200);
-            //show the result
-            echo json_encode(array('message' => $res));
-            
-        } else {
+            echo json_encode(['message' => $res]);
+        } catch (\Throwable $e) {
             http_response_code(404);
-            // Convert to JSON & output error msg
-
-            echo json_encode(array('message' => mysqli_error($db)));
+            echo json_encode(['message' => $e->getMessage()]);
         }
-
     } else {
         http_response_code(400);
-        // Convert to JSON & output error msg
-        echo json_encode(array('message' => 'User id not given'));
+        echo json_encode(['message' => 'User ID or term not provided']);
     }
-
 } else {
     http_response_code(400);
-    // Convert to JSON & output error msg
-    echo json_encode(array('message' => 'Only POST requests are accepted'));
+    echo json_encode(['message' => 'Only POST requests are accepted']);
 }
 ?>

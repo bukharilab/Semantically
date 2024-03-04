@@ -1,69 +1,70 @@
 <?php
 
 // Headers
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
- 
+include_once '../config/headers.php';
+include_once '../config/database.php';
+
 // Check if POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Start session and Get user id
+    // Start session and get user ID
     session_start();
-    
+
     $user_id = $_SESSION['user_id'];
-    $doc_id = $_POST['doc_id'];
-    $post_reply_id = $_POST['post_reply_id'];
-    $from_loc = $_POST['from_loc'];
-    $to_loc = $_POST['to_loc'];
+    $doc_id = (int) $_POST['doc_id'];
+    $post_reply_id = (int) $_POST['post_reply_id'];
+    $from_loc = (int) $_POST['from_loc'];
+    $to_loc = (int) $_POST['to_loc'];
     $acronym = $_POST['acronym'];
     $onto_link = $_POST['onto_link'];
-    $flag = $_POST['flag'];
-    
-   
-    // Check if project id given
+    $flag = (int) $_POST['flag'];
+    /*
+    echo "Ontology link: " . $onto_link . "\n";
+    echo "Acronym: " . $acronym . "\n";
+    echo "From loc: " . $from_loc . "\n";
+    echo "To loc: " . $to_loc . "\n";
+    echo "doc id: " . $doc_id . "\n";
+    echo "flag: " . $flag . "\n";
+    echo "postReplyId: " . $post_reply_id ."\n";
+    */
+     // Check if post reply ID is given
     if ($post_reply_id) {
-        // Connect to database & retrieve instance
-        $db = Database::connect();
-        $time_stamp=date("Y-m-d H:i:s");
-        // Create document
-        $results = mysqli_query($db, sprintf("UPDATE `tbl_post_reply` SET flag= '%s' WHERE post_reply_id='%s'", $flag,$post_reply_id));
-        
-        // Check if document createdc
-        if ($results) {
-          if($flag === '1'){
-             // Select ontology Id
-       $anno_results = mysqli_query($db, sprintf("SELECT ontology_id FROM `tbl_primary_annotation` WHERE doc_id = '%s' AND from_loc='%s' AND to_loc ='%s'", $doc_id,$from_loc,$to_loc));  
-        
-        while ($anno_row = mysqli_fetch_assoc($anno_results)) {
-            
-            //update ontologies table
-            $onto_update = mysqli_query($db, sprintf("UPDATE `tbl_ontologies` SET acronym= '%s', link='%s' WHERE ontology_id='%s'",$acronym,$onto_link,$anno_row['ontology_id']));
-            
-        }
-            http_response_code(200);
-            // Turn to JSON & output
-            echo json_encode(array('message' => 'updated success'));
-          }
-          else{
-            http_response_code(200);
-            // Turn to JSON & output
-            echo json_encode(array('message' => 'success'));
-        }
+        // Connect to Neo4j database & retrieve client instance
+        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
+        $neo4jClient = Database::connect();
+        $time_stamp = date("Y-m-d H:i:s");
 
+        // Update post reply flag
+        $queryUpdateReply = 'MATCH (reply:TblPostReply {postReplyId: $post_reply_id})
+                             SET reply.flag = $flag';
+        $results = $neo4jClient->run($queryUpdateReply, ['post_reply_id' => $post_reply_id, 'flag' => $flag]);
+        /*
+        if($results){
+            print('flag successfully updated');
+            
+        }
+        */
+        // If flag is set to '1', update related ontologies
+        if ($flag === 1) {
+            $queryUpdateOntologies = 'MATCH (doc:TblDocument {docId: $doc_id})<-[:annotated_to]-(anno:TblPrimaryAnnotation {fromLoc: $from_loc, toLoc: $to_loc})<-[:annotated_from]-(onto:TblOntology {ontologyId: anno.ontologyId})
+                                      SET onto.acronym = $acronym, onto.link = $onto_link';
+            $query = $neo4jClient->run($queryUpdateOntologies, ['doc_id' => $doc_id, 'from_loc' => $from_loc, 'to_loc' => $to_loc, 'acronym' => $acronym, 'onto_link' => $onto_link]);
+            
+            $queryShowResults = 'MATCH (n:TblDocument {docId: 367883868})-[:annotated_to]-(anno:TblPrimaryAnnotation {fromLoc: 101, toLoc: 119})-[:annotated_from]-(onto:TblOntology {ontologyId: anno.ontologyId}) RETURN n,anno,onto;';
+            $qresults = $neo4jClient->run($queryShowResults);
+            
+            http_response_code(200);
+            echo json_encode(['message' => 'Updated successfully']);
+            echo json_encode(['Result' => $query]);
         } else {
-            http_response_code(404);
-            // Convert to JSON & output error msg
-            echo json_encode(array('message' => mysqli_error($db)));
+            http_response_code(200);
+            echo json_encode(['message' => 'Success']);
         }
-
     } else {
         http_response_code(400);
-        // Convert to JSON & output error msg
-        echo json_encode(array('message' => 'Post id not given'));
+        echo json_encode(['message' => 'Post reply ID not provided']);
     }
-
 } else {
     http_response_code(400);
-    // Convert to JSON & output error msg
-    echo json_encode(array('message' => 'Only POST requests are accepted'));
+    echo json_encode(['message' => 'Only POST requests are accepted']);
 }
 ?>

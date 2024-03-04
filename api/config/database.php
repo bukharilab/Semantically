@@ -31,8 +31,10 @@
       // Connect to database and store instance
       $conn = mysqli_connect($host, $username, $password, $database);
       */
-      $client = ClientBuilder::create()->withDriver('http', 'http://localhost:8081', Authenticate::basic('neo4j','root1234'))->build();
+      $client = ClientBuilder::create()
       
+      ->withDriver('bolt', 'bolt://localhost:7687', Authenticate::basic('neo4j', 'root1234'))
+      ->build();
       return $client;
 
     }

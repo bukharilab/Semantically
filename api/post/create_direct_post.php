@@ -11,7 +11,7 @@
       $terminology = $_POST['terminology'];
       $curr_ontology = $_POST['ontology'];
       $post_content = $_POST['context'];
-      $expert_id = $_POST['expertID'];
+      $expert_id = (int) $_POST['expertID'];
       //echo $expert_id;
       //isset($POST['expertID']);
       // Check if project id given

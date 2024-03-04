@@ -1,57 +1,57 @@
 <?php
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
+include_once '../config/headers.php';
+include_once '../config/database.php'; // Assuming this returns a Neo4j client
 
-  // Check if POST request
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      // Start session and Get user id
-      session_start();
-      $user_id = $_SESSION['user_id'];
-      $post_title = $_POST['question'];
-      $terminology = $_POST['terminology'];
-      $curr_ontology = $_POST['ontology'];
-      $post_content = $_POST['context'];
-      //$expert_id = $_POST['expertID'];
-      //isset($POST['expertID']);
-      // Check if project id given
-      if ($user_id) {
-        if ($post_title && $terminology && $post_content) {
-          // Connect to database & retrieve instance
-          $db = Database::connect();
-          $time_stamp=date("Y-m-d H:i:s");
-          // Create document
-          /*
-          if($expert_id) {
-            
-          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_create_post` (user_id, post_title, terminology, curr_ontology, post_content,time_stamp, expert_id) VALUES ('%s', '%s', '%s','%s', '%s', '%s')", $user_id, $post_title, $terminology, $curr_ontology, $post_content,$time_stamp,$expert_id));
-          }
-          */
+// Check if it's a POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Start session and get user ID and other POST data
+    session_start();
+    $user_id = $_SESSION['user_id'];
+    $post_title = $_POST['question'];
+    $terminology = $_POST['terminology'];
+    $curr_ontology = $_POST['ontology'];
+    $post_content = $_POST['context'];
+    // $expert_id = $_POST['expertID']; // Uncomment if you're using this variable
 
-          //else if($expert_id = null)
-          $results = mysqli_query($db, sprintf("INSERT INTO `tbl_create_post` (user_id, post_title, terminology, curr_ontology, post_content,time_stamp) VALUES ('%s', '%s', '%s','%s', '%s', '%s')", $user_id, $post_title, $terminology, $curr_ontology, $post_content,$time_stamp));
-          // Check if document created
-          if ($results) {
+    // Check if necessary data is provided
+    if ($user_id && $post_title && $terminology && $post_content) {
+        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
+        $neo4jClient = Database::connect();
+        $time_stamp = date("Y-m-d H:i:s");
+        $post_id = rand();
+        // Prepare the Cypher query to create a new post
+        $query = '
+        MATCH (log:TblLogin {userId: $user_id})
+        CREATE (p:TblCreatePost {postId: $post_id, postTitle: $post_title, terminology: $terminology, currOntology: $curr_ontology, postContent: $post_content, timeStamp: $time_stamp})
+        CREATE (p)-[:created]->(log) 
+        RETURN p.postId AS postId';
+
+        // Execute the query
+        try {
+            $result = $neo4jClient->run($query, [
+                'user_id' => $user_id,
+                'post_id' => $post_id,
+                'post_title' => $post_title,
+                'terminology' => $terminology,
+                'curr_ontology' => $curr_ontology,
+                'post_content' => $post_content,
+                'time_stamp' => $time_stamp
+            ]);
+
+            $postId = $result->first()->get('postId');
+
             http_response_code(200);
-            // Turn to JSON & output
-            echo json_encode(array('post_id' => mysqli_insert_id($db)));
-          } else {
-              http_response_code(404);
-              // Convert to JSON & output error msg
-              echo json_encode(array('message' => mysqli_error($db)));
-          }
-        } else {
-          http_response_code(400);
-          // Convert to JSON & output error msg
-          echo json_encode(array('message' => array('ont'=> $post_title, 'term'=> $terminology, 'cont'=> $post_content)));
+            echo json_encode(['post_id' => $postId]);
+        } catch (\Throwable $e) {
+            http_response_code(404);
+            echo json_encode(['message' => $e->getMessage()]);
         }
-      } else {
-          http_response_code(400);
-          // Convert to JSON & output error msg
-          echo json_encode(array('message' => 'User id not given'));
-      }
-
-  } else {
-      http_response_code(400);
-      // Convert to JSON & output error msg
-      echo json_encode(array('message' => 'Only POST requests are accepted'));
-  }
+    } else {
+        http_response_code(400);
+        echo json_encode(['message' => 'Missing required fields']);
+    }
+} else {
+    http_response_code(400);
+    echo json_encode(['message' => 'Only POST requests are accepted']);
+}
+?>

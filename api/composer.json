@@ -18,7 +18,8 @@
         "nyholm/psr7": "^1.8",
         "nyholm/psr7-server": "^1.1",
         "kriswallsmith/buzz": "^1.2",
-        "laudis/neo4j-php-client": "^3.0"
+        "laudis/neo4j-php-client": "^3.0",
+        "predis/predis": "^2.2"
     },
     "config": {
         "allow-plugins": {

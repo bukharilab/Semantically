@@ -12,7 +12,7 @@
           // Connect to database & retrieve instance
           $db = Database::connect();
           // Query for all projects
-          $results = $db->run('MATCH (log:TblLogin {userId: $u_id})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply:TblPostReply) 
+          $results = $db->run('MATCH (log:TblLogin {userId: $u_id})-[:created]-(post:TblCreatePost) OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply) 
           RETURN log,post,COUNT(reply) AS responses;', ['u_id' => $user_id]);
           // Check if document created
           if ($results) {

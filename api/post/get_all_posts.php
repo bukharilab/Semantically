@@ -1,6 +1,8 @@
 <?php
     include_once '../config/headers.php';
     include_once '../config/database.php';
+    
+   
     //include_once './get_responses_func.php';
 
     // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -8,17 +10,18 @@
     //     echo json_encode(array('message' => 'Only POST requests are accepted'));
     //     die();
     // }
+$query = 'MATCH (post:TblCreatePost)
+OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
+WITH post, COUNT(reply) AS responses
+RETURN post, responses';
+// Check if the result is in cache
 
     // Connect to database & retrieve instance
     $db = Database::connect();
 
     // Query for all posts
     //$results = mysqli_query($db, sprintf("SELECT * FROM tbl_create_post"));
-    $results = $db->run(
-      'MATCH (post:TblCreatePost)
-      OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
-      WITH post, COUNT(reply) AS responses
-      RETURN post, responses');   
+    $results = $db->run($query);   
     
     if (!$results) {
         http_response_code(404);

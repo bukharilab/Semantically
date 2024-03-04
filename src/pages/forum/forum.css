@@ -17,7 +17,13 @@
   flex-wrap: wrap;
 }
 
-
+.circle {
+  display: inline-block;
+  width: 10px; 
+  height: 10px;
+  border-radius: 50%; 
+  margin-right: 5px; 
+}
 .document-card .card-footer,
 .document-card .card-header {
   padding: 0 !important;

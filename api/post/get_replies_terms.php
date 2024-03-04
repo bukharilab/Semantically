@@ -25,11 +25,30 @@
           
   //         // Insert the expert reply into databasr
          //$results = mysqli_query($db, sprintf("SELECT post_id, terminology, curr_ontology, post_content FROM tbl_create_post WHERE terminology = '%s'",$terminology));
-         // $results = 
+         //$results = $db->run('MATCH (log:TblLogin)-[:created]-(doc:TblDocument )-[:annotated_to]-(anno:TblPrimaryAnnotation {textStr: $terminology})-[:annotated_from]-(onto:TblOntology) OPTIONAL MATCH (post:TblCreatePost {terminology: $terminology}) OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply) OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)
+         //RETURN post.postId AS post_id, anno.textStr AS terminology, post.currOntology AS curr_ontology, post.postContent AS post_content, reply.replyContent AS reply_content, vote.voteUp AS voteup, vote.voteDown AS votedown, id(vote) AS vote_id;',['terminology' => $terminology]);
+         $results = $db->run('MATCH (log:TblLogin)-[:created]-(post:TblCreatePost {terminology: $terminology})
+         OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
+         OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)
+         
+         RETURN post.postId AS post_id, post.postContent AS post_content, post.terminology AS terminology, reply.replyContent AS reply_content,post.currOntology AS curr_ontology, 
+                sum(vote.voteUp) AS upvote, sum(vote.voteDown) AS downvote, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score;',['terminology' => $terminology]);
                    // Check if document created
           if ($results) {
-              $res = array();
-              while ($row = mysqli_fetch_assoc($results)) $res[] = $row;
+            $res = array();
+            foreach ($results as $record) {
+              $res[] = [
+                'post_id' => $record->get('post_id'), 
+                'terminology' => $record->get('terminology'), 
+                'curr_ontology' => $record->get('curr_ontology'), 
+                'post_content' => $record->get('post_content'),
+                'reply_content' => $record->get('reply_content'),
+                'confidence_score' => $record->get('confidence_score'),
+                'reply_id' => $record->get('reply_id'),
+                'voteup' => $record->get('upvote'),
+                'votedown' => $record->get('downvote'),
+            ];
+            }
               http_response_code(200);
               echo json_encode(array('terminology' => $res));
           

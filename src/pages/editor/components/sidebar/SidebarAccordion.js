@@ -98,19 +98,7 @@ const SidebarAccordion = ({
   }
   
   //Get Current user's ID for calculating personalized recommendations.
-    $.post({
-       url: apiAddresses.getUser_ID,
-       success: (data) => {
-          console.log(data["data"][0]['user_id'])
-          updateID(data["data"][0]['user_id'])
-          
-          
-       }
-       
-       
-          
-         
-      });
+    
     
   const openPersonalizeModal = () => {
    
@@ -189,9 +177,11 @@ const SidebarAccordion = ({
       setCheck([]);
       let current_word = getTermStr(currentHighlight, content);
       clearTimeout(timeoutId);
+      
       updateTimeoutId(
         setTimeout(() => checkRecommendation(current_word, setCheck), 1000)
       );
+      
     }
   }, [currentHighlight]);
 
@@ -231,7 +221,10 @@ const SidebarAccordion = ({
                   ].acronym
                 }
               </span>
+              {console.log("Annotations by highlight: ", annotations[currentHighlight].length)}
               <div>
+              
+
                 {annotations[currentHighlight].length > 1 ? (
                   <Button
                     variant="outline-info"
@@ -374,7 +367,8 @@ const OntologyModal = ({
       );
     }
   });
-
+  {console.log("Annotation ID: ",annotations[term][0].annotation_id)}
+  {console.log("Ontology ID: ",annotations)}
   return (
     <Modal
       show={true}
@@ -390,6 +384,7 @@ const OntologyModal = ({
       <Modal.Body>
         <Accordion defaultActiveKey={`${term}-modal-0`} id="sidebar-accordion">
           {annotations[term].map((ontology, idx) => (
+            
             <Card>
               <Accordion.Toggle
                 as={Card.Header}

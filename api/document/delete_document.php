@@ -1,30 +1,34 @@
 <?php
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
-  include_once '../config/response.php';
+include_once '../config/headers.php';
+include_once '../config/database.php'; // This should now use the Laudis Neo4j client
+include_once '../config/response.php';
 
-  if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
-  session_start();
-	$user_id = $_SESSION['user_id'];
-	if (!$user_id) user_id_error();
+session_start();
+$user_id = $_SESSION['user_id'];
+if (!$user_id) user_id_error();
 
-  $document_id = $_POST['document_id'];
-  if (!$document_id) invalid_argument_error();
+$document_id = (int) $_POST['document_id'];
+if (!$document_id) invalid_argument_error();
 
-  // Connect to database & retrieve instance
-  $db = Database::connect();
+// Get the Neo4j client instance
+/** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
+$neo4jClient = Database::connect();
 
-  // delete ontologies
-  $results = mysqli_query($db, sprintf("SELECT anno_id FROM tbl_primary_annotation WHERE doc_id = '%s'", $document_id));
-  while ($anno_id = mysqli_fetch_assoc($results)['anno_id']) {
-    // delete ontologies
-    mysqli_query($db, sprintf("DELETE FROM tbl_ontologies WHERE anno_id = '%s'", $anno_id));
-  }
-  // delete annotations
-  $results = mysqli_query($db, sprintf("DELETE FROM tbl_primary_annotation WHERE doc_id = '%s'", $document_id));
-  // Delete document
-  $results = mysqli_query($db, sprintf("DELETE FROM tbl_documents WHERE doc_id = '%s'", $document_id));
+// Prepare the Cypher query to delete the document, annotations, and ontologies
+$query = '
+MATCH (doc:TblDocument {docId: $document_id})
+OPTIONAL MATCH (doc)-[:annotated_to]-(anno:TblPrimaryAnnotation)
+OPTIONAL MATCH (anno)-[:annotated_from]-(onto:TblOntology)
+DETACH DELETE doc, anno, onto';
 
-  if ($results) success_message("document deleted.");
-  else system_error(mysqli_error($db)); 
+// Execute the query
+try {
+    $neo4jClient->run($query, ['document_id' => $document_id]);
+    success_message("Document deleted.");
+} catch (\Throwable $e) {
+    // Handle any errors during the execution of the query
+    system_error($e->getMessage());
+}
+?>

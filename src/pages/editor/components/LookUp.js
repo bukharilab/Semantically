@@ -155,7 +155,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                       >
                         <a
                           href={
-                            element.ontology_link +
+                            element.onto_link +
                             "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f"
                           }
                           target={"_blank"}
