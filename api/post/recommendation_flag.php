@@ -16,7 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $to_loc = (int) $_POST['to_loc'];
     $acronym = $_POST['acronym'];
     $onto_link = $_POST['onto_link'];
-    $flag = (int) $_POST['flag'];
+    $flag = (int) $_POST['flag'];   
+    $rating = (int) $_POST['rating'];
+
     /*
     echo "Ontology link: " . $onto_link . "\n";
     echo "Acronym: " . $acronym . "\n";
@@ -45,12 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         */
         // If flag is set to '1', update related ontologies
         if ($flag === 1) {
+            $changeCurrOntologiesQuery = 'MATCH (log:TblLogin {userId: $user_id})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply:TblPostReply {postReplyId: $post_reply_id}) SET post.currOntology = $acronym RETURN log, post, reply';
+            $ontChangeQuery = $neo4jClient->run($changeCurrOntologiesQuery, ['user_id' => $user_id, 'post_reply_id' => $post_reply_id, 'acronym' => $acronym]);
+            
+            $addRecommendationRatingQuery = 'MATCH (reply:TblPostReply {postReplyId: $post_reply_id}) SET reply.rating = $rating';
+
             $queryUpdateOntologies = 'MATCH (doc:TblDocument {docId: $doc_id})<-[:annotated_to]-(anno:TblPrimaryAnnotation {fromLoc: $from_loc, toLoc: $to_loc})<-[:annotated_from]-(onto:TblOntology {ontologyId: anno.ontologyId})
                                       SET onto.acronym = $acronym, onto.link = $onto_link';
+            $ratingQuery = $neo4jClient->run($addRecommendationRatingQuery, ['post_reply_id' => $post_reply_id, 'rating' => $rating]);
             $query = $neo4jClient->run($queryUpdateOntologies, ['doc_id' => $doc_id, 'from_loc' => $from_loc, 'to_loc' => $to_loc, 'acronym' => $acronym, 'onto_link' => $onto_link]);
             
-            $queryShowResults = 'MATCH (n:TblDocument {docId: 367883868})-[:annotated_to]-(anno:TblPrimaryAnnotation {fromLoc: 101, toLoc: 119})-[:annotated_from]-(onto:TblOntology {ontologyId: anno.ontologyId}) RETURN n,anno,onto;';
-            $qresults = $neo4jClient->run($queryShowResults);
+            
             
             http_response_code(200);
             echo json_encode(['message' => 'Updated successfully']);

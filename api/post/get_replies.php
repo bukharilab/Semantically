@@ -20,7 +20,6 @@
       $confidence_score=$_POST['confidence_score'];
       */
       
-
   //     // Check if project id given
        if ($user_id ) {
         
@@ -33,7 +32,7 @@
           
   //         // Insert the expert reply into databasr
           // $results = mysqli_query($db, sprintf("SELECT tbl_post_reply.post_reply_id, tbl_create_post.post_id,ontology, first_name, last_name, reply_content, profile_rank, vote_up, vote_down FROM tbl_post_reply INNER JOIN tbl_login on tbl_login.user_id = tbl_post_reply.user_id LEFT JOIN tbl_vote on tbl_vote.post_reply_id = tbl_post_reply.post_reply_id LEFT JOIN tbl_create_post on tbl_create_post.post_id = tbl_post_reply.post_id WHERE first_name = '%s' and last_name = '%s'",$first_name, $last_name));
-          $results = $db->run('MATCH (log:TblLogin {firstName: $f_n, lastName: $l_n})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply: TblPostReply) OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote) RETURN log.firstName AS firstname, log.lastName AS lastname, post.postId AS postid, reply.postReplyId AS replypostid, reply.ontology AS ontology, reply.replyContent AS reply_content, reply.postReplyId AS reply_id, log.profileRank AS profileRank, SUM(vote.voteUp) AS upvote, SUM(vote.voteDown) AS downvote, reply.confidenceScore AS confidence_score;',['f_n' => $first_name,'l_n' => $last_name]);
+          $results = $db->run('MATCH (log:TblLogin {firstName: $f_n, lastName: $l_n})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply: TblPostReply) OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote) RETURN log.firstName AS firstname, log.lastName AS lastname, post.postId AS postid, reply.postReplyId AS replypostid, reply.ontology AS ontology, reply.replyContent AS reply_content, reply.postReplyId AS reply_id, log.profileRank AS profileRank, SUM(vote.voteUp) AS upvote, SUM(vote.voteDown) AS downvote, reply.confidenceScore AS confidence_score, reply.rating AS rating;',['f_n' => $first_name,'l_n' => $last_name]);
                    // Check if document created
           if ($results) {
             $res = array();
@@ -50,6 +49,7 @@
                 'reply_id' => $record->get('reply_id'),
                 'voteup' => $record->get('upvote'),
                 'votedown' => $record->get('downvote'),
+                'rating' => $record->get('rating'),
             ];
             }
             http_response_code(200);

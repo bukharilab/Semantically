@@ -39,7 +39,32 @@ const Forum = () => {
 
   }
 
+  function wilsonScore(pos, total, confidence = 0.95) {
+    if (total === 0) {
+      return 0;
+    }
   
+    // The proportion of positive ratings
+    const p = pos / total;
+  
+    // Z-score for the confidence interval (1.96 corresponds to about 95% confidence)
+    const z = (() => {
+      if (confidence === 0.95) return 1.96;
+      // Include other confidence levels if needed
+      // For example, for 99% confidence: if (confidence === 0.99) return 2.58;
+      // Default to 1.96 if an unrecognized confidence level is provided
+      return 1.96;
+    })();
+  
+    // The Wilson score formula
+    const denominator = 1 + (z*z / total);
+    const score = (p + (z*z / (2*total)) - z * Math.sqrt((p*(1-p) / total) + (z*z / (4*total*total)))) / denominator;
+  
+    return score;
+  }  
+  function normalize(value, max){
+    return (value / max).toFixed(3);
+  }
 
 // add by asim for post deletion
 const postCardProps = {
@@ -83,15 +108,16 @@ const processTermQuery = (a) =>{
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
 const searchInput = (a) => {
-
+const start = performance.now()
   resetGraph()
   d3.selectAll("svg").remove()
   if(searchForUser) { 
-  var name = processNameQuery(a)
+  //var name = processNameQuery(a)
+  var name = a
   setTitle(true)
   setSearchLegendQuery('User')
   setName(name)
-  console.log(name)
+  console.log("Name search : ",name)
   var nameArray = name.split(" ")
   console.log(nameArray)
   //Sends an api call to the database.
@@ -171,16 +197,44 @@ const searchInput = (a) => {
   }
   const filteredRecommendations = replies.filter(val => val.reply_id != null && val.reply_content != null && val.voteup != null && val.votedown != null)
   .map(val => {
-    const totalVotes = val.voteup + val.votedown;
-      // Calculate the score, ensuring the denominator is not zero
-      const score = totalVotes > 0 ? (val.voteup / totalVotes)*(parseInt(val.confidence_score)*0.01) : 0;
-      return {
-        reply_id: val.reply_id,
+    var upvotes = val.voteup
+                                                
+                                                var totalVotes = val.voteup + val.votedown;
+                                                
+                                                const maxConfidenceScore = 10;
+                                                const maxCredibilityScore = 5;
+                                                
+                                                var confidenceScore = val.confidence_score
+                                                var rating = val.rating
+                                                if(rating == null){
+                                                  rating = 0
+                                                }
+                                                if(confidenceScore == null){
+                                                  confidenceScore = 0
+                                                }
+                                                
+                                                    var wilson = wilsonScore(upvotes,totalVotes, 0.95);
+                                                    var normalizedConfidence = normalize(confidenceScore, maxConfidenceScore);
+                                                    var normalizedCredibility = normalize(rating, maxCredibilityScore);
+                                              
+                                                // Further calculations would depend on the specifics of your scoring system
+                                                // such as how you want to aggregate and calculate the final score
+                                                // For instance, a weighted average might look like this:
+                                                   var finalScore = (wilson + parseFloat(normalizedConfidence) + parseFloat(normalizedCredibility)) / 3;
+                                                  
+                                                    
+                                                
+                                                console.log(finalScore)
+
+                                                return {
+                                                  reply_id: val.reply_id,
         reply_content: val.reply_content,
         totalVoteUp: val.voteup,
         totalVoteDown: val.votedown,
-        score: parseFloat(score.toFixed(2))
-      }
+        wilsonScore: wilson.toFixed(3),
+        confidenceScore: confidenceScore,
+        rating: rating,
+        score: finalScore.toFixed(3)}
     
   }).sort((a, b) => b.score - a.score);
 setRecommendedList(filteredRecommendations);
@@ -261,15 +315,44 @@ getTermResults(term, terminology =>
      }
      const filteredRecommendations = terminology.filter(val => val.reply_id != null && val.reply_content != null && val.voteup != null && val.votedown != null)
                                               .map(val => {
-                                                const totalVotes = val.voteup + val.votedown;
-                                                // Calculate the score, ensuring the denominator is not zero
-                                                const score = totalVotes > 0 ? (val.voteup / totalVotes)*(parseInt(val.confidence_score)*0.01) : 0;
+                                                var upvotes = val.voteup
+                                                
+                                                var totalVotes = val.voteup + val.votedown;
+                                                
+                                                const maxConfidenceScore = 10;
+                                                const maxCredibilityScore = 5;
+                                                
+                                                var confidenceScore = val.confidence_score
+                                                var rating = val.rating
+                                                if(rating == null){
+                                                  rating = 0
+                                                }
+                                                if(confidenceScore == null){
+                                                  confidenceScore = 0
+                                                }
+                                                
+                                                    var wilson = wilsonScore(upvotes,totalVotes, 0.95);
+                                                    var normalizedConfidence = normalize(confidenceScore, maxConfidenceScore);
+                                                    var normalizedCredibility = normalize(rating, maxCredibilityScore);
+                                              
+                                                // Further calculations would depend on the specifics of your scoring system
+                                                // such as how you want to aggregate and calculate the final score
+                                                // For instance, a weighted average might look like this:
+                                                   var finalScore = (wilson + parseFloat(normalizedConfidence) + parseFloat(normalizedCredibility)) / 3;
+                                                  
+                                                    
+                                                
+                                                console.log(finalScore)
+
                                                 return {
                                                   reply_id: val.reply_id,
-                                                  reply_content: val.reply_content,
-                                                  totalVoteUp: val.voteup,
-                                                  totalVoteDown: val.votedown,
-                                                  score: parseFloat(score.toFixed(2))
+        reply_content: val.reply_content,
+        totalVoteUp: val.voteup,
+        totalVoteDown: val.votedown,
+        wilsonScore: wilson.toFixed(3),
+        confidenceScore: confidenceScore,
+        rating: rating,
+        score: finalScore.toFixed(3)
                                               }}).sort((a, b) => b.score - a.score);
         setRecommendedList(filteredRecommendations);
      Chart(data,terminology)
@@ -308,17 +391,17 @@ getTermResults(term, terminology =>
           
           linkArray.push({source: val.reply_content, target: val.post_content, value: 10, distance: 200})
           if(val.voteup != null ){
-            nodeArray.push({ id: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup, group: 4})  
-            linkArray.push({source: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup,target: val.reply_content, value: 10, distance: 200})     
+            nodeArray.push({ id: "ReplyId: "+val.reply_id+", Vote up: "+val.voteup, group: 4})  
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote up: "+val.voteup,target: val.reply_content, value: 10, distance: 200})     
           }
 
           if(val.votedown != null ){
-            nodeArray.push({ id: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown, group: 4})
-            linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
+            nodeArray.push({ id:  "ReplyId: "+val.reply_id+", Vote down: "+val.votedown, group: 4})
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote down: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
           }
           if(val.confidence_score != null){
-            nodeArray.push({ id: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score, group: 6})  
-            linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
+            nodeArray.push({ id: "ReplyId: "+val.reply_id+", Confidence score: "+val.confidence_score, group: 6})  
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
           }
           /*
           if(val.vote_id != null && !nodeArray.find(n => n.voteID === val.vote_id)){
@@ -348,15 +431,44 @@ getTermResults(term, terminology =>
         )
         const filteredRecommendations = ontology_result.filter(val => val.reply_id != null && val.reply_content != null && val.voteup != null && val.votedown != null)
                                               .map(val => {
-                                                const totalVotes = val.voteup + val.votedown;
-                                                // Calculate the score, ensuring the denominator is not zero
-                                                const score = totalVotes > 0 ? (val.voteup / totalVotes)*(parseInt(val.confidence_score)*0.01) : 0;
+                                                var upvotes = val.voteup
+                                                
+                                                var totalVotes = val.voteup + val.votedown;
+                                                
+                                                const maxConfidenceScore = 10;
+                                                const maxCredibilityScore = 5;
+                                                
+                                                var confidenceScore = val.confidence_score
+                                                var rating = val.rating
+                                                if(rating == null){
+                                                  rating = 0
+                                                }
+                                                if(confidenceScore == null){
+                                                  confidenceScore = 0
+                                                }
+                                                
+                                                    var wilson = wilsonScore(upvotes,totalVotes, 0.95);
+                                                    var normalizedConfidence = normalize(confidenceScore, maxConfidenceScore);
+                                                    var normalizedCredibility = normalize(rating, maxCredibilityScore);
+                                              
+                                                // Further calculations would depend on the specifics of your scoring system
+                                                // such as how you want to aggregate and calculate the final score
+                                                // For instance, a weighted average might look like this:
+                                                   var finalScore = (wilson + parseFloat(normalizedConfidence) + parseFloat(normalizedCredibility)) / 3;
+                                                  
+                                                    
+                                                
+                                                console.log(finalScore)
+
                                                 return {
                                                   reply_id: val.reply_id,
-                                                  reply_content: val.reply_content,
-                                                  totalVoteUp: val.voteup,
-                                                  totalVoteDown: val.votedown,
-                                                  score: parseFloat(score.toFixed(2))
+        reply_content: val.reply_content,
+        totalVoteUp: val.voteup,
+        totalVoteDown: val.votedown,
+        wilsonScore: wilson.toFixed(3),
+        confidenceScore: confidenceScore,
+        rating: rating,
+        score: finalScore.toFixed(3)
                                               }}).sort((a, b) => b.score - a.score);;
         setRecommendedList(filteredRecommendations);
        }
@@ -366,6 +478,9 @@ getTermResults(term, terminology =>
     
     
   }
+  const end = performance.now()
+  const totalTime = end - start
+  console.log("Total time elapsed: ", totalTime)
 }
 
 // This is the data that will be used for generating the nodes, links and their values to represent the data as a knowledge graph.
@@ -408,6 +523,25 @@ f.map((val) => {
  
 
 }
+/*
+function getLabelText(d) {
+  // Determine how to process each node based on its group
+  switch(d.group) {
+    case 4: 
+    let voteParts = d.id.split('-');
+        let voteType = voteParts[0]; // 'upvote' or 'downvote'
+        let voteCount = voteParts[voteParts.length - 1]; // the actual vote count
+        return `${voteCount}`;// Assuming group 4 is for upvotes/downvotes
+    case 6: // Assuming group 6 is for confidence scores
+    let confidenceParts = d.id.split('-');
+    let confidenceScore = confidenceParts[confidenceParts.length - 1]; // the actual confidence score
+    return `${confidenceScore}`;
+    default:
+      // For other nodes, just return the id as is
+      return d.id;
+  }
+}
+*/
 //------------------------------------------------------------------//
 //Graph Generation code
 const Chart = (data, replyData) => {
@@ -475,18 +609,19 @@ const Chart = (data, replyData) => {
 
 
   node.append("title")
-      .text(d => d.id);
       
-      var label = svg.selectAll(".mytext")
-      .data(nodes)
-      .enter()
-      .append("text")
-      //Sets the text for each node.
-        .text(function (d) { return d.id; })
-        .style("text-anchor", "middle")
-        .style("fill", "#000")
-        .style("font-family", "Arial")
-        .style("font-size", 16);
+      
+  var label = svg.selectAll(".mytext")
+  .data(nodes)
+  .enter()
+  .append("text")
+  //Sets the text for each node.
+    .text(function (d) { return d.id; })
+    .style("text-anchor", "middle")
+    .style("fill", "#000")
+    .style("font-family", "Arial")
+    .style("font-size", 16);
+        
    /*
   const text = node.append("text")
   .text(function(d) { return d.id; });
@@ -699,9 +834,9 @@ const [del, setDelete] = useState(false);
         <li> {val.post_reply_id}</li>
         
        })}
-       {console.log("Recommendation list: ", recommendedList)}
+       
             <div>
-              <h3> Most Recommended Results </h3>
+              <h3 class = "jumbotron"> Most Recommended Results </h3>
               {recommendedList && recommendedList.length > 0 ? (
                 <div>
                 <table>
@@ -710,15 +845,21 @@ const [del, setDelete] = useState(false);
             <th> Reply Content </th>
             <th> Upvotes </th>
             <th> Downvotes </th>
+            <th> Wilson Score </th>
+            <th> Confidence score </th>
+            <th> Rating </th>
             <th> Score</th>
           </tr>
         </thead>
                 <tbody>
-                {recommendedList.map((val) => (
+                {recommendedList.slice(0,4).map((val) => (
                   <tr key={(val.reply_id)}>  
                     <td> {val.reply_content}</td>
                     <td> {val.totalVoteUp}</td>
                     <td> {val.totalVoteDown}</td>
+                    <td> {val.wilsonScore}</td>
+                    <td> {val.confidenceScore}</td>
+                    <td> {val.rating}</td>             
                     <td> {val.score} </td>
                   </tr> 
                 )

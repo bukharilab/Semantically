@@ -32,7 +32,7 @@
          OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)
          
          RETURN post.postId AS post_id, post.postContent AS post_content, post.terminology AS terminology, reply.replyContent AS reply_content,post.currOntology AS curr_ontology, 
-                sum(vote.voteUp) AS upvote, sum(vote.voteDown) AS downvote, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score;',['terminology' => $terminology]);
+                sum(vote.voteUp) AS upvote, sum(vote.voteDown) AS downvote, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating;',['terminology' => $terminology]);
                    // Check if document created
           if ($results) {
             $res = array();
@@ -47,6 +47,7 @@
                 'reply_id' => $record->get('reply_id'),
                 'voteup' => $record->get('upvote'),
                 'votedown' => $record->get('downvote'),
+                'rating' => $record->get('rating'),
             ];
             }
               http_response_code(200);
