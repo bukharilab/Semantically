@@ -73,6 +73,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     
     alert("Accepted");
     closeModal();
+    openRatingPrompt(false)
     setSelectedRating(0)
   };
   

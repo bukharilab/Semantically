@@ -153,7 +153,7 @@ const start = performance.now()
         linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
       }
       if(val.confidence_score != null){
-        nodeArray.push({ id: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score, group: 5})  
+        nodeArray.push({ id: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score, group: 6})  
         linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
       }
       /*
@@ -523,25 +523,32 @@ f.map((val) => {
  
 
 }
-/*
+
 function getLabelText(d) {
+  
+     console.log("Confidence score: ", d)
+  
   // Determine how to process each node based on its group
   switch(d.group) {
     case 4: 
-    let voteParts = d.id.split('-');
-        let voteType = voteParts[0]; // 'upvote' or 'downvote'
+    let voteParts = d.id.split(':');
+        let voteType = voteParts[1]; // 'upvote' or 'downvote'
+        console.log("Vote type: ", voteType)
         let voteCount = voteParts[voteParts.length - 1]; // the actual vote count
+        console.log("Vote count: ", voteCount)
         return `${voteCount}`;// Assuming group 4 is for upvotes/downvotes
     case 6: // Assuming group 6 is for confidence scores
-    let confidenceParts = d.id.split('-');
+    console.log("conf score")
+    let confidenceParts = d.id.split(':');
     let confidenceScore = confidenceParts[confidenceParts.length - 1]; // the actual confidence score
+    console.log("Confidence score label: ", confidenceScore)
     return `${confidenceScore}`;
     default:
       // For other nodes, just return the id as is
       return d.id;
   }
 }
-*/
+
 //------------------------------------------------------------------//
 //Graph Generation code
 const Chart = (data, replyData) => {
@@ -616,7 +623,7 @@ const Chart = (data, replyData) => {
   .enter()
   .append("text")
   //Sets the text for each node.
-    .text(function (d) { return d.id; })
+    .text(function (d) { return getLabelText(d) })
     .style("text-anchor", "middle")
     .style("fill", "#000")
     .style("font-family", "Arial")
@@ -807,11 +814,37 @@ const [del, setDelete] = useState(false);
               <div class="legend"> 
               <h3> Legend </h3>
               <ul>
-                <li> <span class="circle" style={{backgroundColor:"#d62728"}}></span> User Replies</li> <br/>
-                <li> <span class="circle" style={{backgroundColor:"#2ca02c"}}></span> Profile rank</li> <br/>
-                <li> <span class="circle" style={{backgroundColor:"#ff7f0e"}}></span> Ontology Answer </li> <br/>
-                <li> <span class="circle" style={{backgroundColor:"#9467bd"}}></span> Votes</li> <br/>
-                <li> <span class="circle" style={{backgroundColor:"#8c564b"}}></span> Confidence Score</li> <br/>
+                <li> <span class="circle" style={{backgroundColor:"#d62728"}}>   </span> User Replies 
+                <div class="form-check"> 
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
+                hide
+  </label>
+</div></li> <br/>
+                <li> <span class="circle" style={{backgroundColor:"#2ca02c"}}></span> Profile rank</li> <div class="form-check"> 
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
+                hide
+  </label>
+</div><br/>
+                <li> <span class="circle" style={{backgroundColor:"#ff7f0e"}}></span> Ontology Answer </li><div class="form-check"> 
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
+                hide
+  </label>
+</div> <br/>
+                <li> <span class="circle" style={{backgroundColor:"#9467bd"}}></span> Votes</li><div class="form-check"> 
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
+                hide
+  </label>
+</div> <br/>
+                <li> <span class="circle" style={{backgroundColor:"#8c564b"}}></span> Confidence Score</li> <div class="form-check"> 
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
+                hide
+  </label>
+</div><br/>
                 <li> <span class="circle" style={{backgroundColor:"#1f77b4"}}></span> {searchLegendQuery} </li>
               </ul>
             </div>
@@ -836,7 +869,7 @@ const [del, setDelete] = useState(false);
        })}
        
             <div>
-              <h3 class = "jumbotron"> Most Recommended Results </h3>
+              <h3 class = "jumbotron" style={{fontSize: 40}}> Most Recommended Results </h3>
               {recommendedList && recommendedList.length > 0 ? (
                 <div>
                 <table>
