@@ -4,10 +4,11 @@ import Sidebar from '../../components/Sidebar';
 import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
-import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology, getAllUsers} from './hooks/postAPI';
+import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology, getAllUsers, getDefinition} from './hooks/postAPI';
 import natural from "natural"
 import * as d3 from "d3"
 import nlp from "compromise"
+import $ from 'jquery';
 
 const Forum = () => {
 
@@ -30,15 +31,55 @@ const Forum = () => {
   const [ontologyResults, setOntologyResults] = useState([])
     const[nodeArray, setNodeArray] = useState([]);
     const[linkArray, setLinkArray] = useState([]);
-   
+    
     const[recommendedList, setRecommendedList] = useState([])
     const[searchLegendQuery, setSearchLegendQuery] = useState('');
+    const[ontologyURI, setOntologyURI] = useState('')
+
+    const[bestDefinition, setBestDefinition] = useState('')
+    
+    //Code to allow users to filter out specific nodes.
+    //--------------------------------------------------------//
+    const [visibilityFilter, setVisibilityFilter] = useState({
+      userReplies: true,
+      profileRank: true,
+      ontologyAnswer: true,
+      votes: true,
+      confidenceScore: true,
+    });
+    const handleVisibilityChange = (group, isVisible) => {
+      setVisibilityFilter(prev => ({ ...prev, [group]: isVisible }));
+      
+    };
+    const getFilteredData = () => {
+      const filteredNodes = nodeArray.filter(node => visibilityFilter[node.group]);
+      const filteredLinks = linkArray.filter(link => visibilityFilter[link.source.group] && visibilityFilter[link.target.group]);
+      
+      return { nodes: filteredNodes, links: filteredLinks };
+    };
+    const { nodes, links } = getFilteredData();
+    Chart({ nodes, links }, replies);
+    // Example checkbox
+   
+    //--------------------------------------------------------//
   let inputHandler = (e) => {
 
     setInputData(e.target.value)
 
   }
-
+  function getOntologyDefinition(ont){
+    $.ajax({
+      method: "GET",
+      url: ont + "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f",
+      dataType: "JSON",
+      xhrFields: {
+        withCredentials: false
+      },
+      success: res => setBestDefinition(res['definition']),
+      error: res => 'Error retrieving definition.'
+    })
+    
+  }
   function wilsonScore(pos, total, confidence = 0.95) {
     if (total === 0) {
       return 0;
@@ -104,6 +145,7 @@ const processTermQuery = (a) =>{
   let doc = nlp(a)
   
 }
+
 //This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
@@ -133,28 +175,28 @@ const start = performance.now()
   {replies.map((val)=> {
     if(!nodeArray.find(n => n.id === val.ontology)){
       nodeArray.push({id: val.ontology, group: 2})
-      linkArray.push({source: val.ontology, target: name, value: 10, distance: 200})
+      linkArray.push({source: val.ontology, target: name, relationship: "has_suggested", value: 10, distance: 200})
     }
     if(!nodeArray.find(n => n.id === val.profile_rank)){
     nodeArray.push({id: val.profile_rank, group: 1})
-    linkArray.push({source: val.profile_rank, target: name, value: 10, distance: 200})
+    linkArray.push({source: val.profile_rank, target: name, relationship: "is_ranked", value: 10, distance: 200})
     }
     //If statements are used to make sure that no two nodes with the same exact data can be replicated. In d3.js, if a node with the same exact data is found in the array used to generate the nodes, it will not link with any nodes and will float away.
     if(val.reply_id != null && val.reply_content != null && !nodeArray.find(n => n.id === val.reply_content)){
       nodeArray.push({id: val.reply_content, group: 3})  
       
-      linkArray.push({source: val.reply_content, target: val.ontology, value: 10, distance: 200})
+      linkArray.push({source: val.reply_content, target: val.ontology, relationship: "reply_ontology", value: 10, distance: 200})
       if(val.voteup != null ){
         nodeArray.push({ id: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup, group: 4})  
-        linkArray.push({source: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup,target: val.reply_content, value: 10, distance: 200})     
+        linkArray.push({source: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup,target: val.reply_content, relationship: "upvote", value: 10, distance: 200})     
       }
       if(val.votedown != null ){
         nodeArray.push({ id: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown, group: 4})
-        linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
+        linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, relationship: "downvote",value: 10, distance: 200})
       }
       if(val.confidence_score != null){
         nodeArray.push({ id: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score, group: 6})  
-        linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
+        linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, relationship: "self_scored", value: 10, distance: 200})     
       }
       /*
       if(val.vote_id != null && !nodeArray.find(n => n.voteID === val.vote_id)){
@@ -234,11 +276,16 @@ const start = performance.now()
         wilsonScore: wilson.toFixed(3),
         confidenceScore: confidenceScore,
         rating: rating,
-        score: finalScore.toFixed(3)}
+        score: finalScore.toFixed(3),
+        ontology_link: val.ontology_link,
+      }
     
   }).sort((a, b) => b.score - a.score);
 setRecommendedList(filteredRecommendations);
-
+console.log("All recommendation:",filteredRecommendations)
+        console.log("ontology link: ",filteredRecommendations[0].ontology_link)
+        setOntologyURI(filteredRecommendations[0].ontology_link)
+        getOntologyDefinition(filteredRecommendations[0].ontology_link)
   //After all the nodeArray and LinkArray arrays are populated, the function will generate a graph with the data.
   //The process is the same for the medical term and ontology inputs but with different data being retrieved from the api.
   Chart(data, replies)
@@ -275,18 +322,18 @@ getTermResults(term, terminology =>
       if(val.reply_id != null && val.reply_content != null && !nodeArray.find(n => n.id === val.reply_content)){
         nodeArray.push({id: val.reply_content, group: 3})  
         
-        linkArray.push({source: val.reply_content, target: val.post_content, value: 10, distance: 200})
+        linkArray.push({source: val.reply_content, target: val.post_content, relationship: "reply_to" ,value: 10, distance: 200})
         if(val.voteup != null ){
           nodeArray.push({ id: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup, group: 4})  
-          linkArray.push({source: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup,target: val.reply_content, value: 10, distance: 200})     
+          linkArray.push({source: "Reply_id: "+val.reply_id+" Upvote: "+val.voteup,target: val.reply_content, relationship: "upvote", value: 10, distance: 200})     
         }
         if(val.votedown != null ){
           nodeArray.push({ id: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown, group: 4})
-          linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
+          linkArray.push({source: "Reply_id: "+val.reply_id+" Downvote: "+val.votedown,  target: val.reply_content, value: 10, relationship: "downvote" ,distance: 200})
         }
         if(val.confidence_score != null){
           nodeArray.push({ id: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score, group: 6})  
-          linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
+          linkArray.push({source: "Reply_id: "+val.reply_id+" Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, relationship: "self_scored",distance: 200})     
         }
         /*
         if(val.vote_id != null && !nodeArray.find(n => n.voteID === val.vote_id)){
@@ -352,9 +399,14 @@ getTermResults(term, terminology =>
         wilsonScore: wilson.toFixed(3),
         confidenceScore: confidenceScore,
         rating: rating,
-        score: finalScore.toFixed(3)
+        score: finalScore.toFixed(3),
+        ontology_link: val.ontology_link,
                                               }}).sort((a, b) => b.score - a.score);
         setRecommendedList(filteredRecommendations);
+        console.log("All recommendation:",filteredRecommendations)
+        console.log("ontology link: ",filteredRecommendations[0].ontology_link)
+        setOntologyURI(filteredRecommendations[0].ontology_link)
+        getOntologyDefinition(filteredRecommendations[0].ontology_link)
      Chart(data,terminology)
   });
   
@@ -380,28 +432,28 @@ getTermResults(term, terminology =>
         
         if(val.terminology != null && !nodeArray.find(n => n.id === val.terminology)){
         nodeArray.push({id: val.terminology,  group: 1})
-        linkArray.push({source: val.terminology, target: ontology_term, value: 10, distance: 200})
+        linkArray.push({source: val.terminology, target: ontology_term, relationship: "defined_by", value: 10, distance: 200})
         }
         if(val.post_content != null && !nodeArray.find(n => n.id === val.post_content)){
         nodeArray.push({id: val.post_content, group: 2})
-        linkArray.push({source: val.post_content, target: val.terminology, value: 10, distance: 200})
+        linkArray.push({source: val.post_content, target: val.terminology, relationship: "current_ontology_of", value: 10, distance: 200})
         }
         if(val.reply_id != null && val.reply_content != null && !nodeArray.find(n => n.id === val.reply_content)){
           nodeArray.push({id: val.reply_content, group: 3})  
           
-          linkArray.push({source: val.reply_content, target: val.post_content, value: 10, distance: 200})
+          linkArray.push({source: val.reply_content, target: val.post_content, relationship: "reply_to", value: 10, distance: 200})
           if(val.voteup != null ){
             nodeArray.push({ id: "ReplyId: "+val.reply_id+", Vote up: "+val.voteup, group: 4})  
-            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote up: "+val.voteup,target: val.reply_content, value: 10, distance: 200})     
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote up: "+val.voteup,target: val.reply_content, relationship: "upvote", value: 10, distance: 200})     
           }
 
           if(val.votedown != null ){
             nodeArray.push({ id:  "ReplyId: "+val.reply_id+", Vote down: "+val.votedown, group: 4})
-            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote down: "+val.votedown,  target: val.reply_content, value: 10, distance: 200})
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Vote down: "+val.votedown,  target: val.reply_content, relationship: "downvote", value: 10, distance: 200})
           }
           if(val.confidence_score != null){
             nodeArray.push({ id: "ReplyId: "+val.reply_id+", Confidence score: "+val.confidence_score, group: 6})  
-            linkArray.push({source: "ReplyId: "+val.reply_id+", Confidence score: "+val.confidence_score,target: val.reply_content, value: 10, distance: 200})     
+            linkArray.push({source: "ReplyId: "+val.reply_id+", Confidence score: "+val.confidence_score,target: val.reply_content, relationship: "self_scored", value: 10, distance: 200})     
           }
           /*
           if(val.vote_id != null && !nodeArray.find(n => n.voteID === val.vote_id)){
@@ -429,7 +481,7 @@ getTermResults(term, terminology =>
         
        }
         )
-        const filteredRecommendations = ontology_result.filter(val => val.reply_id != null && val.reply_content != null && val.voteup != null && val.votedown != null)
+        const filteredRecommendations = ontology_result.filter(val => val.reply_id != null && val.reply_content != null && val.voteup != null && val.votedown != null && val.ontology_link != null)
                                               .map(val => {
                                                 var upvotes = val.voteup
                                                 
@@ -458,7 +510,7 @@ getTermResults(term, terminology =>
                                                   
                                                     
                                                 
-                                                console.log(finalScore)
+                                                
 
                                                 return {
                                                   reply_id: val.reply_id,
@@ -468,11 +520,16 @@ getTermResults(term, terminology =>
         wilsonScore: wilson.toFixed(3),
         confidenceScore: confidenceScore,
         rating: rating,
-        score: finalScore.toFixed(3)
+        score: finalScore.toFixed(3),
+        ontology_link: val.ontology_link,
                                               }}).sort((a, b) => b.score - a.score);;
         setRecommendedList(filteredRecommendations);
+        console.log("All recommendation:",filteredRecommendations)
+        console.log("ontology link: ",filteredRecommendations[0].ontology_link)
+        setOntologyURI(filteredRecommendations[0].ontology_link)
+        getOntologyDefinition(filteredRecommendations[0].ontology_link)
        }
-       
+      
        Chart(data, ontology_result)
     });
     
@@ -526,22 +583,22 @@ f.map((val) => {
 
 function getLabelText(d) {
   
-     console.log("Confidence score: ", d)
+     
   
   // Determine how to process each node based on its group
   switch(d.group) {
     case 4: 
     let voteParts = d.id.split(':');
         let voteType = voteParts[1]; // 'upvote' or 'downvote'
-        console.log("Vote type: ", voteType)
+       
         let voteCount = voteParts[voteParts.length - 1]; // the actual vote count
-        console.log("Vote count: ", voteCount)
+        
         return `${voteCount}`;// Assuming group 4 is for upvotes/downvotes
     case 6: // Assuming group 6 is for confidence scores
-    console.log("conf score")
+    
     let confidenceParts = d.id.split(':');
     let confidenceScore = confidenceParts[confidenceParts.length - 1]; // the actual confidence score
-    console.log("Confidence score label: ", confidenceScore)
+    
     return `${confidenceScore}`;
     default:
       // For other nodes, just return the id as is
@@ -554,7 +611,7 @@ function getLabelText(d) {
 const Chart = (data, replyData) => {
     
   // Specify the dimensions of the chart.
-  const width = 1500;
+  const width = 2500;
   const height = 1500;
 
   // Specify the color scale.
@@ -580,7 +637,20 @@ const Chart = (data, replyData) => {
       .attr("height", height)
       .attr("viewBox", [0, 0, width, height])
       .attr("style", "max-width: 100%; height: auto;");
-
+      svg.append("defs").selectAll("marker")
+    .data(["end"])      // Just one marker type called 'end'
+  .enter().append("marker")
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 25)   // Controls the distance between the arrowhead and the node
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", "#999"); // Arrow color
+      
   // Add a line for each link, and a circle for each node.
   const link = svg.append("g")
       .attr("stroke", "#999")
@@ -589,15 +659,15 @@ const Chart = (data, replyData) => {
     .data(links)
     .join("line")
       .attr("stroke-width", d => Math.sqrt(d.value))
-      .attr("stroke-length", 100);
-
+      .attr("stroke-length", 100)
+      .attr("marker-end", "url(#end)"); 
   const node = svg.append("g")
       .attr("stroke", "#fff")
       .attr("stroke-width", 1.5)
     .selectAll()
     .data(nodes)
     .join("circle")
-      .attr("r", 40)
+      .attr("r", 60)
       .attr("fill", d => color(d.group))
     .on("click",function(d){
       console.log("Clicked",replyData)
@@ -627,8 +697,15 @@ const Chart = (data, replyData) => {
     .style("text-anchor", "middle")
     .style("fill", "#000")
     .style("font-family", "Arial")
-    .style("font-size", 16);
-        
+    .style("font-size", 24);
+  const linkText = svg.append("g")
+    .attr("class", "link-labels")
+  .selectAll("text")
+  .data(links)
+  .join("text")
+    .text(d => d.relationship) // Assuming you want to display the 'value' property as the label
+    .attr("font-size", 16)
+    .attr("fill", "#F00");     
    /*
   const text = node.append("text")
   .text(function(d) { return d.id; });
@@ -654,6 +731,9 @@ const Chart = (data, replyData) => {
     label
         .attr("x", function(d){ return d.x; })
         .attr("y", function (d) {return d.y - 10; });
+        linkText
+        .attr("x", d => (d.source.x + d.target.x) / 2)
+        .attr("y", d => (d.source.y + d.target.y) / 2);
   }
   function linkDistance(d) {
     return d.distance;
@@ -816,34 +896,45 @@ const [del, setDelete] = useState(false);
               <ul>
                 <li> <span class="circle" style={{backgroundColor:"#d62728"}}>   </span> User Replies 
                 <div class="form-check"> 
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
-                hide
-  </label>
+                <input
+      class="form-check-input"
+      type="checkbox"
+      checked={visibilityFilter.userReplies}
+      onChange={(e) => handleVisibilityChange('userReplies', e.target.checked)}
+    />
 </div></li> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#2ca02c"}}></span> Profile rank</li> <div class="form-check"> 
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
-                hide
-  </label>
+                <input
+      class="form-check-input"
+      type="checkbox"
+      checked={visibilityFilter.userReplies}
+      onChange={(e) => handleVisibilityChange('profileRank', e.target.checked)}
+    />
 </div><br/>
+
                 <li> <span class="circle" style={{backgroundColor:"#ff7f0e"}}></span> Ontology Answer </li><div class="form-check"> 
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
-                hide
-  </label>
+                <input
+      class="form-check-input"
+      type="checkbox"
+      checked={visibilityFilter.userReplies}
+      onChange={(e) => handleVisibilityChange('ontologyAnswer', e.target.checked)}
+    />
 </div> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#9467bd"}}></span> Votes</li><div class="form-check"> 
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
-                hide
-  </label>
+                <input
+      class="form-check-input"
+      type="checkbox"
+      checked={visibilityFilter.userReplies}
+      onChange={(e) => handleVisibilityChange('votes', e.target.checked)}
+    />
 </div> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#8c564b"}}></span> Confidence Score</li> <div class="form-check"> 
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                <label class="form-check-label" for="flexCheckDefault" style={{fontSize: 16}}>
-                hide
-  </label>
+                <input
+      class="form-check-input"
+      type="checkbox"
+      checked={visibilityFilter.userReplies}
+      onChange={(e) => handleVisibilityChange('confidenceScore', e.target.checked)}
+    />
 </div><br/>
                 <li> <span class="circle" style={{backgroundColor:"#1f77b4"}}></span> {searchLegendQuery} </li>
               </ul>
@@ -867,11 +958,12 @@ const [del, setDelete] = useState(false);
         <li> {val.post_reply_id}</li>
         
        })}
-       
+            
             <div>
               <h3 class = "jumbotron" style={{fontSize: 40}}> Most Recommended Results </h3>
-              {recommendedList && recommendedList.length > 0 ? (
-                <div>
+              
+              <div>
+                <h1> Best Result </h1>
                 <table>
                 <thead> 
           <tr> 
@@ -884,9 +976,61 @@ const [del, setDelete] = useState(false);
             <th> Score</th>
           </tr>
         </thead>
-                <tbody>
-                {recommendedList.slice(0,4).map((val) => (
+        <tbody>
+        {recommendedList.slice(0,1).map((val) => (
                   <tr key={(val.reply_id)}>  
+                    <td> {recommendedList[0].reply_content}</td>
+                    <td> {recommendedList[0].totalVoteUp}</td>
+                    <td> {recommendedList[0].totalVoteDown}</td>
+                    <td> {recommendedList[0].wilsonScore}</td>
+                    <td> {recommendedList[0].confidenceScore}</td>
+                    <td> {recommendedList[0].rating}</td>             
+                    <td> {recommendedList[0].score} </td>
+                  </tr> 
+                )
+                 
+                )}
+                  </tbody>
+                </table>
+                {bestDefinition ? (<div>
+                    <h3 style={{fontSize: 30}}> Ontology Definition </h3>
+                    <p style={{fontSize: 40, border: '5px solid black', padding: 10}}> {bestDefinition} </p>
+                    </div>
+                ):null}
+                
+      {/* Textbox that is conditionally rendered */}
+      
+              </div>
+              <br/>
+             
+              <hr/>
+              
+              {recommendedList && recommendedList.length > 0 ? (
+                
+                <div>
+                  <h1 > All Top results</h1>
+                <table>
+                <thead> 
+          <tr> 
+            <th> Rank </th>
+            <th> Reply Content </th>
+            <th> Upvotes </th>
+            <th> Downvotes </th>
+            <th> Wilson Score </th>
+            <th> Confidence score </th>
+            <th> Rating </th>
+            <th> Score</th>
+          </tr>
+        </thead>
+                <tbody>
+                {recommendedList.slice(0,5).map((val, index) => (
+                  <tr key={(val.reply_id)}>  
+                    <td> 
+                      {(index == 0) && (<div> <span class="gold_medal"> {index + 1} </span></div>)}
+                      {(index == 1) && (<div> <span class="silver_medal"> {index + 1} </span></div>)}
+                      {(index == 2) && (<div> <span class="bronze_medal"> {index + 1} </span></div>)}
+                      {index >= 3 && (index + 1)}
+                   </td>
                     <td> {val.reply_content}</td>
                     <td> {val.totalVoteUp}</td>
                     <td> {val.totalVoteDown}</td>

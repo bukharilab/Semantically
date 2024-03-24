@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query = 'MATCH (p:TblCreatePost {postId: $post_id})
         CREATE (reply:TblPostReply {postReplyId: $post_reply_id, ontology: $ontology, ontologyLink: $ontology_link, replyContent: $reply_content, confidenceScore: $confidence_score, flag: $flag, timeStamp: $time_stamp})       
         CREATE (reply)<-[:reply_to]-(p)
+        CREATE (log)<-[:created]-(reply)
         RETURN id(reply) AS replyId';
         
         try {

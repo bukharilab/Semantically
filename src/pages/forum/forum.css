@@ -46,4 +46,51 @@
 th, td{
   padding: 10px;
   border: 5px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+hr {
+  height: 5px; /* Thickness of the line */
+  background-color: #000; /* Color of the line */
+  width: 100%; /* Length of the line */
+}
+.gold_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #ffd700; /* Gold color */
+  color: white;
+  
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.silver_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #C0C0C0; /* Silver color */
+  color: white;
+  
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.bronze_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #CD7F32; /* Bronze color */
+  color: white;
+  font-weight: bold;
+  margin: 0 5px;
 }
