@@ -13,6 +13,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $email = $_POST['email'];
       $google_id= $_POST['google_id'];
+      
     // Check if email id given
     if ($email && $google_id) {
       // Connect to database & retrieve instance

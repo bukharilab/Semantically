@@ -40,6 +40,7 @@ const Forum = () => {
     
     //Code to allow users to filter out specific nodes.
     //--------------------------------------------------------//
+    /*
     const [visibilityFilter, setVisibilityFilter] = useState({
       userReplies: true,
       profileRank: true,
@@ -59,6 +60,7 @@ const Forum = () => {
     };
     const { nodes, links } = getFilteredData();
     Chart({ nodes, links }, replies);
+    */
     // Example checkbox
    
     //--------------------------------------------------------//
@@ -126,6 +128,40 @@ const resetGraph = () => {
   setRecommendedList([])
   setTitle(false)
 }
+const downloadSvg = () => {
+  // Get the SVG element using its ID or class
+  const svg = document.getElementById('graph');
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svg);
+
+  // Add name spaces.
+  if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+      source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+  }
+
+  // Add xml declaration
+  source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+  // Convert SVG source to URI data scheme.
+  const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+  // Create an anchor for the download
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'graph.svg';  // Set the download filename.
+  
+  // Append to the document
+  document.body.appendChild(link);
+  
+  // Trigger the download
+  link.click();
+  
+  // Cleanup
+  document.body.removeChild(link);
+};
 
 const processNameQuery = (a) => {
   var tokenizer = new natural.WordTokenizer()
@@ -896,45 +932,20 @@ const [del, setDelete] = useState(false);
               <ul>
                 <li> <span class="circle" style={{backgroundColor:"#d62728"}}>   </span> User Replies 
                 <div class="form-check"> 
-                <input
-      class="form-check-input"
-      type="checkbox"
-      checked={visibilityFilter.userReplies}
-      onChange={(e) => handleVisibilityChange('userReplies', e.target.checked)}
-    />
+                
 </div></li> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#2ca02c"}}></span> Profile rank</li> <div class="form-check"> 
-                <input
-      class="form-check-input"
-      type="checkbox"
-      checked={visibilityFilter.userReplies}
-      onChange={(e) => handleVisibilityChange('profileRank', e.target.checked)}
-    />
+                
 </div><br/>
 
                 <li> <span class="circle" style={{backgroundColor:"#ff7f0e"}}></span> Ontology Answer </li><div class="form-check"> 
-                <input
-      class="form-check-input"
-      type="checkbox"
-      checked={visibilityFilter.userReplies}
-      onChange={(e) => handleVisibilityChange('ontologyAnswer', e.target.checked)}
-    />
+                
 </div> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#9467bd"}}></span> Votes</li><div class="form-check"> 
-                <input
-      class="form-check-input"
-      type="checkbox"
-      checked={visibilityFilter.userReplies}
-      onChange={(e) => handleVisibilityChange('votes', e.target.checked)}
-    />
+                
 </div> <br/>
                 <li> <span class="circle" style={{backgroundColor:"#8c564b"}}></span> Confidence Score</li> <div class="form-check"> 
-                <input
-      class="form-check-input"
-      type="checkbox"
-      checked={visibilityFilter.userReplies}
-      onChange={(e) => handleVisibilityChange('confidenceScore', e.target.checked)}
-    />
+                
 </div><br/>
                 <li> <span class="circle" style={{backgroundColor:"#1f77b4"}}></span> {searchLegendQuery} </li>
               </ul>
@@ -1049,7 +1060,7 @@ const [del, setDelete] = useState(false);
               ): <p> No recommended results. </p>}
 
             </div>
-  
+            <button id="download" onClick={downloadSvg}>Download Graph</button>
                   
               </div>
 
