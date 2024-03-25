@@ -22,7 +22,6 @@
     "react": "^17.0.1",
     "react-bootstrap": "^1.6.4",
     "react-bootstrap-range-slider": "^3.0.3",
-    "react-chips": "^0.8.0",
     "react-cookie": "^4.1.1",
     "react-d3-graph": "^2.6.0",
     "react-dom": "^17.0.1",
