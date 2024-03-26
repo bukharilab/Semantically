@@ -5,7 +5,7 @@ import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
 import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology, getAllUsers, getDefinition} from './hooks/postAPI';
-
+import nlp from "compromise"
 import * as d3 from "d3"
 
 import $ from 'jquery';
