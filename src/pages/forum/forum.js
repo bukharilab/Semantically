@@ -5,9 +5,9 @@ import ForumCard from './components/ForumCard';
 import {Button, Tabs, Tab, Dropdown, DropdownButton} from 'react-bootstrap';
 import TextField from "@mui/material/TextField";
 import {getPosts, getAllPosts, getDirectPosts, getUserReplies, getTermResults, getOntology, getAllUsers, getDefinition} from './hooks/postAPI';
-import natural from "natural"
+
 import * as d3 from "d3"
-import nlp from "compromise"
+
 import $ from 'jquery';
 
 const Forum = () => {
@@ -162,7 +162,7 @@ const downloadSvg = () => {
   // Cleanup
   document.body.removeChild(link);
 };
-
+/*
 const processNameQuery = (a) => {
   var tokenizer = new natural.WordTokenizer()
   const getName = tokenizer.tokenize(a)
@@ -181,7 +181,7 @@ const processTermQuery = (a) =>{
   let doc = nlp(a)
   
 }
-
+*/
 //This function is invoked when the user clicks the search button. The function first resets the graph and then determines whether the input is an ontology, medical term or expert user.
 //Once it parses the meaning of the input, it then sends an api call for the relevant data from the database. The backend will return an array of data containing the data related to the input.
 //For example, if the search input is the name of an expert, it will return all of their replies to forum posts, the ontologies and terminologies they recommend and the critical reception of their answers from other community members.
