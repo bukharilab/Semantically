@@ -1,6 +1,5 @@
 
 # A Socio-technical Approach for Biomedical Content Authoring and Structured Web Publishing
-
 Because of the unprecedented growth in biomedical research and in clinical practices, a huge volume of biomedical contents such as research papers, clinical notes, and biomedical reports, etc. have been produced
 in recent years. According to the 2018 online molecular biology database collection, there are 1737 large-scale biological databases and over 30 million citations for biomedical literature available at PubMed
 with a tenfold increase per annum. Efficient practices for accessing biomedical publications are key to allowing a timely transfer of information from the scientific research community to peer investigators and
@@ -13,6 +12,8 @@ semantic annotations at the pre-publication stage (while first-time drafting) of
 broader semantic web vision. However, both these processes are complex and require deep technical and/or domain knowledge. Therefore, a state-of-the-art freely accessible biomedical semantic content
 authoring and publishing framework would be a game-changer. In the following sections, I summarize the current status of research in the semantic content authoring and publishing domain and highlights the
 position of this proposal.
+# Enhancing Biomedical Knowledge Representation Through Knowledge Graphs
+Even considering the significant enhancements by the social-technical and personalized approaches, there were still some flaws left unaddressed in the current methodology. Firstly, annotation recommendations were isolated to separate community posts and direct collaboration with personalized experts. This leads to difficulty in accessing the most up to date information on the most optimal annotation recommendations immediately. Previously, Semantically stored its data in a tabular format in MySQL. Due to this, the data lacks machine-readability and the meanings behind different entities (Questions, replies, ontologies, vote tally etc.) and their relationships is obscured. With these shortcomings in mind, we propose to further extend the methodology by integrating a Knowledge Graph based recommendaiton system that provides an environment for exploring the most optimal annotation recommendations retrieved in the form of a knowledge graph. 
 
 ## 🛠 Technologies
 ### Front End
