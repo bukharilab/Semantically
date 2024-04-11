@@ -58,7 +58,6 @@ React Js, Flask
    *The code should look as follows: $client = ClientBuilder::create()
     ->withDriver('bolt', 'neo4j+s://9b2ba3a3.databases.neo4j.io', Authenticate::basic('neo4j', 'Rs6ohkABtkf3O-l4w73N5n_DRpwRqVosjSyQxT6sABE'))
     ->build();
-  3. Import the 'SemanticallyNeo4j.db'
   4. Open 'Semantically => api => config'  folder then 'database.php' file and setup database path
   5. Open 'Semantically => src' folder then 'appinfo.js' and setup php folder path 
 ```
