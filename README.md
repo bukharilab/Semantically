@@ -51,8 +51,14 @@ React Js, Flask
 ## Database setup
 ```bash
   1. Download and install Xampp or Wamp on your system 
-  2. Create new database using PhpMySQL with the name 'semantically_db'
-  3. Import the 'semantically_db'
+  2. Connect to the Neo4j Aura database by accessing the database.php file and replace the the ClientBuilder driver credentials with the following:
+
+   -  Connection_URL: neo4j+s://9b2ba3a3.databases.neo4j.io
+   -  Password: Rs6ohkABtkf3O-l4w73N5n_DRpwRqVosjSyQxT6sABE
+   *The code should look as follows: $client = ClientBuilder::create()
+    ->withDriver('bolt', 'neo4j+s://9b2ba3a3.databases.neo4j.io', Authenticate::basic('neo4j', 'Rs6ohkABtkf3O-l4w73N5n_DRpwRqVosjSyQxT6sABE'))
+    ->build();
+  3. Import the 'SemanticallyNeo4j.db'
   4. Open 'Semantically => api => config'  folder then 'database.php' file and setup database path
   5. Open 'Semantically => src' folder then 'appinfo.js' and setup php folder path 
 ```
@@ -60,7 +66,10 @@ React Js, Flask
 ```bash
   1. npm start
 ```
-
+# Knowledge Graph Based Recommendation System Demo Page
+```
+  The demo page for the Knowledge Graph based Recommendation System is now live at: https://sebc750.github.io/. You may look at the provided media to evaluate the current system and provide feedback through the survey below the page. The demo page and survey is translatable to both English and Spanish.
+```
 # Project Demo Click to watch
 [![Demo CountPages alpha](https://github.com/bukharilab/Semantically/blob/master/landing/src/demo_img.png)](https://gosemantically.com/)
 
