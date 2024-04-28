@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // This should now return a Neo4j client instance
+include_once '../config/database.php';
 include_once '../config/response.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 session_start();
 $user_id = $_SESSION['user_id'];
 if (!$user_id) user_id_error();
-
+//Making sure that the document id is an int to avoid type mismatches.
 $doc_id = (int) $_POST['document_id'];
 $annotations = $_POST['annotations'];
 if (!$doc_id || !$annotations) invalid_argument_error();
@@ -24,6 +24,7 @@ $result = $neo4jClient->run($query, ['docId' => $doc_id]);
 
 if (count($result) > 0) die('Annotations already exist for this document.');
 try {
+//For each annotation, store them in the database and link them to the document the user made changes to. Annotations of key words in the document will persist. 
 foreach ($annotations as $annotation) {
     $anno_id = rand();
     $anno_onto_id = rand();
@@ -48,9 +49,10 @@ foreach ($annotations as $annotation) {
     $annoResult = $neo4jClient->run($query, $parameters);
     $annoId = $annoResult->first()->get('annoId');
 
-    // Create Ontology nodes and relationships
+    // Each annotation will have a set of ontologies retrieved from online ontology databases. Store each ontology as a node and link it to the annotation.
     $first_ontology_id = null;
     foreach ($annotation['ontologies'] as $ontology) {
+        //If the annotation is 
         if(!$first_ontology_id){
             $first_ontology_id = $anno_onto_id;
             $onto_id = $first_ontology_id;
@@ -81,6 +83,4 @@ catch (\Throwable $e) {
     // Handle any errors during the execution of the query
     system_error($e->getMessage());
 }
-// Assuming success_message and system_error are properly defined elsewhere
-success_message("Annotations saved.");
 ?>

@@ -11,22 +11,32 @@
       
       $user_id = $_SESSION['user_id'];
       $ontology = $_POST['ontology'];
-      
-
-  //     // Check if project id given
+    
+// Check if project id given
        if ($user_id ) {
         
          if ($ontology) {
           
-  //         // Connect to database & retrieve instance
+// Connect to database & retrieve instance
            $db = Database::connect();
-  //         //fetch the expert data
+//fetch the expert data
            $time_stamp = date("Y-m-d H:i:s");
           
-  //         // Insert the expert reply into databasr
-          $results = $db->run('MATCH (log:TblLogin)-[:created]-(p:TblCreatePost {currOntology: $ont}) OPTIONAL MATCH (p)-[r:reply_to]-(reply:TblPostReply) OPTIONAL MATCH (reply)-[v:voted]-(vote:TblVote) RETURN p.postId AS postId, p.terminology AS terminology, reply.ontology AS currOntology, p.postContent AS postContent, reply.replyContent AS reply_content, SUM(vote.voteUp) AS voteup, SUM(vote.voteDown) AS votedown, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating, reply.ontologyLink AS ontology_link, log.profileRank AS rank', ['ont' => $ontology]);
-                   // Check if document created
-          
+//Get the recommendation results data by ontology for the recommendation system.
+          $results = $db->run('MATCH (log:TblLogin)-[:created]-(p:TblCreatePost {currOntology: $ont}) 
+          OPTIONAL MATCH (p)-[r:reply_to]-(reply:TblPostReply) 
+          OPTIONAL MATCH (reply)-[v:voted]-(vote:TblVote) 
+          RETURN p.postId AS postId, 
+          p.terminology AS terminology, 
+          reply.ontology AS currOntology, 
+          p.postContent AS postContent, 
+          reply.replyContent AS reply_content, 
+          SUM(vote.voteUp) AS voteup, SUM(vote.voteDown) AS votedown, 
+          reply.postReplyId AS reply_id, 
+          reply.confidenceScore AS confidence_score, 
+          reply.rating AS rating, 
+          reply.ontologyLink AS ontology_link, log.profileRank AS rank', ['ont' => $ontology]);
+          // Check if document created        
           if ($results) {
             $res = array();
             foreach ($results as $record) {

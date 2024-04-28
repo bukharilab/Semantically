@@ -1,7 +1,7 @@
 <?php 
 // Headers
 include_once '../config/headers.php';
-include_once '../config/database.php'; // This should now use the Laudis Neo4j client
+include_once '../config/database.php';
 
 // Check if it's a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,15 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if user ID and term are given
     if ($user_id && $term) {
         // Connect to Neo4j database & retrieve client instance
-        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
         $neo4jClient = Database::connect();
 
         // Prepare the Cypher query
-        /*
-        $query = 'MATCH (p:TblCreatePost)-[:reply_to]-(r:TblPostReply) WHERE p.userId = $user_id AND p.terminology = $term AND r.flag = $flag
-        RETURN p.postId AS post_id, p.terminology, r.replyId AS reply_id, r.replyContent AS reply_content, 
-               r.ontology, r.ontologyLink AS ontology_link, r.confidenceScore AS confidence_score, r.flag';
-        */
         $query = 'MATCH (u:TblLogin {userId: $user_id})-[:created]-(p:TblCreatePost)-[:reply_to]-(r:TblPostReply) WHERE p.terminology = $term AND r.flag = $flag
         RETURN collect({postId: p.postId, terminology: p.terminology, post_reply_id: r.postReplyId, reply_content: r.replyContent, ontology: r.ontology, onto_link: r.ontologyLink, confidence_score: r.confidenceScore, flag: r.flag}) AS Recommendation';
         // Execute the query

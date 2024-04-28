@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // Assuming this returns a Neo4j client
+include_once '../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_start();
@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $flag = 0;
     
     if ($user_id && $post_id && $ontology && $reply_content) {
-        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
         $neo4jClient = Database::connect();
         $time_stamp = date("Y-m-d H:i:s");
         $post_reply_id = rand();

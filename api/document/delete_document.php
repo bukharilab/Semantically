@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // This should now use the Laudis Neo4j client
+include_once '../config/database.php'; 
 include_once '../config/response.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
@@ -13,7 +13,6 @@ $document_id = (int) $_POST['document_id'];
 if (!$document_id) invalid_argument_error();
 
 // Get the Neo4j client instance
-/** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
 $neo4jClient = Database::connect();
 
 // Prepare the Cypher query to delete the document, annotations, and ontologies

@@ -3,7 +3,6 @@
   include_once '../config/database.php';
   include_once '../config/response.php';
   require_once '../vendor/autoload.php';
-  use Laudis\Neo4j\Contracts\TransactionInterface;
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
   session_start();

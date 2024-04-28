@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // Assuming this returns a Neo4j client
+include_once '../config/database.php'; 
 include_once '../config/response.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
@@ -12,7 +12,6 @@ if (!$user_id) user_id_error();
 $post_id = (int) $_POST['post_id'];
 if (!$post_id) invalid_argument_error();
 
-/** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
 $neo4jClient = Database::connect();
 
 // Start a transaction

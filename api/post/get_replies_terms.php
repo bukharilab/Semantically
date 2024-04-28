@@ -23,10 +23,7 @@
   //         //fetch the expert data
            $time_stamp = date("Y-m-d H:i:s");
           
-  //         // Insert the expert reply into databasr
-         //$results = mysqli_query($db, sprintf("SELECT post_id, terminology, curr_ontology, post_content FROM tbl_create_post WHERE terminology = '%s'",$terminology));
-         //$results = $db->run('MATCH (log:TblLogin)-[:created]-(doc:TblDocument )-[:annotated_to]-(anno:TblPrimaryAnnotation {textStr: $terminology})-[:annotated_from]-(onto:TblOntology) OPTIONAL MATCH (post:TblCreatePost {terminology: $terminology}) OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply) OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)
-         //RETURN post.postId AS post_id, anno.textStr AS terminology, post.currOntology AS curr_ontology, post.postContent AS post_content, reply.replyContent AS reply_content, vote.voteUp AS voteup, vote.voteDown AS votedown, id(vote) AS vote_id;',['terminology' => $terminology]);
+  //         // Get the recommendations for the user by terminology.
          $results = $db->run('MATCH (log:TblLogin)-[:created]-(post:TblCreatePost {terminology: $terminology})
          OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
          OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)

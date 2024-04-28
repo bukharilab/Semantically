@@ -5,13 +5,10 @@ include_once '../config/database.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_start();
     $user_id = $_SESSION['user_id'];
-   // $post_id = $_POST['post_id'];
     $post_id = (int) $_POST['post_id'];
     if ($user_id && $post_id) {
-        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
         $neo4jClient = Database::connect();
-        
-         
+               
         // Fetch post and post creator's details
         $postQuery = 'MATCH (p:TblCreatePost {postId: $post_id})-[:created]-(u:TblLogin) WHERE u.userId = $user_id OR p.expertId IS NOT NULL
                       RETURN p AS post, u.firstName AS first_name, COALESCE(p.expertId, "No Expert") AS expert_id, u.lastName AS last_name';

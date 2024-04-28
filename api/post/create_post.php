@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // Assuming this returns a Neo4j client
+include_once '../config/database.php';
 
 // Check if it's a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -11,15 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $terminology = $_POST['terminology'];
     $curr_ontology = $_POST['ontology'];
     $post_content = $_POST['context'];
-    // $expert_id = $_POST['expertID']; // Uncomment if you're using this variable
 
     // Check if necessary data is provided
     if ($user_id && $post_title && $terminology && $post_content) {
-        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
         $neo4jClient = Database::connect();
         $time_stamp = date("Y-m-d H:i:s");
         $post_id = rand();
-        // Prepare the Cypher query to create a new post
+        // Prepare the Cypher query to create a new post.
         $query = '
         MATCH (log:TblLogin {userId: $user_id})
         CREATE (p:TblCreatePost {postId: $post_id, expertId: 0, postTitle: $post_title, terminology: $terminology, currOntology: $curr_ontology, postContent: $post_content, timeStamp: $time_stamp})

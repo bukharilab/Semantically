@@ -1,6 +1,6 @@
 <?php
 include_once '../config/headers.php';
-include_once '../config/database.php'; // Assuming this returns a Neo4j client
+include_once '../config/database.php';
 include_once '../config/response.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
@@ -15,7 +15,6 @@ $status = (int) $_POST['status'];
 
 if (!$doc_id || !$anno_id || !$status) invalid_argument_error();
 
-/** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
 $neo4jClient = Database::connect();
 
 // Prepare the Cypher query to update the removed status of a specific annotation

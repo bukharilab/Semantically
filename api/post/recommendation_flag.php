@@ -19,19 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $flag = (int) $_POST['flag'];   
     $rating = (int) $_POST['rating'];
 
-    /*
-    echo "Ontology link: " . $onto_link . "\n";
-    echo "Acronym: " . $acronym . "\n";
-    echo "From loc: " . $from_loc . "\n";
-    echo "To loc: " . $to_loc . "\n";
-    echo "doc id: " . $doc_id . "\n";
-    echo "flag: " . $flag . "\n";
-    echo "postReplyId: " . $post_reply_id ."\n";
-    */
      // Check if post reply ID is given
     if ($post_reply_id) {
         // Connect to Neo4j database & retrieve client instance
-        /** @var \Laudis\Neo4j\Contracts\ClientInterface $neo4jClient */
         $neo4jClient = Database::connect();
         $time_stamp = date("Y-m-d H:i:s");
 
@@ -39,12 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $queryUpdateReply = 'MATCH (reply:TblPostReply {postReplyId: $post_reply_id})
                              SET reply.flag = $flag';
         $results = $neo4jClient->run($queryUpdateReply, ['post_reply_id' => $post_reply_id, 'flag' => $flag]);
-        /*
-        if($results){
-            print('flag successfully updated');
-            
-        }
-        */
+        
         // If flag is set to '1', update related ontologies
         if ($flag === 1) {
             $changeCurrOntologiesQuery = 'MATCH (log:TblLogin {userId: $user_id})-[:created]-(post:TblCreatePost)-[:reply_to]-(reply:TblPostReply {postReplyId: $post_reply_id}) SET post.currOntology = $acronym RETURN log, post, reply';

@@ -1,7 +1,7 @@
 <?php
-require_once '../vendor/autoload.php'; // Make sure to include the autoload.php from Composer
+require_once '../vendor/autoload.php';
 include_once '../config/headers.php';
-include_once '../config/database.php'; // Assuming this returns a Neo4j client
+include_once '../config/database.php';
 include_once '../config/response.php';
 use Laudis\Neo4j\ClientBuilder;
 
@@ -23,8 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $client = Database::connect();
 
             $time_stamp = date("Y-m-d H:i:s");
-           
-            // Create document in Neo4j
+           //Create a direct post for a given expert. The expert will then have it displayed on their end when they log in next time.
             $query = "
             MATCH (log:TblLogin {userId: $user_id})
             CREATE (p:TblCreatePost {
