@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Prepare the Cypher query to create a new post
         $query = '
         MATCH (log:TblLogin {userId: $user_id})
-        CREATE (p:TblCreatePost {postId: $post_id, postTitle: $post_title, terminology: $terminology, currOntology: $curr_ontology, postContent: $post_content, timeStamp: $time_stamp})
+        CREATE (p:TblCreatePost {postId: $post_id, expertId: 0, postTitle: $post_title, terminology: $terminology, currOntology: $curr_ontology, postContent: $post_content, timeStamp: $time_stamp})
         CREATE (p)-[:created]->(log) 
         RETURN p.postId AS postId';
 

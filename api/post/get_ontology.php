@@ -24,7 +24,7 @@
            $time_stamp = date("Y-m-d H:i:s");
           
   //         // Insert the expert reply into databasr
-          $results = $db->run('MATCH(p:TblCreatePost {currOntology: $ont}) OPTIONAL MATCH (p)-[r:reply_to]-(reply:TblPostReply) OPTIONAL MATCH (reply)-[v:voted]-(vote:TblVote) RETURN p.postId AS postId, p.terminology AS terminology, p.currOntology AS currOntology, p.postContent AS postContent, reply.replyContent AS reply_content, SUM(vote.voteUp) AS voteup, SUM(vote.voteDown) AS votedown, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating, reply.ontologyLink AS ontology_link', ['ont' => $ontology]);
+          $results = $db->run('MATCH (log:TblLogin)-[:created]-(p:TblCreatePost {currOntology: $ont}) OPTIONAL MATCH (p)-[r:reply_to]-(reply:TblPostReply) OPTIONAL MATCH (reply)-[v:voted]-(vote:TblVote) RETURN p.postId AS postId, p.terminology AS terminology, reply.ontology AS currOntology, p.postContent AS postContent, reply.replyContent AS reply_content, SUM(vote.voteUp) AS voteup, SUM(vote.voteDown) AS votedown, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating, reply.ontologyLink AS ontology_link, log.profileRank AS rank', ['ont' => $ontology]);
                    // Check if document created
           
           if ($results) {
@@ -42,6 +42,7 @@
                 'votedown' => $record->get('votedown'),
                 'rating' => $record->get('rating'),
                 'ontology_link' => $record->get('ontology_link'),
+                'rank' => $record->get('rank'),
             ];
                     
             }

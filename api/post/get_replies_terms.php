@@ -31,8 +31,8 @@
          OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply)
          OPTIONAL MATCH (reply)-[:voted]-(vote:TblVote)
          
-         RETURN post.postId AS post_id, post.postContent AS post_content, post.terminology AS terminology, reply.replyContent AS reply_content,post.currOntology AS curr_ontology, 
-                sum(vote.voteUp) AS upvote, sum(vote.voteDown) AS downvote, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating;',['terminology' => $terminology]);
+         RETURN post.postId AS post_id, post.postContent AS post_content, post.terminology AS terminology, reply.replyContent AS reply_content,reply.ontology AS curr_ontology, 
+                sum(vote.voteUp) AS upvote, sum(vote.voteDown) AS downvote, reply.postReplyId AS reply_id, reply.confidenceScore AS confidence_score, reply.rating AS rating, log.profileRank AS rank, reply.ontologyLink AS ontology_link;',['terminology' => $terminology]);
                    // Check if document created
           if ($results) {
             $res = array();
@@ -44,10 +44,12 @@
                 'post_content' => $record->get('post_content'),
                 'reply_content' => $record->get('reply_content'),
                 'confidence_score' => $record->get('confidence_score'),
+                'ontology_link' => $record->get('ontology_link'),
                 'reply_id' => $record->get('reply_id'),
                 'voteup' => $record->get('upvote'),
                 'votedown' => $record->get('downvote'),
                 'rating' => $record->get('rating'),
+                'rank' => $record->get('rank'),
             ];
             }
               http_response_code(200);

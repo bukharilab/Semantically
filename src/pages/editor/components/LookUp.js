@@ -163,7 +163,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col>{element.confidence_score}%</Col>
+                      <Col>{element.confidence_score}</Col>
                     </Row>
                     <Row>
                       <Col

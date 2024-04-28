@@ -31,7 +31,7 @@
         $post_id = $node->getProperty('postId');
         
         $responses = $db->run(<<<'CYPHER'
-        MATCH (post:TblCreatePost {postId: $id})-[:reply_to]-(reply:TblPostReply) RETURN post, COUNT(reply) as responses;
+        MATCH (post:TblCreatePost {postId: $id}) OPTIONAL MATCH (post)-[:reply_to]-(reply:TblPostReply) RETURN post, COUNT(reply) as responses;
         CYPHER, ['id' => $post_id]);
 
      foreach ($responses as $record) {

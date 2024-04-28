@@ -1,0 +1,8 @@
+#tableFormat {
+    font-size: 0.9em; /* Example of reducing font size */
+}
+
+#tableFormat th, #tableFormat td {
+    padding: 0.3rem; /* Example of reducing padding */
+    word-break: break-word; /* To ensure long words do not cause overflow */
+}
