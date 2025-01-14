@@ -138,11 +138,13 @@ const checkRecommendation = (term, callback) => {
   });
 };
 
-const recommendationFlag = (doc_id,post_reply_id,from_loc,to_loc,acronym,onto_link,flag, callback) => {
+const recommendationFlag = (doc_id,post_reply_id,from_loc,to_loc,acronym,onto_link,rating, flag,callback) => {
   setUp();
+  console.log("Sending flag", flag)
+  console.log("Sending rating:", rating);
   $.post({
     url: apiAddresses.recommendationFlag,
-    data: {doc_id:doc_id, post_reply_id: post_reply_id, from_loc:from_loc, to_loc:to_loc,acronym:acronym, onto_link:onto_link,flag: flag },
+    data: {doc_id:doc_id, post_reply_id: post_reply_id, from_loc:from_loc, to_loc:to_loc,acronym:acronym, onto_link:onto_link,flag: flag , rating: rating},
     success: (data) => callback(data["message"]),
   });
 };

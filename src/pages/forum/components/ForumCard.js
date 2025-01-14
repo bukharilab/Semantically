@@ -5,22 +5,24 @@ import { Link } from "react-router-dom";
 import DeletePostModal from '../components/models/DeletePostModel';
 import 'react-router-dom';
 export default function ForumCard({
-  post_id,
+  postId,
   post_title,
   terminology,
-  curr_ontology,
-  post_content,
+  currOntology,
+  postContent,
   responses,
   publicPost,
   posts,
-  setPosts}) {
+  setPosts
+  
+}) {
   const [showDelPostModal, updateShowDelPostModal] = useState(false);
   const [knowledgeGraph, updateKnowledgeGraph] = useState(false);
   const deletePost = () => updateShowDelPostModal(true);  
   const openKnowledgeGraph = () => updateKnowledgeGraph(true);
   
   const deletePostProps = {
-    post_id:post_id,
+    post_id:postId,
     posts:posts,
     setPosts:setPosts,
     showDelPostModal: showDelPostModal, updateShowDelPostModal: updateShowDelPostModal
@@ -38,10 +40,10 @@ export default function ForumCard({
           <Card.Title className="">
             <span>{post_title}</span>
           </Card.Title>
-          <Card.Subtitle className="mb-2 text-muted text-smal">{`${terminology}: ${curr_ontology}`}</Card.Subtitle>
-          <Card.Text>{post_content}</Card.Text>
+          <Card.Subtitle className="mb-2 text-muted text-smal">{`${terminology}: ${currOntology}`}</Card.Subtitle>
+          <Card.Text>{postContent}</Card.Text>
           <Card.Link>
-            <Link to={`/post/${post_id}`}>open</Link>
+            <Link to={`/post/${postId}`}>open</Link>
           </Card.Link>
              
           {!publicPost ? (

@@ -30,5 +30,6 @@
   function system_error($error) {
     error_message($error, 500);
   }
-
-
+  function not_found_error(){
+     error_message("Resource could not be found.", 404);
+  }

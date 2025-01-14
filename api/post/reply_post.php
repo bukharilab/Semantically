@@ -1,62 +1,59 @@
 <?php
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
+include_once '../config/headers.php';
+include_once '../config/database.php';
 
-  
-
-  // // Check if POST request
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      // Session start and Get user id
-      session_start();
-      
-      $user_id = $_SESSION['user_id'];
-      $post_id = $_POST['post_id'];
-      $ontology = $_POST['ontology'];
-      $ontology_link = $_POST['ontology_link'];
-      $reply_content = $_POST['content'];
-      $confidence_score=$_POST['confidence_score'];
-      
-      
-
-  //     // Check if project id given
-       if ($user_id ) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_start();
+    
+    $user_id = $_SESSION['user_id'];
+    $post_id = (int) $_POST['post_id'];
+    $ontology = $_POST['ontology'];
+    $ontology_link = $_POST['ontology_link'];
+    $reply_content = $_POST['content'];
+    $confidence_score = $_POST['confidence_score'];
+    $flag = 0;
+    
+    if ($user_id && $post_id && $ontology && $reply_content) {
+        $neo4jClient = Database::connect();
+        $time_stamp = date("Y-m-d H:i:s");
+        $post_reply_id = rand();
+        // Prepare the Cypher query to insert the expert reply into the database
+        $query = 'MATCH (p:TblCreatePost {postId: $post_id})
+        CREATE (reply:TblPostReply {postReplyId: $post_reply_id, ontology: $ontology, ontologyLink: $ontology_link, replyContent: $reply_content, confidenceScore: $confidence_score, flag: $flag, timeStamp: $time_stamp})       
+        CREATE (reply)<-[:reply_to]-(p)
+        CREATE (log)<-[:created]-(reply)
+        RETURN id(reply) AS replyId';
         
-         if ($post_id && $ontology && $reply_content) {
-          
-  //         // Connect to database & retrieve instance
-           $db = Database::connect();
-  //         //fetch the expert data
-           $time_stamp = date("Y-m-d H:i:s");
-          
-  //         // Insert the expert reply into databasr
-           $results = mysqli_query($db, sprintf("INSERT INTO `tbl_post_reply` (user_id, post_id,ontology,ontology_link,reply_content,confidence_score,flag,time_stamp) 
-           VALUES ('%s', '%s', '%s', '%s','%s', '%s', '%s','%s')", $user_id, $post_id, $ontology ,$ontology_link,$reply_content,$confidence_score,'0',$time_stamp));
-                   // Check if document created
-          if ($results) {
-              http_response_code(200);
-              // Turn to JSON & output
-              echo json_encode(array('message' => 'success'));
-
-          } else {
-              http_response_code(404);
-              // Convert to JSON & output error msg
-              echo json_encode(array('message' => mysqli_error($db)));
-          }
-        } else {
-          http_response_code(400);
-          // Convert to JSON & output error msg
-          echo json_encode(array('message' => 'Missing arguments'));
+        try {
+            $result = $neo4jClient->run($query, [
+                'user_id' => $user_id,
+                'post_reply_id' => $post_reply_id,
+                'post_id' => $post_id,
+                'ontology' => $ontology,
+                'ontology_link' => $ontology_link,
+                'reply_content' => $reply_content,
+                'confidence_score' => $confidence_score,
+                'time_stamp' => $time_stamp,
+                'flag' => $flag,
+            ]);
+            
+            if ($result->count() > 0) {
+                http_response_code(200);
+                echo json_encode(['message' => 'Success']);
+            } else {
+                http_response_code(404);
+                echo json_encode(['message' => 'Failed to create reply']);
+            }
+        } catch (\Throwable $e) {
+            http_response_code(404);
+            echo json_encode(['message' => $e->getMessage()]);
         }
-
-      } else {
-          http_response_code(400);
-          // Convert to JSON & output error msg
-          echo json_encode(array('message' => 'User id not given'));
-      }
-
-  } else {
-      http_response_code(400);
-      // Convert to JSON & output error msg
-      echo json_encode(array('message' => 'Only POST requests are accepted'));
-  }
+    } else {
+        http_response_code(400);
+        echo json_encode(['message' => 'Missing arguments']);
+    }
+} else {
+    http_response_code(400);
+    echo json_encode(['message' => 'Only POST requests are accepted']);
+}
 ?>

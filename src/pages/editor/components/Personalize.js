@@ -5,20 +5,20 @@ import AskQuestion from './AskQuestion';
 import {postAddresses} from '../../../appInfo';
 import { getUser_ID } from '../hooks/editor/documentAPI';
 import $ from "jquery";
-
+import "./personalizeStyle.css"
 const Personalize = ({updatePersonalize, updateOpenPostModal, expert, updateShowExpert, updateExpert, updateID, ID}) => {
     
        
        
        
+    
+  
+  console.log(usersArray);
        
-       
-      
-       
-       
-       const [data, setData] = useState([])
+       const [data, setData] = useState(usersArray)
        //This function retrieves data from a web server that has the data for experts and their names and ranks.
        //This code currently does not work as the web server hosting this data requires private access.
+       
        const fetchData = () => {
        
         //Add conditional statement 
@@ -51,14 +51,14 @@ const Personalize = ({updatePersonalize, updateOpenPostModal, expert, updateShow
              size="lg"
              aria-labelledby="contained-modal-title-vcenter"
              centered
-             onShow = {fetchData}
+             onShow={fetchData}
              >
                 <Modal.Header closeButton onHide={closeModal}>
                     <Modal.Title id="contained-modal-title-vcenter"> Recommended Experts </Modal.Title>
                     
                 </Modal.Header>
                 <Modal.Body className="px-5">
-                
+                <div className="table-responsive">
                     <h2 id = "title"> List of Experts </h2>
              <table id = "tableFormat" class = "table">
              <tbody>
@@ -69,25 +69,21 @@ const Personalize = ({updatePersonalize, updateOpenPostModal, expert, updateShow
                  <th> Similarity Score </th>
               </tr>
               
-              {data.map((val)=> (
-                    
-                   
-                    <tr key={val.id}>
-                       <td > {val.user_id} </td>
-                       <td > {val.user_name} </td>
-                       <td > {val.Weighted_Score} </td>
-                       <td > {val.similarity_score} </td>
-                       <Button variant = "primary" onClick={() => goToAskQuestionModal([val.user_id, val.user_name, val.Weighted_Score,val.similarity_score])}> Select </Button> 
-                    </tr>
-                   
-                  ))
-                
-                  }
+              {data.sort((a, b) => b.similarity_score - a.similarity_score).map((val) => (
+    <tr key={val.id}>
+        <td>{val.user_id}</td>
+        <td>{val.user_name}</td>
+        <td>{val.Weighted_Score}</td>
+        <td>{val.similarity_score}</td>
+        <Button variant="primary" onClick={() => goToAskQuestionModal([val.user_id, val.user_name, val.Weighted_Score, val.similarity_score])}>Select</Button>
+    </tr>
+))}
                    
                  
                  
               </tbody>
              </table>
+             </div>
                 </Modal.Body>
                 <Modal.Footer>
                 <Button onClick={closeModal} variant="secondary">Close</Button>

@@ -1,30 +1,43 @@
 <?php
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
-  include_once '../config/response.php';
+include_once '../config/headers.php';
+include_once '../config/database.php'; 
+include_once '../config/response.php';
 
-  if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
-  session_start();
-	$user_id = $_SESSION['user_id'];
-	if (!$user_id) user_id_error();
+session_start();
+$user_id = $_SESSION['user_id'];
+if (!$user_id) user_id_error();
 
-  $post_id = $_POST['post_id'];
-  if (!$post_id) invalid_argument_error();
+$post_id = (int) $_POST['post_id'];
+if (!$post_id) invalid_argument_error();
 
-  // Connect to database & retrieve instance
-  $db = Database::connect();
+$neo4jClient = Database::connect();
 
-  // delete ontologies
-  $results = mysqli_query($db, sprintf("SELECT post_reply_id FROM `tbl_post_reply` WHERE post_id = '%s'", $post_id));
-  while ($post_reply_id = mysqli_fetch_assoc($results)['post_reply_id']) {
-    // delete ontologies
-    mysqli_query($db, sprintf("DELETE FROM `tbl_Vote` WHERE post_reply_id = '%s'", $post_reply_id));
-  }
-  // delete annotations
-  $results = mysqli_query($db, sprintf("DELETE FROM `tbl_post_reply` WHERE post_id = '%s'", $post_id));
-  // Delete document
-  $results = mysqli_query($db, sprintf("DELETE FROM `tbl_create_post` WHERE post_id = '%s'", $post_id));
+// Start a transaction
 
-  if ($results) success_message("post deleted.");
-  else system_error(mysqli_error($db));
+
+try {
+    // Delete related Votes
+    $queryDeleteVotes = 'MATCH (p:TblCreatePost {postId: $post_id})-[:reply_to]-(r:TblPostReply)-[:voted]-(v:TblVote) DETACH DELETE v';
+    $neo4jClient->run($queryDeleteVotes, ['post_id' => $post_id]);
+
+    // Delete PostReplies
+    $queryDeleteReplies = 'MATCH (p:TblCreatePost {postId: $post_id})-[:reply_to]-(r:TblPostReply) DETACH DELETE r';
+    $neo4jClient->run($queryDeleteReplies, ['post_id' => $post_id]);
+
+    // Finally, delete the Post itself
+    $queryDeletePost = 'MATCH (p:TblCreatePost {postId: $post_id}) DETACH DELETE p';
+    $neo4jClient->run($queryDeletePost, ['post_id' => $post_id]);
+
+    // Commit the transaction
+    
+
+    success_message("Post deleted.");
+} catch (\Throwable $e) {
+    // In case of any error, rollback the transaction
+   
+    
+    system_error($e->getMessage());
+}
+?>

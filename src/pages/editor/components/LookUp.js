@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Button,
@@ -30,22 +30,53 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     closeModal();
     //updateOpenPostModal(true);
   };
+  
+  const [ratingPrompt,openRatingPrompt] = useState(false)
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  /*
+  const Star = ({ selected = false, onClick = f => f }) => (
+    
+  );
+  */
+  
+  const handleMouseEnter = (rating) => {
+    setHoverRating(rating);
+  };
 
-  //Accept recommendation
+  const handleMouseLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handleClick = (rating) => {
+    setSelectedRating(rating);
+    
+    
+    console.log(rating)
+  };
+  const recommendationPrompt = () =>{
+    openRatingPrompt(true)
+    
+  }
   const acceptRecommendation = (post_reply_id,acronym,onto_link) => {
-    setFlag([]);
+    
+    setFlag([]); 
+    console.log("Submitting rating: ",selectedRating)
     const divider = term.indexOf('-');
     const from = Number(term.substring(0, divider))-1;
     const to = Number(term.substring(divider+1, term.length));
-    console.log("while accpet",from, 'asim',to);
+    console.log("while accept",from, 'asim',to);
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,"1",setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,acronym,onto_link,selectedRating,"1",setFlag), 1000)
     );
+    
     alert("Accepted");
     closeModal();
-    
+    openRatingPrompt(false)
+    setSelectedRating(0)
   };
+  
 //reject recommendation
   const rejectRecommendation = (post_reply_id) => {
     setFlag([]);
@@ -54,13 +85,15 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
     const to = Number(term.substring(divider+1, term.length));
     clearTimeout(timeoutId);
     updateTimeoutId(
-      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,"","", "-1",setFlag), 1000)
+      setTimeout(() => recommendationFlag(documentId,post_reply_id,from,to,"","", "-1",0,setFlag), 1000)
     );
 
     alert("rejected");
     closeModal();
   };
-
+  useEffect(() => {
+    console.log("Current rating",selectedRating)
+  });
   console.log("check data", checkData);
 
   return (
@@ -97,7 +130,8 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.onto_link)
+                      onClick={()=>recommendationPrompt()
+                      //</div>onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.onto_link)
                       }
                     >
                       Accept
@@ -129,7 +163,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col>{element.confidence_score}%</Col>
+                      <Col>{element.confidence_score}</Col>
                     </Row>
                     <Row>
                       <Col
@@ -155,7 +189,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                       >
                         <a
                           href={
-                            element.ontology_link +
+                            element.onto_link +
                             "?apikey=89f4c54e-aee8-4af5-95b6-dd7c608f057f"
                           }
                           target={"_blank"}
@@ -181,8 +215,52 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
                     <Row>
                       <Col>{element.reply_content}</Col>
                     </Row>
+                    <Row>
+                      {ratingPrompt ? (
+                      <Modal
+                      show={true}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered>
+                      <Modal.Header closeButton onHide={closeModal}>
+                      <Modal.Title id="contained-modal-title-vcenter">
+                       Rating
+                       </Modal.Title>
+                       </Modal.Header>
+                      <Modal.Body>
+                        <p> Glad to help! Please rate this recommendation! </p>
+                      <Col style={{
+                          fontWeight: "bold",
+                          color: "green",
+                          fontSize: 16,
+                        }}> Recommendation Rating <br/>
+                        {[1, 2, 3, 4, 5].map((star, index) => (
+                          <span
+                          key={index}
+                          onMouseEnter={() => handleMouseEnter(star)}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => handleClick(star)}
+                          style={{ cursor: 'pointer', color: hoverRating >= star || selectedRating >= star ? 'yellow' : 'gray' , fontSize: 30}}
+                        >
+                          ★
+                        </span>
+                        
+                        ))}
+                        </Col>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button onClick={()=>acceptRecommendation(element.post_reply_id,element.ontology,element.onto_link)}> Submit </Button>
+                        <Button onClick={closeModal}>Cancel</Button>
+                        </Modal.Footer>
+                        </Modal>  
+          ):null}
+                        
+                      
+
+                    </Row>
                   </Container>
                 </Accordion.Collapse>
+              
               </Card>
             );
           })}
@@ -190,6 +268,7 @@ const LookUp = ({ checkData, term,updateOpenLookUpModal }) => {
         {/* <div className="text-right"><Button variant="link" style={{'box-shadow': 'none'}} onClick={() => askQuestion()}>{'Ask question'}</Button></div> */}
       </Modal.Body>
       <Modal.Footer>
+        
         <Button onClick={closeModal}>Close</Button>
       </Modal.Footer>
     </Modal>

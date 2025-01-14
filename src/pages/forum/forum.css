@@ -17,7 +17,13 @@
   flex-wrap: wrap;
 }
 
-
+.circle {
+  display: inline-block;
+  width: 20px; 
+  height: 20px;
+  border-radius: 50%; 
+  margin-right: 5px; 
+}
 .document-card .card-footer,
 .document-card .card-header {
   padding: 0 !important;
@@ -30,4 +36,70 @@
   padding: 4rem;
   width: 100%;
   max-width: 1000px;
+}
+ table{
+  
+    border-collapse: collapse;
+    font-size: 40px; /* Adjust font-size as needed */
+  
+}
+th{
+  padding: 10px;
+  border: 5px solid black;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 72px;
+}
+td{
+  padding: 10px;
+  border: 5px solid black;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 60px;
+  font-weight: bold;
+}
+hr {
+  height: 5px; /* Thickness of the line */
+  background-color: #000; /* Color of the line */
+  width: 100%; /* Length of the line */
+}
+.gold_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #ffd700; /* Gold color */
+  color: white;
+  
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.silver_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #C0C0C0; /* Silver color */
+  color: white;
+  
+  font-weight: bold;
+  margin: 0 5px;
+}
+
+.bronze_medal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #CD7F32; /* Bronze color */
+  color: white;
+  font-weight: bold;
+  margin: 0 5px;
 }

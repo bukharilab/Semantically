@@ -39,19 +39,19 @@ console.log(replyArray);
       postId,
       (
         {
-          post_title,
+          postTitle,
           terminology,
-          curr_ontology,
-          post_content,
+          currOntology,
+          postContent,
           first_name,
           last_name,
         },
         replies
       ) => {
-        setTitle(post_title);
+        setTitle(postTitle);
         setTerminology(terminology);
-        setOntology(curr_ontology);
-        setContext(post_content);
+        setOntology(currOntology);
+        setContext(postContent);
         setName(`${first_name} ${last_name}`);
         setReplies(replies);
       }
@@ -143,12 +143,12 @@ const insertVoting = (post_reply_id,vote_up,vote_down) => {
             />
           ) : null}
           {console.log("reply_post",replies)} 
-          {replies.map(({ post_reply_id,ontology, reply_content, first_name, last_name,upvote,downvote }) => (
+          {replies.map(({ post_reply_id,ontology, replyContent, first_name, last_name,upvote,downvote }) => (
             <Card style={{ width: "auto" }} className="mt-5">
               <Card.Body>
                 <Card.Title>{ontology}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">{`${first_name} ${last_name}`}</Card.Subtitle>
-                <Card.Text>{reply_content}</Card.Text>
+                <Card.Text>{replyContent}</Card.Text>
                 <div className="text-right">
                 <strong>{upvote}&nbsp;&nbsp;&nbsp;</strong>
                   <Button

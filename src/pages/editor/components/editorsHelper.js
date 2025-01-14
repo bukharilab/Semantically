@@ -52,6 +52,8 @@ const EditorHelper = editorProps => {
     if (currentHighlight) {
       if (annotationSelection[currentHighlight] != -1) {
         const annotation = annotations[currentHighlight][annotationSelection[currentHighlight]];
+        console.log("Annotation ID: ",annotation.annotation_id)
+        console.log("Ontology ID: ",annotation.ontologyId)
         changeOntologySelection(documentId, annotation.annotation_id, annotation.ontologyId);
         changeDeleteAnnotation(documentId, annotation.annotation_id, -1);
       } else {
@@ -60,7 +62,7 @@ const EditorHelper = editorProps => {
       }
     }
   }, [annotationSelection]);
-
+  
   // retrieve annotations
   useEffect(() => {
     if (editor && content) {

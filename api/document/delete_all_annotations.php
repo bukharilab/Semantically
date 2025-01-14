@@ -1,33 +1,31 @@
 <?php
-  include_once '../config/headers.php';
-  include_once '../config/database.php';
-  include_once '../config/response.php';
+include_once '../config/headers.php';
+include_once '../config/database.php';
+include_once '../config/response.php';
 
-  if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
-  session_start();
-	$user_id = $_SESSION['user_id'];
-	if (!$user_id) user_id_error();
+session_start();
+$user_id = $_SESSION['user_id'];
+if (!$user_id) user_id_error();
 
-  $doc_id = $_POST['document_id'];
-  if (!$doc_id) invalid_argument_error();
+$doc_id = (int) $_POST['document_id'];
+if (!$doc_id) invalid_argument_error();
 
-  // Connect to database & retrieve instance
-  $db = Database::connect();
+$neo4jClient = Database::connect();
 
-  // get all annotation
-  $anno_results = mysqli_query($db, 
-    sprintf("SELECT anno_id FROM tbl_primary_annotation WHERE doc_id = '%s'", $doc_id));
+// Prepare the Cypher query to delete all annotations and related ontologies for a given document
+$query = 'MATCH (doc:TblDocument {docId: $doc_id})<-[:annotated_to]-(anno:TblPrimaryAnnotation)
+OPTIONAL MATCH (anno)<-[:annotated_from]-(onto:TblOntology)
+DETACH DELETE anno, onto;';
 
-  while ($anno_id = mysqli_fetch_assoc($anno_results)['anno_id']) {
-    // delete all ontologies
-    $delete_onto_results = mysqli_query($db, 
-    sprintf("DELETE FROM tbl_ontologies WHERE anno_id = '%s'", $anno_id));
-    // delete annotation
-    $delete_anno_results = mysqli_query($db, 
-    sprintf("DELETE FROM tbl_primary_annotation WHERE anno_id = '%s'", $anno_id));
-  }
-
-  if ($delete_anno_results) success_message("all annotations deleted.");
-  else system_error(mysqli_error($db)); 
-  
+// Execute the query
+try {
+   // $neo4jClient->run($query, ['doc_id' => $doc_id]);
+   $neo4jClient->run($query, ['doc_id' => $doc_id]);
+    success_message("All annotations deleted.");
+} catch (\Throwable $e) {
+    // Handle any errors during the execution of the query
+    system_error($e->getMessage());
+}
+?>

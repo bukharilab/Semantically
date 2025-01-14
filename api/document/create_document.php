@@ -2,13 +2,14 @@
   include_once '../config/headers.php';
   include_once '../config/database.php';
   include_once '../config/response.php';
-
+  require_once '../vendor/autoload.php';
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') post_request_error();
 
   session_start();
 	$user_id = $_SESSION['user_id'];
 	if (!$user_id) user_id_error();
-
+    $docId = rand();
+  
     $doc_name = $_POST['doc_name'];
 	$desc = $_POST['description'];
 	$content = $_POST['content'];
@@ -18,7 +19,28 @@
 	// Connect to database & retrieve instance
 	$db = Database::connect();
 	// Create document
-	$results = mysqli_query($db, sprintf("INSERT INTO tbl_documents (user_id, doc_name, description, content) VALUES ('%s', '%s', '%s', '%s')", $user_id, $doc_name, $desc, $content));
+	$query = ' MATCH (log:TblLogin {userId: $user_id})
+    CREATE (doc:TblDocument {docId: $docId, docName: $doc_name, description: $description, content: $content})-[:created]->(log) RETURN doc.docId AS docId';
 
-	if ($results) success_response(array('document_id' => mysqli_insert_id($db)));
-	else system_error(mysqli_error($db));
+// Parameters to be passed to the query
+$params = [
+    'user_id' => $user_id,
+    'docId' => $docId,
+    'doc_name' => $doc_name,
+    'description' => $desc,
+    'content' => $content,
+];
+
+// Execute the query
+
+$result = $db->run($query, $params);
+
+// Fetch the newly created Document node ID
+$documentId = $result->first()->get('docId');
+
+// Assuming success_response is a function that returns a successful response
+if ($documentId !== null) {
+    success_response(['document_id' => $documentId]);
+} else {
+    // Handle error or no result case
+}
