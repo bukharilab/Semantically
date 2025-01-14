@@ -1,38 +1,16 @@
 
-# A Socio-technical Approach for Biomedical Content Authoring and Structured Web Publishing
+# Medical Code Recommender for Efficient Healthcare Reimbursement
 
-Because of the unprecedented growth in biomedical research and in clinical practices, a huge volume of biomedical contents such as research papers, clinical notes, and biomedical reports, etc. have been produced
-in recent years. According to the 2018 online molecular biology database collection, there are 1737 large-scale biological databases and over 30 million citations for biomedical literature available at PubMed
-with a tenfold increase per annum. Efficient practices for accessing biomedical publications are key to allowing a timely transfer of information from the scientific research community to peer investigators and
-other healthcare practitioners. This explosive growth in the biomedical domain has introduced several access-level challenges for researchers and practitioners. Shah et al. define researchers struggle as ‘‘a
-researcher studying the allelic variations in a gene would want to know all the pathways that are affected by that gene, the drugs whose effects could be modulated by the allelic variations in the gene, and any
-disease that could be caused by the gene and the clinical trials that have studied drugs or diseases related to that gene”. This valuable information is available in the contents available on the web but still opaque
-to information retrieval and knowledge extraction search engines because of the missing machine-interpretable metadata (semantic annotations). Search engines require the metadata to properly index
-contents in a context-aware fashion for precise search of biomedical literature and to foster secondary activities such as automatic integration for meta-analysis. Incorporating machine-interpretable
-semantic annotations at the pre-publication stage (while first-time drafting) of biomedical contents and preserving them during online publishing is indeed desirable and will be a great value addition towards the
-broader semantic web vision. However, both these processes are complex and require deep technical and/or domain knowledge. Therefore, a state-of-the-art freely accessible biomedical semantic content
-authoring and publishing framework would be a game-changer. In the following sections, I summarize the current status of research in the semantic content authoring and publishing domain and highlights the
-position of this proposal.
-
-## 🛠 Technologies
-### Front End
-HTML, CSS, javascript bootstrap, jquery
-
-### Backend
-PHP and Python
-
-### Framework
-React Js, Flask
-
-
-## Project Team
-
-- [Dr.Syed Ahmad Chan Bukhari (PI)](https://www.stjohns.edu/academics/faculty/syed-ahmad-chan-bukhari)
-- [Asim Abbas (Team Lead)](https://www.linkedin.com/in/asim-abbas-b2891ab8/)
-- [Steve Mbouadeu](https://www.linkedin.com/in/stevembouadeu/)
-- [Dr,Fazel Keshtkar](https://www.stjohns.edu/academics/faculty/fazel-keshtkar)
 
 ## Published Research Papers
+
+1.      Knowledge Graph Based Trustworthy Medical Code Recommendations 
+
+2.      Explainable Prediction of Medical Codes through Automated Knowledge Graph Curation Framework
+
+3.      Accelerating Medical Knowledge Discovery through Automated Knowledge Graph Generation and Enrichment (to be published in LNCS Feb 2024)
+
+4.      A Socio-Technical Approach to Trustworthy Semantic Biomedical Content Generation and Sharing
 
 | Authors | Title | Paper Link | Year|
 | --- | --- | --- | --- |
@@ -45,22 +23,8 @@ React Js, Flask
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:KlAtU1dfN6UC) | A Sociotechnical Framework for Semantic Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/360380925_A_Sociotechnical_Framework_for_Semantic_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 | [Steve Mbouadeu et al.](https://scholar.google.com/citations?view_op=view_citation&hl=en&user=gNtO-mYAAAAJ&sortby=pubdate&citation_for_view=gNtO-mYAAAAJ:kNdYIx-mwKoC) | Towards Structured Biomedical Content Authoring and Publishing | [Paper Link](https://www.researchgate.net/publication/359427284_Towards_Structured_Biomedical_Content_Authoring_and_Publishing) | 2022 |
 
-# Installation and Deployment
-## Database setup
-```bash
-  1. Download and install Xampp or Wamp on your system 
-  2. Create new database using PhpMySQL with the name 'semantically_db'
-  3. Import the 'semantically_db'
-  4. Open 'Semantically => api => config'  folder then 'database.php' file and setup database path
-  5. Open 'Semantically => src' folder then 'appinfo.js' and setup php folder path 
-```
-## Run Semantically
-```bash
-  1. npm start
-```
 
-# Project Demo Click to watch
-[![Demo CountPages alpha](https://github.com/bukharilab/Semantically/blob/master/landing/src/demo_img.png)](https://gosemantically.com/)
+
 
 # Project Log
 ![alt text](https://github.com/ahmadchan/Semantically/blob/master/logo.png)
